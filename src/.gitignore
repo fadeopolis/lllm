@@ -1,0 +1,12 @@
+# gedit backup files
+*~
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+
+# Compiled binary
+lllm
+
