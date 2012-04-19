@@ -12,6 +12,7 @@ namespace lllm {
 	class Nil;
 	class Lambda;
 	class Thunk;
+	class Ref;
 
 	typedef const Value*  ValuePtr;
 	typedef const Int*    IntPtr;
@@ -22,48 +23,8 @@ namespace lllm {
 	typedef const Cons*   ConsPtr;
 	typedef const Nil*    NilPtr;
 	typedef const Lambda* LambdaPtr;
-	typedef const Thunk * ThunkPtr;
-
-	namespace val {
-		// constants
-		extern constexpr ValuePtr nil();
-		// construtors
-		extern IntPtr    integer( long );
-		extern RealPtr   real( double );
-		extern CharPtr   character( double );
-		extern StringPtr string( const char* );
-		extern SymbolPtr symbol( const char* );
-		extern ConsPtr   cons( ValuePtr car, ValuePtr cdr );
-		// destructuring
-		extern constexpr ValuePtr car( ConsPtr cons );
-		extern constexpr ValuePtr cdr( ConsPtr cons );
-		extern ValuePtr cadr( ConsPtr cons );
-		extern ValuePtr cdar( ConsPtr cons );
-
-		// predicates
-		extern constexpr bool isInt( ValuePtr );
-		extern constexpr bool isReal( ValuePtr );
-		extern constexpr bool isChar( ValuePtr );
-		extern constexpr bool isString( ValuePtr );
-		extern constexpr bool isSymbol( ValuePtr );
-		extern constexpr bool isCons( ValuePtr );
-		extern constexpr bool isNil( ValuePtr );
-		extern constexpr bool isLambda( ValuePtr );
-		extern constexpr bool isThunk( ValuePtr );
-
-		// useful helpers
-		extern constexpr ValuePtr value( ValuePtr v ) { return v; } 
-		extern ValuePtr value( int         v );
-		extern ValuePtr value( long        v );
-		extern ValuePtr value( double      v );
-
-		extern constexpr ValuePtr list() { return nullptr; }
-
-		template<typename Car, typename... Cdr>
-		ConsPtr list( Car car, Cdr... cdr ) {
-			return cons( value( car ), list( cdr... ) );
-		}
-	}
+	typedef const Thunk*  ThunkPtr;
+	typedef const Ref*    RefPtr;
 
 	// hack around the fact that forward decls do not allow for inheritance
 	template<typename T> constexpr Value* upcast( T* t ) { return (Value*) t; }
@@ -77,16 +38,55 @@ namespace lllm {
 	template<>           ConsPtr   cast<Cons>  ( ValuePtr v );
 	template<>           LambdaPtr cast<Lambda>( ValuePtr v );
 	template<>           ThunkPtr  cast<Thunk> ( ValuePtr v );
+	template<>           RefPtr    cast<Ref>   ( ValuePtr v );
 
-	template<typename T> const T*  castOrNull( ValuePtr v );
-	template<>           IntPtr    castOrNull<Int>   ( ValuePtr v );
-	template<>           RealPtr   castOrNull<Real>  ( ValuePtr v );
-	template<>           CharPtr   castOrNull<Char>  ( ValuePtr v );
-	template<>           StringPtr castOrNull<String>( ValuePtr v );
-	template<>           SymbolPtr castOrNull<Symbol>( ValuePtr v );
-	template<>           ConsPtr   castOrNull<Cons>  ( ValuePtr v );
-	template<>           LambdaPtr castOrNull<Lambda>( ValuePtr v );
-	template<>           ThunkPtr  castOrNull<Thunk> ( ValuePtr v );
+	template<typename T> const T*  castOrNil( ValuePtr v );
+	template<>           IntPtr    castOrNil<Int>   ( ValuePtr v );
+	template<>           RealPtr   castOrNil<Real>  ( ValuePtr v );
+	template<>           CharPtr   castOrNil<Char>  ( ValuePtr v );
+	template<>           StringPtr castOrNil<String>( ValuePtr v );
+	template<>           SymbolPtr castOrNil<Symbol>( ValuePtr v );
+	template<>           ConsPtr   castOrNil<Cons>  ( ValuePtr v );
+	template<>           LambdaPtr castOrNil<Lambda>( ValuePtr v );
+	template<>           ThunkPtr  castOrNil<Thunk> ( ValuePtr v );
+	template<>           RefPtr    castOrNil<Ref>   ( ValuePtr v );
+
+	// builtin functions
+
+	namespace val {
+		// *** constants
+		extern constexpr ValuePtr nil();
+		extern constexpr ValuePtr True();
+		extern constexpr ValuePtr False();
+		// *** construtors
+		extern IntPtr    integer( long );
+		extern RealPtr   real( double );
+		extern CharPtr   character( char );
+		extern StringPtr string( const char* );
+		extern SymbolPtr symbol( const char* );
+		extern ConsPtr   cons( ValuePtr car, ValuePtr cdr );
+		extern RefPtr    ref();
+		extern RefPtr    ref( ValuePtr v );
+		// *** destructuring
+		extern constexpr ValuePtr car( ConsPtr cons );
+		extern constexpr ValuePtr cdr( ConsPtr cons );
+		extern ValuePtr cadr( ConsPtr cons );
+		extern ValuePtr cdar( ConsPtr cons );
+		// *** predicates
+		// ** type checks
+		extern constexpr bool isInt( ValuePtr );
+		extern constexpr bool isReal( ValuePtr );
+		extern constexpr bool isChar( ValuePtr );
+		extern constexpr bool isString( ValuePtr );
+		extern constexpr bool isSymbol( ValuePtr );
+		extern constexpr bool isCons( ValuePtr );
+		extern constexpr bool isNil( ValuePtr );
+		extern constexpr bool isLambda( ValuePtr );
+		extern constexpr bool isThunk( ValuePtr );
+		extern constexpr bool isRef( ValuePtr );
+		// ** misc
+		extern bool equal( ValuePtr, ValuePtr );
+	}
 }
 
 #endif /* __TEST_HPP__ */

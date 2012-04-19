@@ -1,3 +1,3 @@
 
-add_library( value Value.cpp ValueIO.cpp )
+add_library( value Value.cpp builtins.cpp ValueIO.cpp )
 

@@ -19,6 +19,7 @@ std::ostream& lllm::operator<<( std::ostream& os, Type t ) {
 		CASE( Nil )
 		CASE( Lambda )
 		CASE( Thunk )
+		CASE( Ref )
 		#undef  CASE
 	}
 
@@ -28,7 +29,7 @@ std::ostream& lllm::operator<<( std::ostream& os, const Value& v ) {
 	return os << &v;
 }
 std::ostream& lllm::operator<<( std::ostream& os, ValuePtr val ) {
-	struct V final : public Visitor<void,std::ostream&> {
+	struct V final {
 		void operator()( IntPtr    v, std::ostream& os ) { os << v->value; }
 		void operator()( RealPtr   v, std::ostream& os ) { os << v->value; }
 		void operator()( CharPtr   v, std::ostream& os ) { os << v->value; }
@@ -56,6 +57,7 @@ std::ostream& lllm::operator<<( std::ostream& os, ValuePtr val ) {
 		void operator()( NilPtr    v, std::ostream& os ) { os << "nil";      }
 		void operator()( LambdaPtr v, std::ostream& os ) { os << "<lambda>"; }
 		void operator()( ThunkPtr  v, std::ostream& os ) { os << "<thunk>";  }
+		void operator()( RefPtr    v, std::ostream& os ) { os << "<ref " << v->value << ">";  }
 	};
 
 	V v;

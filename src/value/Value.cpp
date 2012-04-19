@@ -7,24 +7,6 @@
 using namespace lllm;
 using namespace lllm::val;
 
-IntPtr lllm::val::integer( long value ) {
-	return new Int( value );
-}
-ConsPtr lllm::val::cons( ValuePtr car, ValuePtr cdr ) {
-	return new Cons( car, cdr );
-}
-
-ValuePtr val::cadr( ConsPtr cons ) { return car( cast<Cons>( cdr( cons ) ) ); }
-ValuePtr val::cdar( ConsPtr cons ) { return cdr( cast<Cons>( car( cons ) ) ); }
-
-		extern ValuePtr value( int         v );
-		extern ValuePtr value( long        v );
-		extern ValuePtr value( double      v );
-
-ValuePtr val::value( int    v ) { return new Int( v ); }
-ValuePtr val::value( long   v ) { return new Int( v ); }
-ValuePtr val::value( double v ) { return new Real( v ); }
-
 template<typename T>
 inline const T* do_cast( ValuePtr v ) {
 	assert( typeOf( v ) == T::TYPE );
@@ -55,14 +37,16 @@ template<> SymbolPtr lllm::cast<Symbol>( ValuePtr v ) { return do_cast<Symbol>( 
 template<> ConsPtr   lllm::cast<Cons>  ( ValuePtr v ) { return do_cast<Cons>  ( v ); }
 template<> LambdaPtr lllm::cast<Lambda>( ValuePtr v ) { return do_cast<Lambda>( v ); }
 template<> ThunkPtr  lllm::cast<Thunk> ( ValuePtr v ) { return do_cast<Thunk> ( v ); }
+template<> RefPtr    lllm::cast<Ref>   ( ValuePtr v ) { return do_cast<Ref>   ( v ); }
 
-template<> IntPtr    lllm::castOrNull<Int>   ( ValuePtr v ) { return do_cast_or_null<Int>   ( v ); }
-template<> RealPtr   lllm::castOrNull<Real>  ( ValuePtr v ) { return do_cast_or_null<Real>  ( v ); }
-template<> CharPtr   lllm::castOrNull<Char>  ( ValuePtr v ) { return do_cast_or_null<Char>  ( v ); }
-template<> StringPtr lllm::castOrNull<String>( ValuePtr v ) { return do_cast_or_null<String>( v ); }
-template<> SymbolPtr lllm::castOrNull<Symbol>( ValuePtr v ) { return do_cast_or_null<Symbol>( v ); }
-template<> ConsPtr   lllm::castOrNull<Cons>  ( ValuePtr v ) { return do_cast_or_null<Cons>  ( v ); }
-template<> LambdaPtr lllm::castOrNull<Lambda>( ValuePtr v ) { return do_cast_or_null<Lambda>( v ); }
-template<> ThunkPtr  lllm::castOrNull<Thunk> ( ValuePtr v ) { return do_cast_or_null<Thunk> ( v ); }
+template<> IntPtr    lllm::castOrNil<Int>   ( ValuePtr v ) { return do_cast_or_null<Int>   ( v ); }
+template<> RealPtr   lllm::castOrNil<Real>  ( ValuePtr v ) { return do_cast_or_null<Real>  ( v ); }
+template<> CharPtr   lllm::castOrNil<Char>  ( ValuePtr v ) { return do_cast_or_null<Char>  ( v ); }
+template<> StringPtr lllm::castOrNil<String>( ValuePtr v ) { return do_cast_or_null<String>( v ); }
+template<> SymbolPtr lllm::castOrNil<Symbol>( ValuePtr v ) { return do_cast_or_null<Symbol>( v ); }
+template<> ConsPtr   lllm::castOrNil<Cons>  ( ValuePtr v ) { return do_cast_or_null<Cons>  ( v ); }
+template<> LambdaPtr lllm::castOrNil<Lambda>( ValuePtr v ) { return do_cast_or_null<Lambda>( v ); }
+template<> ThunkPtr  lllm::castOrNil<Thunk> ( ValuePtr v ) { return do_cast_or_null<Thunk> ( v ); }
+template<> RefPtr    lllm::castOrNil<Ref>   ( ValuePtr v ) { return do_cast_or_null<Ref>   ( v ); }
 
 

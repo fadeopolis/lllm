@@ -3,6 +3,7 @@
 #include "Value.hpp"
 #include "ValueABI.hpp"
 #include "ValueIO.hpp"
+#include "Reader.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -21,33 +22,27 @@ static constexpr long     l   = I.value;
 static constexpr ValuePtr car = val::car( &c );
 
 int main() {
-	std::cout << "LLLM says: 'Hi'" << std::endl;
+	cout << "LLLM says: 'Hi'" << endl << endl;
 
 	IntPtr i = val::integer( 5 );
 	
 	cout << i << endl;
 	cout << cons( integer( 0 ), cons( integer( 1 ), nil() ) ) << endl;
-	cout << list( 2, list( 3, 4 ) ) << endl;
-	cout << list( 5, 5.5f ) << endl;
+	cout << "'" << nil() << "'" << endl;
+	
+	cout << endl << ">>> TEST EQUALITY" << endl;
+	cout << std::boolalpha;
 
-/*
-	Int   i = new IntObj();
-	Handle<IntObj>   i2( i );
-	Handle<IntObj>   i3 = i;
+	#define EQ( A, B ) (void) ({ cout << #A " == " #B " is " << equal( (A), (B) ) << endl; nullptr; })
 
-	Value v;
-	Value v_i( i );
-	Value v_n = val::nil;
+	EQ( nil(),        nil() );
+	EQ( integer( 5 ), nil() );
+	EQ( nil(),        integer( 5 ) );
+	EQ( integer( 5 ), integer( 5 ) );
+	EQ( cons( nil(), nil() ), cons( nil(), True() ) );
 
-	cout << (v.type()   == Type::Nil) << endl;
-	cout << (v_i.type() == Type::Int) << endl;
+	cout << endl << "LLLM says: 'Bye'" << endl;
 
-//	lllm::Value v;
-//
-//	std::cout << "E " << sizeof( E ) << std::endl;
-//	std::cout << "U " << sizeof( U ) << std::endl;
-//	std::cout << "S " << sizeof( S ) << std::endl;
-*/
 	return 0;
 }
 

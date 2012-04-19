@@ -15,7 +15,8 @@ namespace lllm {
 		// non-readable types
 		Nil,
 		Lambda,
-		Thunk
+		Thunk,
+		Ref
 	};
 
 	struct Value {
@@ -71,9 +72,18 @@ namespace lllm {
 	struct Thunk : public Value {
 		static constexpr Type TYPE = Type::Thunk;
 	};
+	struct Ref : public Value {
+		static constexpr Type TYPE = Type::Ref;
+
+		constexpr Ref()             : Ref( nullptr )                 {}
+		constexpr Ref( ValuePtr v ) : Value( Type::Ref ), value( v ) {}
+
+		ValuePtr value;
+	};
 
 	namespace val {
-		extern constexpr ValuePtr nil() { return nullptr; }
+		extern constexpr ValuePtr nil()   { return nullptr; }
+		extern constexpr ValuePtr False() { return nullptr; }
 
 		extern constexpr ValuePtr car( ConsPtr cons )  { return cons->car; }
 		extern constexpr ValuePtr cdr( ConsPtr cons )  { return cons->cdr; }
@@ -91,6 +101,7 @@ namespace lllm {
 		extern constexpr bool isNil( ValuePtr v )    { return !v;                           }
 		extern constexpr bool isLambda( ValuePtr v ) { return v && v->type == Type::Lambda; }
 		extern constexpr bool isThunk( ValuePtr v )  { return v && v->type == Type::Thunk;  }
+		extern constexpr bool isRef( ValuePtr v )    { return v && v->type == Type::Ref;    }
 	}
 }
 
