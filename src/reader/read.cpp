@@ -2,6 +2,7 @@
 #include "read.hpp"
 #include "Source.hpp"
 #include "values.hpp"
+#include "fail.hpp"
 
 #include <cassert>
 #include <cstring>
@@ -11,8 +12,8 @@ using namespace std;
 using namespace lllm;
 using namespace lllm::val;
 
-#define LOG( SRC, MSG ) cout << __FUNCTION__ << "\t" << SRC << " " << MSG << endl
-#//#define LOG( SRC, MSG )
+//#define LOG( SRC, MSG ) cout << __FUNCTION__ << "\t" << SRC << " " << MSG << endl
+#define LOG( SRC, MSG )
 
 static ValuePtr _read( Source& src );
 static ValuePtr _readList( Source& src );
@@ -37,17 +38,11 @@ ValuePtr lllm::readFile( const char* name ) {
 	return _read( src );
 }
 
-#define FAIL( SRC, MSG ) ({   \
-	std::stringstream str;    \
-	str << MSG;               \
-	fail( (SRC), str.str() ); \
-})
-
 ValuePtr _read( Source& src ) {
 	LOG( src, "" );
 	skipWhitespace( src );
 
-	if ( !src ) fail( src, "EOF while reading expression" );
+	if ( !src ) LLLM_FAIL( src << "EOF while reading expression" );
 	
 	switch ( src.peek() ) {
 		case '(':  return _readList( src );
@@ -60,7 +55,7 @@ ValuePtr _readList( Source& src ) {
 	assert( src && src.consume('(') );
 
 	skipWhitespace( src );
-	if ( !src ) fail( src, "EOF while reading list" );
+	if ( !src ) LLLM_FAIL( src << "EOF while reading list" );
 	
 	// if we immediately read ) this is an empty list
 	if ( src.peek() == ')' ) {
@@ -80,7 +75,7 @@ ValuePtr _readTail( Source& src ) {
 	assert( src );
 
 	skipWhitespace( src );
-	if ( !src ) fail( src, "EOF while reading list" );
+	if ( !src ) LLLM_FAIL( src << "EOF while reading list" );
 
 	if ( src.peek() == ')' ) {
 		src.consume();
@@ -128,7 +123,7 @@ ValuePtr _readChar( Source& src ) {
 	LOG( src, "" );
 	assert( src && src.consume('\\') );
 
-	if ( !src ) fail( src, "EOF while reading character" );
+	if ( !src ) LLLM_FAIL( src << "EOF while reading character" );
 
 	LOG( src, "READ: " << src.peek() );
 
@@ -186,7 +181,7 @@ ValuePtr _readString( Source& src ) {
 	while ( true ) {
 		char c = src.peek();
 
-		if ( !src ) fail( src, "EOF while reading string" );
+		if ( !src ) LLLM_FAIL( src << "EOF while reading string" );
 
 		if ( src.consume('"') ) {
 			char* cs = (char*) malloc( buf.str().size() );
@@ -270,9 +265,5 @@ void skipComment( Source& src ) {
 				continue;
 		}
 	}
-}
-void fail( Source& src, const std::string& msg ) {
-	std::cerr << src << ":" << msg << std::endl;
-	exit( 1 );
 }
 
