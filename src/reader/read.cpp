@@ -27,7 +27,6 @@ static ValuePtr _readSymbol( Source& src );
 
 static void skipWhitespace( Source& src );
 static void skipComment( Source& src );
-static void fail( Source& src, const std::string& msg );
 
 ValuePtr lllm::read( const char* str ) {
 	StringSource src( str );
