@@ -48,7 +48,8 @@ std::ostream& lllm::operator<<( std::ostream& os, ValuePtr val ) {
 					os << ' ' << car( cons );
 					tmp = cdr( cons );
 				} else {
-					os << tmp;
+					os << ' ' << tmp;
+					break;
 				}
 			}
 

@@ -2,6 +2,50 @@
 #define __TEST_HPP__ 1
 
 namespace lllm {
+	typedef const class Value*  ValuePtr;
+
+	namespace val {
+		// *** constants
+		extern constexpr ValuePtr nil() { return nullptr; }
+		extern const ValuePtr True;
+		extern const ValuePtr False;
+		// *** construtors
+		extern ValuePtr number( int );
+		extern ValuePtr number( long );
+		extern ValuePtr number( double );
+		extern ValuePtr character( char );
+		extern ValuePtr string( const char* );
+		extern ValuePtr symbol( const char* );
+		extern ValuePtr cons( ValuePtr car, ValuePtr cdr );
+		extern ValuePtr ref();
+		extern ValuePtr ref( ValuePtr v );
+		// *** destructuring
+		extern ValuePtr car( ValuePtr cons );
+		extern ValuePtr cdr( ValuePtr cons );
+
+		extern ValuePtr cadr( ValuePtr cons );
+		extern ValuePtr cdar( ValuePtr cons );
+
+		extern ValuePtr cadar( ValuePtr cons );
+		extern ValuePtr caddr( ValuePtr cons );
+
+		// *** predicates
+		// ** type checks
+		extern constexpr bool isInt   ( ValuePtr );
+		extern constexpr bool isReal  ( ValuePtr );
+		extern constexpr bool isChar  ( ValuePtr );
+		extern constexpr bool isString( ValuePtr );
+		extern constexpr bool isSymbol( ValuePtr );
+		extern constexpr bool isCons  ( ValuePtr );
+		extern constexpr bool isNil   ( ValuePtr );
+		extern constexpr bool isLambda( ValuePtr );
+		extern constexpr bool isThunk ( ValuePtr );
+		extern constexpr bool isRef   ( ValuePtr );
+		// ** misc
+		extern bool equal( ValuePtr, ValuePtr );
+	}
+
+/*
 	class Value;
 	class Int;
 	class Real;
@@ -87,6 +131,8 @@ namespace lllm {
 		// ** misc
 		extern bool equal( ValuePtr, ValuePtr );
 	}
+*/
+
 }
 
 #endif /* __TEST_HPP__ */

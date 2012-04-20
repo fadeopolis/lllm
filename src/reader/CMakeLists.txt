@@ -1,3 +1,3 @@
 
-add_library( reader Reader.cpp Source.cpp )
+add_library( reader read.cpp Source.cpp )
 

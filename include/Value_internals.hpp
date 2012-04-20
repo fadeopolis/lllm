@@ -1,5 +1,5 @@
-#ifndef __TEST_ABI_HPP__
-#define __TEST_ABI_HPP__ 1
+#ifndef __VALUE_INTERNALS_HPP__
+#define __VALUE_INTERNALS_HPP__ 1
 
 #include "Value.hpp"
 
@@ -18,6 +18,17 @@ namespace lllm {
 		Thunk,
 		Ref
 	};
+
+	typedef const struct Int*    IntPtr;
+	typedef const struct Real*   RealPtr;
+	typedef const struct Char*   CharPtr;
+	typedef const struct String* StringPtr;
+	typedef const struct Symbol* SymbolPtr;
+	typedef const struct Cons*   ConsPtr;
+	typedef const struct Nil*    NilPtr;
+	typedef const struct Lambda* LambdaPtr;
+	typedef const struct Thunk*  ThunkPtr;
+	typedef const struct Ref*    RefPtr;
 
 	struct Value {
 		constexpr Value( Type type ) : type( type ) {}
@@ -81,13 +92,30 @@ namespace lllm {
 		ValuePtr value;
 	};
 
+	// checked casts
+	template<typename T> const T*  cast( ValuePtr v );
+	template<>           IntPtr    cast<Int>   ( ValuePtr v );
+	template<>           RealPtr   cast<Real>  ( ValuePtr v );
+	template<>           CharPtr   cast<Char>  ( ValuePtr v );
+	template<>           StringPtr cast<String>( ValuePtr v );
+	template<>           SymbolPtr cast<Symbol>( ValuePtr v );
+	template<>           ConsPtr   cast<Cons>  ( ValuePtr v );
+	template<>           LambdaPtr cast<Lambda>( ValuePtr v );
+	template<>           ThunkPtr  cast<Thunk> ( ValuePtr v );
+	template<>           RefPtr    cast<Ref>   ( ValuePtr v );
+
+	template<typename T> const T*  castOrNil( ValuePtr v );
+	template<>           IntPtr    castOrNil<Int>   ( ValuePtr v );
+	template<>           RealPtr   castOrNil<Real>  ( ValuePtr v );
+	template<>           CharPtr   castOrNil<Char>  ( ValuePtr v );
+	template<>           StringPtr castOrNil<String>( ValuePtr v );
+	template<>           SymbolPtr castOrNil<Symbol>( ValuePtr v );
+	template<>           ConsPtr   castOrNil<Cons>  ( ValuePtr v );
+	template<>           LambdaPtr castOrNil<Lambda>( ValuePtr v );
+	template<>           ThunkPtr  castOrNil<Thunk> ( ValuePtr v );
+	template<>           RefPtr    castOrNil<Ref>   ( ValuePtr v );
+
 	namespace val {
-		extern constexpr ValuePtr nil()   { return nullptr; }
-		extern constexpr ValuePtr False() { return nullptr; }
-
-		extern constexpr ValuePtr car( ConsPtr cons )  { return cons->car; }
-		extern constexpr ValuePtr cdr( ConsPtr cons )  { return cons->cdr; }
-
 		extern constexpr Type typeOf( ValuePtr v ) {
 			return v ? v->type : Type::Nil;
 		}
@@ -105,5 +133,5 @@ namespace lllm {
 	}
 }
 
-#endif /* __TEST_ABI_HPP__ */
+#endif /* __VALUE_INTERNALS_HPP__ */
 

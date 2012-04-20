@@ -1,5 +1,5 @@
 
-#include "Reader.hpp"
+#include "read.hpp"
 #include "Source.hpp"
 #include "values.hpp"
 
@@ -11,8 +11,8 @@ using namespace std;
 using namespace lllm;
 using namespace lllm::val;
 
-//#define LOG( SRC, MSG ) cout << __FUNCTION__ << "\t" << SRC << " " << MSG << endl
-#define LOG( SRC, MSG )
+#define LOG( SRC, MSG ) cout << __FUNCTION__ << "\t" << SRC << " " << MSG << endl
+#//#define LOG( SRC, MSG )
 
 static ValuePtr _read( Source& src );
 static ValuePtr _readList( Source& src );
@@ -63,10 +63,15 @@ ValuePtr _readList( Source& src ) {
 	if ( !src ) fail( src, "EOF while reading list" );
 	
 	// if we immediately read ) this is an empty list
-	if ( src.peek() == ')' ) return nil();
+	if ( src.peek() == ')' ) {
+		return nil();
+		src.consume();
+	}
 
 	ValuePtr car = _read( src );
 	ValuePtr cdr = _readTail( src );
+
+	LOG( src, "READ: " << cons( car, cdr ) );
 
 	return cons( car, cdr );
 }
@@ -77,10 +82,15 @@ ValuePtr _readTail( Source& src ) {
 	skipWhitespace( src );
 	if ( !src ) fail( src, "EOF while reading list" );
 
-	if ( src.peek() == ')' ) return nil();
-
+	if ( src.peek() == ')' ) {
+		src.consume();
+		return nil();
+	}
+	
 	ValuePtr car = _read( src );
 	ValuePtr cdr = _readTail( src );
+
+	LOG( src, "READ: " << cons( car, cdr ) );	
 
 	return cons( car, cdr );
 }
@@ -88,7 +98,11 @@ ValuePtr _readQuote( Source& src ) {
 	LOG( src, "" );
 	assert( src && src.consume('\'') );
 
-	return cons( symbol("quote"), cons( _read( src ), nil() ) );
+	ValuePtr quoted = _read( src );
+
+	LOG( src, "READ: '" << quoted );
+
+	return cons( symbol("quote"), cons( quoted, nil() ) );
 }
 ValuePtr _readAtom( Source& src ) {
 	LOG( src, "" );
@@ -116,7 +130,7 @@ ValuePtr _readChar( Source& src ) {
 
 	if ( !src ) fail( src, "EOF while reading character" );
 
-	LOG( src, src.peek() );
+	LOG( src, "READ: " << src.peek() );
 
 	return val::character( src.read() );
 }
@@ -144,12 +158,12 @@ ValuePtr _readNumber( Source& src ) {
 			case '9':
 				buf << c;
 				break;
-			case ' ':
-			case '\t':
-			case '\n':
-				goto end;	
+			// skip underscores in numbers
+			case '_':
+				break;
+			// any other character terminates a the number
 			default:
-				FAIL( src, "Illegal character '" << c << "'in integer literal" );
+				goto end;	
 		}
 		src.read();
 	}
@@ -157,7 +171,8 @@ ValuePtr _readNumber( Source& src ) {
 	end:
 		int64_t i;
 		buf >> i;
-		return integer( i );
+		LOG( src, "READ: " << i );
+		return number( i );
 }
 ValuePtr _readString( Source& src ) {
 	LOG( src, "" );
@@ -168,7 +183,6 @@ ValuePtr _readString( Source& src ) {
 	// skip "
 	src.read();
 	
-
 	while ( true ) {
 		char c = src.peek();
 
@@ -177,6 +191,7 @@ ValuePtr _readString( Source& src ) {
 		if ( src.consume('"') ) {
 			char* cs = (char*) malloc( buf.str().size() );
 			std::strcpy( cs, buf.str().c_str() );
+			LOG( src, "READ: \"" << cs << '"' );
 			return val::string( cs );
 		}
 
@@ -216,6 +231,7 @@ ValuePtr _readSymbol( Source& src ) {
 	end:
 		char* cs = (char*) malloc( buf.str().size() );
 		std::strcpy( cs, buf.str().c_str() );
+		LOG( src, "READ: " << cs );
 		return symbol( cs );
 }
 

@@ -2,7 +2,7 @@
 #define __VALUE_UTIL_HPP__ 1
 
 #include "Value.hpp"
-#include "ValueABI.hpp"
+#include "Value_internals.hpp"
 
 #include <utility>
 
@@ -11,8 +11,9 @@ namespace lllm {
 	template<typename Visitor, typename Return, typename... Args>
 	Return visit( ValuePtr val, Visitor& v, Args... args ) {
 		switch ( val::typeOf( val ) ) {
-			#define CASE( TYPE ) case Type::TYPE: return v( cast<TYPE>( val ), args... );
-//			#define CASE( TYPE ) case Type::TYPE: return v( cast<TYPE>( val ), std::forward<Args>(args)... );
+			#define CASE( TYPE ) \
+				case Type::TYPE: \
+					return v( static_cast<const TYPE*>( val ), args... );
 			CASE( Int )
 			CASE( Real )
 			CASE( Char )

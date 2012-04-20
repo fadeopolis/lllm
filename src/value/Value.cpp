@@ -1,21 +1,24 @@
 
 #include "Value.hpp"
-#include "ValueABI.hpp"
+#include "Value_internals.hpp"
+#include "ValueIO.hpp"
+#include "fail.hpp"
 
 #include <cassert>
 
 using namespace lllm;
 using namespace lllm::val;
 
+
 template<typename T>
 inline const T* do_cast( ValuePtr v ) {
-	assert( typeOf( v ) == T::TYPE );
+	if ( typeOf( v ) != T::TYPE ) LLLM_FAIL( typeOf( v ) << " cannot be cast to " << T::TYPE );
 	
 	return static_cast<const T*>( v );
 }
 template<>
 inline NilPtr do_cast( ValuePtr v ) {
-	assert( v == val::nil() );
+	if ( typeOf( v ) != Type::Nil ) LLLM_FAIL( typeOf( v ) << " cannot be cast to nil" );
 	
 	return nullptr;
 }

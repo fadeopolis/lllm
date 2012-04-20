@@ -1,5 +1,5 @@
 
-#include "ValueABI.hpp"
+#include "Value_internals.hpp"
 #include "ValueVisitor.hpp"
 
 #include <map>
@@ -14,13 +14,15 @@ namespace lllm {
 // ***** constants ***********************************************************************
 		static Symbol TRUE("true");
 
-		constexpr ValuePtr True() { return &TRUE; }
+		constexpr ValuePtr True  = &TRUE;
+		constexpr ValuePtr False = nil();
 // ***** construtors *********************************************************************
-		IntPtr    integer( long value )       { return new Int( value ); }
-		RealPtr   real( double value )        { return new Real( value ); }
-		CharPtr   character( char value )     { return new Char( value ); }
-		StringPtr string( const char* value ) { return new String( value ); }
-		SymbolPtr symbol( const char* value ) {
+		ValuePtr number( int    value )      { return new Int( value ); }
+		ValuePtr number( long   value )      { return new Int( value ); }
+		ValuePtr number( double value )      { return new Real( value ); }
+		ValuePtr character( char value )     { return new Char( value ); }
+		ValuePtr string( const char* value ) { return new String( value ); }
+		ValuePtr symbol( const char* value ) {
 			struct cmp_str final {
 			   bool operator()(char const *a, char const *b) { 
 				return std::strcmp(a, b) < 0;
@@ -45,12 +47,18 @@ namespace lllm {
 				return sym;
 			}
 		}
-		ConsPtr   cons( ValuePtr car, ValuePtr cdr ) { return new Cons( car, cdr ); }
-		RefPtr    ref() { return new Ref( nullptr ); }
-		RefPtr    ref( ValuePtr v ) { return new Ref( v ); }
+		ValuePtr cons( ValuePtr car, ValuePtr cdr ) { return new Cons( car, cdr ); }
+		ValuePtr ref() { return new Ref( nullptr ); }
+		ValuePtr ref( ValuePtr v ) { return new Ref( v ); }
 // ***** destructuring *******************************************************************
-		ValuePtr cadr( ConsPtr cons ) { return car( cast<Cons>( cdr( cons ) ) ); }
-		ValuePtr cdar( ConsPtr cons ) { return cdr( cast<Cons>( car( cons ) ) ); }
+		ValuePtr car( ValuePtr cons )  { return cast<Cons>( cons )->car; }
+		ValuePtr cdr( ValuePtr cons )  { return cast<Cons>( cons )->cdr; }
+
+		ValuePtr cadr( ValuePtr cons ) { return car( cdr( cons ) ); }
+		ValuePtr cdar( ValuePtr cons ) { return cdr( car( cons ) ); }
+
+		ValuePtr cadar( ValuePtr cons ) { return car( cdr( car( cons ) ) ); }
+		ValuePtr caddr( ValuePtr cons ) { return car( cdr( cdr( cons ) ) ); }
 // ***** predicates **********************************************************************
 // *** type checks ***********************************************************************
 // *** misc ******************************************************************************
@@ -64,31 +72,31 @@ namespace lllm {
 			switch ( typeOf( a ) ) {
 				case Type::Int:
 					switch ( typeOf( b ) ) {
-						case Type::Int:  return cast<Int>( a )->value == cast<Int>( b )->value;
-						case Type::Real: return cast<Int>( a )->value == cast<Real>( b )->value;
+						case Type::Int:  return static_cast<IntPtr>( a )->value == static_cast<IntPtr>( b )->value;
+						case Type::Real: return static_cast<IntPtr>( a )->value == static_cast<RealPtr>( b )->value;
 						default:         return false;
 					}
 				case Type::Real:
 					switch ( typeOf( b ) ) {
-						case Type::Int:  return cast<Real>( a )->value == cast<Int>( b )->value;
-						case Type::Real: return cast<Real>( a )->value == cast<Real>( b )->value;
+						case Type::Int:  return static_cast<RealPtr>( a )->value == static_cast<IntPtr>( b )->value;
+						case Type::Real: return static_cast<RealPtr>( a )->value == static_cast<RealPtr>( b )->value;
 						default:         return false;
 					}
 				case Type::Char:
 					switch ( typeOf( b ) ) {
-						case Type::Char:  return cast<Char>( a )->value == cast<Char>( b )->value;
+						case Type::Char:  return static_cast<CharPtr>( a )->value == static_cast<CharPtr>( b )->value;
 						default:          return false;
 					}
 				case Type::String:
 					switch ( typeOf( b ) ) {
-						case Type::String:  return std::strcmp( cast<String>( a )->value, cast<String>( b )->value ) == 0;
+						case Type::String:  return std::strcmp( static_cast<StringPtr>( a )->value, static_cast<StringPtr>( b )->value ) == 0;
 						default:            return false;
 					}
 				case Type::Symbol:
 					return false; // symbols have reference semantics
 				case Type::Cons:
 					switch ( typeOf( b ) ) {
-						case Type::Cons:  return equal( cast<Cons>( a ), cast<Cons>( b ) );
+						case Type::Cons:  return equal( static_cast<ConsPtr>( a ), static_cast<ConsPtr>( b ) );
 						default:          return false;
 					}
 				case Type::Nil:
@@ -107,7 +115,7 @@ namespace lllm {
 		}
 
 		// force instantiation of some constexprs
-		void force_constexpr_instantiation() {
+/*		void force_constexpr_instantiation() {
 			nil();
 			True();
 			False();
@@ -116,7 +124,7 @@ namespace lllm {
 			car( &c );
 			cdr( &c );
 		}
-	} // end namespace val
+*/	} // end namespace val
 } // end namespace lllm
 
 
