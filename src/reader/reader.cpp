@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cassert>
 #include <cstring>
+#include <algorithm>
 
 using namespace lllm;
 
@@ -118,10 +119,12 @@ ListTree*   _readList( Tokenizer& ts ) {
 }
 ListTree*   _readQuote( const SourceLocation& loc, Tokenizer& ts ) {
 	ParseTree* value = _read( ts );
+//	std::cout << "READ QUOTE: " << value << std::endl;
 
 	return new ListTree( loc, new SymbolTree( loc, "quote" ), new ListTree( loc, value, nullptr ) );
 }
 NumberTree* _readNumber( const SourceLocation& loc, CStr tok ) {
+//	std::cout << "READ NUM: " << tok << std::endl;
 	std::stringstream str;
 
 	str << *tok;
@@ -190,6 +193,7 @@ return_real:
 }
 
 CharTree*   _readChar( const SourceLocation& loc, CStr tok ) {
+//	std::cout << "READ CHAR: " << tok << std::endl;
 	assert( *tok == '\\' );
 
 	tok++;
@@ -205,10 +209,16 @@ CharTree*   _readChar( const SourceLocation& loc, CStr tok ) {
 
 	return new CharTree( loc, *tok );	
 }
+
 StringTree* _readString( const SourceLocation& loc, CStr tok ) {
+//	std::cout << "READ STR: " << tok << std::endl;
+	// drop leading ", the " at the end was dropped by tokenizer
+	tok++;
+
 	return new StringTree( loc, tok );
 }
 SymbolTree* _readSymbol( const SourceLocation& loc, CStr tok ) {
+//	std::cout << "READ SYM: " << tok << std::endl;
 	return new SymbolTree( loc, tok );
 }
 

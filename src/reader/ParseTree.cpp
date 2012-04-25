@@ -28,7 +28,7 @@ void IntTree::printTo( std::ostream& os )    const { os << value; }
 void RealTree::printTo( std::ostream& os )   const { os << value; }
 void CharTree::printTo( std::ostream& os )   const { os << value; }
 void StringTree::printTo( std::ostream& os ) const { os << value; }
-void SymbolTree::printTo( std::ostream& os ) const { os << '"' << value << "'"; }
+void SymbolTree::printTo( std::ostream& os ) const { os << '"' << value << '"'; }
 void ListTree::printTo( std::ostream& os )   const {
 	os << '(';
 	os << car;
@@ -53,7 +53,7 @@ std::ostream& lllm::operator<<( std::ostream& os, const ParseTree* p ) {
 	}
 }
 
-bool ParseTree::equal( const ParseTree* a, const ParseTree* b ) {
+bool parseTree::equal( const ParseTree* a, const ParseTree* b ) {
 	if ( a == b ) return true;
 
 	if ( const IntTree* aI = dynamic_cast<const IntTree*>( a ) ) {
@@ -106,12 +106,13 @@ static inline SourceLocation loc() {
 	return SourceLocation("*test*");
 }
 
-ParseTree* ParseTree::number( int    value )                { return new IntTree( loc(), value );     }
-ParseTree* ParseTree::number( long   value )                { return new IntTree( loc(), value );     }
-ParseTree* ParseTree::number( float  value )                { return new RealTree( loc(), value );    }
-ParseTree* ParseTree::number( double value )                { return new RealTree( loc(), value );    }
-ParseTree* ParseTree::character( char value )               { return new CharTree( loc(), value );    }
-ParseTree* ParseTree::string( CStr value )                  { return new StringTree( loc(), value );  }
-ParseTree* ParseTree::symbol( CStr value )                  { return new SymbolTree( loc(), value );  }
-ParseTree* ParseTree::list( ParseTree* car, ListTree* cdr ) { return new ListTree( loc(), car, cdr ); }
+ParseTree* parseTree::nil()                                 { return nullptr;                         }
+ParseTree* parseTree::number( int    value )                { return new IntTree( loc(), value );     }
+ParseTree* parseTree::number( long   value )                { return new IntTree( loc(), value );     }
+ParseTree* parseTree::number( float  value )                { return new RealTree( loc(), value );    }
+ParseTree* parseTree::number( double value )                { return new RealTree( loc(), value );    }
+ParseTree* parseTree::character( char value )               { return new CharTree( loc(), value );    }
+ParseTree* parseTree::string( CStr value )                  { return new StringTree( loc(), value );  }
+ParseTree* parseTree::symbol( CStr value )                  { return new SymbolTree( loc(), value );  }
+ListTree*  parseTree::cons( ParseTree* car, ListTree* cdr ) { return new ListTree( loc(), car, cdr ); }
 

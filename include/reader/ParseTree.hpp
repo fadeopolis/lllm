@@ -28,23 +28,6 @@ namespace lllm {
 			virtual void getVisitedBy( ParseTreeVisitor& ) = 0;
 
 			const SourceLocation location;
-
-			// these are here to help testing only
-			static bool equal( const ParseTree*, const ParseTree* );
-
-			static ParseTree* number( int );
-			static ParseTree* number( long );
-			static ParseTree* number( float );
-			static ParseTree* number( double );
-			static ParseTree* character( char );
-			static ParseTree* string( CStr );
-			static ParseTree* symbol( CStr );
-			static ParseTree* list( ParseTree*, ListTree* = nullptr );
-	
-			template<typename T, typename... Ts>
-			static ParseTree* list( T t, Ts... ts ) {
-				return list( t, list( ts... ) );
-			}
 		protected:
 			virtual void printTo( std::ostream& ) const = 0;
 
@@ -127,6 +110,28 @@ namespace lllm {
 		virtual void visit( SymbolTree* ) = 0;
 		virtual void visit( ListTree*   ) = 0;
 	};
+
+	namespace parseTree {
+		// these are here to help testing only
+		bool equal( const ParseTree*, const ParseTree* );
+
+		ParseTree* nil();
+		ParseTree* number( int );
+		ParseTree* number( long );
+		ParseTree* number( float );
+		ParseTree* number( double );
+		ParseTree* character( char );
+		ParseTree* string( CStr );
+		ParseTree* symbol( CStr );
+		ListTree*  cons( ParseTree*, ListTree* = nullptr );
+
+		constexpr ListTree* list() { return nullptr; }
+	
+		template<typename T, typename... Ts>
+		ListTree* list( T t, Ts... ts ) {
+			return cons( t, list( ts... ) );
+		}
+	}
 }
 
 #endif /* __PARSE_TREE_HPP__ */

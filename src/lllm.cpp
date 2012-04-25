@@ -11,21 +11,20 @@
 
 #include <cassert>
 #include <iostream>
-#include <string>
+#include <typeinfo>
 
 namespace lllm {
 	namespace val  {}
 	namespace util {}
 }
 
-using namespace std;
 using namespace lllm;
 using namespace lllm::val;
 
 static int testReader();
 
 int main() {
-	cout << "LLLM says: 'Hi'" << endl << endl;
+	std::cout << "LLLM says: 'Hi'" << std::endl << std::endl;
 /*
 	ValuePtr i = val::number( 5 );
 	
@@ -71,7 +70,7 @@ int main() {
 	EVAL("(lambda () 'a)");
 	EVAL("((lambda () 5))");
 */
-	cout << endl << "LLLM says: 'Bye'" << endl;
+	std::cout << std::endl << "LLLM says: 'Bye'" << std::endl;
 	return 0;
 }
 
@@ -79,26 +78,37 @@ static int runReaderTest( const char* str, const ParseTree& tree );
 static int runReaderTest( const char* str, const ParseTree* tree );
 
 int testReader() {
-	cout << endl << ">>> TESTING READER" << endl;
+	using namespace lllm::parseTree;
+
+	std::cout << std::endl << ">>> TESTING READER" << std::endl;
 
 	int testsRun = 0, testsPassed = 0;
 
-	#define TEST( NAME, REL, STR, OBJ )  ({											\
-		if ( ParseTree::equal( read( (STR) ), (OBJ) ) REL false ) {					\
-			cout << "Test: " NAME " failed: read(" STR ") == '" << read( (STR) );	\
-			cout << "' should equal '" << OBJ << "'" << endl;						\
-		} else {																	\
-			testsPassed++;															\
-		}																			\
-		testsRun++;																	\
+	#define TEST( NAME, REL, STR, OBJ )  ({												\
+		auto str = (STR);																\
+		auto obj = (OBJ);																\
+																						\
+		if ( parseTree::equal( read( str ), obj ) REL false ) {							\
+			std::cout << "Test: " NAME " failed: read(" STR ") == '" << read( str );	\
+			std::cout << "' should equal '" << obj << "'" << std::endl;					\
+		} else {																		\
+			testsPassed++;																\
+		}																				\
+		testsRun++;																		\
 	})
 
-	TEST( "", ==, "1",   ParseTree::number( 1   ) );
-	TEST( "", ==, "1.5", ParseTree::number( 1.5 ) );
-	TEST( "", !=, "155", ParseTree::number( 1.5 ) );
-	TEST( "", ==, "1 5", ParseTree::number( 1   ) );
+	TEST( "", ==, "1",        number( 1 ) );
+	TEST( "", ==, "1.5",      number( 1.5 ) );
+	TEST( "", !=, "155",      number( 1.5 ) );
+	TEST( "", ==, "1 5",      number( 1 ) );
+	TEST( "", ==, "abba",     symbol( "abba" ) );
+	TEST( "", ==, "\"abba\"", string( "abba" ) );
+	TEST( "", ==, "()",       nil() );
+	TEST( "", ==, "(1)",      list( number( 1 ) ) );
+	TEST( "", ==, "(()())",   list( nil(), nil() ) );
+	TEST( "", ==, "(1 ())",   list( number( 1 ), nil() ) );
 
-	cout << ">>> READER PASSED " << testsPassed << " TESTS OUT OF " << testsRun << endl;
+	std::cout << ">>> READER PASSED " << testsPassed << " TESTS OUT OF " << testsRun << std::endl;
 
 	return 0;
 }
