@@ -35,16 +35,11 @@ namespace lllm {
 			static inline constexpr TypeSet Thunk()  { return TypeSet( Type::Thunk  ); }
 
 			static inline constexpr TypeSet all() { return Nil() | Cons() | Int() | Real() | Char() | String() | Symbol() | Ref() | Lambda() | Thunk(); }
-/*
-			// type set union
-			inline constexpr TypeSet operator|( const TypeSet& t ) {
-				return TypeSet( mask | t.mask );
-			}
-			// type set intersection
-			inline constexpr TypeSet operator&( const TypeSet& t ) {
-				return TypeSet( mask & t.mask );
-			}
-*/
+
+			inline constexpr bool contains( const Type& t ) const { return (bits( t ) & mask) != 0; }
+
+			inline unsigned size() const { return __builtin_popcount( mask ); }
+
 			inline constexpr TypeSet()                   : TypeSet( 0 )         {}
 			inline constexpr TypeSet( const Type& t )    : TypeSet( bits( t ) ) {}
 			inline constexpr TypeSet( const TypeSet& t ) : TypeSet( t.mask )    {}
