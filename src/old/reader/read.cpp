@@ -17,7 +17,7 @@ using namespace lllm::val;
 
 static ValuePtr _read( Source& src );
 static ValuePtr _readList( Source& src );
-static ValuePtr _readTail( Source& src );
+static ListPtr  _readTail( Source& src );
 static ValuePtr _readQuote( Source& src );
 static ValuePtr _readAtom( Source& src );
 static ValuePtr _readChar( Source& src );
@@ -53,40 +53,27 @@ ValuePtr _readList( Source& src ) {
 	LOG( src, "" );
 	assert( src && src.consume('(') );
 
-	skipWhitespace( src );
-	if ( !src ) LLLM_FAIL( src << "EOF while reading list" );
+	ValuePtr list = _readTail( src );
+
+	LOG( src, "READ: " << list );
 	
-	// if we immediately read ) this is an empty list
-	if ( src.peek() == ')' ) {
-		return nil();
-		src.consume();
-	}
-
-	ValuePtr car = _read( src );
-	ValuePtr cdr = _readTail( src );
-
-	LOG( src, "READ: " << cons( car, cdr ) );
-
-	return cons( car, cdr );
+	return list;
 }
-ValuePtr _readTail( Source& src ) {
+ListPtr _readTail( Source& src ) {
 	LOG( src, "" );
-	assert( src );
 
 	skipWhitespace( src );
-	if ( !src ) LLLM_FAIL( src << "EOF while reading list" );
+	if ( !src ) LLLM_FAIL( src << ": EOF while reading list" );
 
-	if ( src.peek() == ')' ) {
-		src.consume();
-		return nil();
+	if ( src.consume(')') ) {
+		return nil;
+	} else {
+		ValuePtr car = _read( src );
+
+		LOG( src, "READ: " << car );
+
+		return cons( car, _readTail( src ) );
 	}
-	
-	ValuePtr car = _read( src );
-	ValuePtr cdr = _readTail( src );
-
-	LOG( src, "READ: " << cons( car, cdr ) );	
-
-	return cons( car, cdr );
 }
 ValuePtr _readQuote( Source& src ) {
 	LOG( src, "" );
@@ -96,7 +83,7 @@ ValuePtr _readQuote( Source& src ) {
 
 	LOG( src, "READ: '" << quoted );
 
-	return cons( symbol("quote"), cons( quoted, nil() ) );
+	return cons( symbol("quote"), cons( quoted ) );
 }
 ValuePtr _readAtom( Source& src ) {
 	LOG( src, "" );

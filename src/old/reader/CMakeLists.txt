@@ -1,5 +1,3 @@
 
 add_library( reader reader.cpp Tokenizer.cpp SourceLocation.cpp ParseTree.cpp )
 
-target_link_libraries( reader util )
-

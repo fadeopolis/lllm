@@ -1,6 +1,5 @@
 
 #include "Value.hpp"
-#include "Value_internals.hpp"
 #include "ValueIO.hpp"
 #include "fail.hpp"
 
@@ -9,6 +8,25 @@
 using namespace lllm;
 using namespace lllm::val;
 
+//***** CTORS **********************************************************************************************************
+
+Cons::Cons( ValuePtr car, ListPtr cdr ) : List( Type::Cons ), car( car ), cdr( cdr ) {}
+
+Int::Int( long value )     : Number( Type::Int ), value( value ) {}
+Real::Real( double value ) : Number( Type::Real ), value( value ) {}
+
+Char::Char( char value )            : Value( Type::Char ), value( value ) {}
+String::String( const char* value ) : Value( Type::String ), value( value ) {}
+Symbol::Symbol( const char* value ) : Value( Type::Symbol ), value( value ) {}
+
+Lambda::Lambda( ListPtr params, ListPtr body, EnvPtr env ) :
+			Value( Type::Lambda ), parameters( params ), body( body ), env( env ) {}
+Thunk::Thunk( ListPtr body, EnvPtr env ) :
+			Value( Type::Thunk ), body( body ), env( env ) {}
+Ref::Ref()             : Ref( nullptr )                 {}
+Ref::Ref( ValuePtr v ) : Value( Type::Ref ), value( v ) {}
+
+//***** CASTING ********************************************************************************************************
 
 template<typename T>
 inline const T* do_cast( ValuePtr v ) {

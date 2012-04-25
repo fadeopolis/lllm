@@ -9,7 +9,7 @@ using namespace lllm;
 Source::Source() {}
 
 StringSource::StringSource( const char* src ) : StringSource( "string", src ) {}
-StringSource::StringSource( const char* name, const char* src ) : name( name ), str( src ), curLine( 0 ), curColumn( -1 ) {}
+StringSource::StringSource( const char* name, const char* src ) : name( name ), str( src ), curLine( 0 ), curColumn( 0 ) {}
 
 FileSource::FileSource( const char* name ) : name( name ), file( name ), la( 0 ), curLine( 0 ), curColumn( -1 ) {
 	consume();
@@ -39,7 +39,7 @@ void StringSource::consume() {
 	}
 }
 bool StringSource::consume( char c ) {
-	if ( *str ) {
+	if ( peek() == c ) {
 		consume();
 		return true;
 	} else {
@@ -51,7 +51,7 @@ uint StringSource::line()   const { return curLine;   }
 uint StringSource::column() const { return curColumn; }
 
 void StringSource::print( std::ostream& os ) const {
-	os << name << ':' << curLine << ':' << curColumn << ":LA='" << (peek() > 0 ? ((char)peek()) : ((char)0)) << "'";
+	os << name << ':' << curLine << ':' << curColumn << ":LA='" << ((char)peek()) << "'";
 }
 
 StringSource::operator void*() const {

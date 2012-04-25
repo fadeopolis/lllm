@@ -1,6 +1,7 @@
 
-#include "Value_internals.hpp"
-#include "ValueVisitor.hpp"
+#include "values.hpp"
+#include "fail.hpp"
+#include "Env.hpp"
 
 #include <map>
 #include <cassert>
@@ -12,17 +13,18 @@ using namespace lllm::val;
 namespace lllm {
 	namespace val {
 // ***** constants ***********************************************************************
-		static Symbol TRUE("true");
-
-		constexpr ValuePtr True  = &TRUE;
-		constexpr ValuePtr False = nil();
+		const NilPtr   nil   = nil;
+		const ValuePtr True  = val::symbol("true");
+		const ValuePtr False = nil;
 // ***** construtors *********************************************************************
-		ValuePtr number( int    value )      { return new Int( value ); }
-		ValuePtr number( long   value )      { return new Int( value ); }
-		ValuePtr number( double value )      { return new Real( value ); }
-		ValuePtr character( char value )     { return new Char( value ); }
-		ValuePtr string( const char* value ) { return new String( value ); }
-		ValuePtr symbol( const char* value ) {
+		IntPtr   number( int    value )       { return new Int( value ); }
+		IntPtr   number( long   value )       { return new Int( value ); }
+		RealPtr  number( float  value )       { return new Real( value ); }
+		RealPtr  number( double value )       { return new Real( value ); }
+	
+		CharPtr   character( char value )     { return new Char( value ); }
+		StringPtr string( const char* value ) { return new String( value ); }
+		SymbolPtr symbol( const char* value ) {
 			struct cmp_str final {
 			   bool operator()(char const *a, char const *b) { 
 				return std::strcmp(a, b) < 0;
@@ -47,20 +49,32 @@ namespace lllm {
 				return sym;
 			}
 		}
-		ValuePtr cons( ValuePtr car, ValuePtr cdr ) { return new Cons( car, cdr ); }
-		ValuePtr ref() { return new Ref( nullptr ); }
-		ValuePtr ref( ValuePtr v ) { return new Ref( v ); }
+		ConsPtr   cons( ValuePtr car, ListPtr cdr ) { return new Cons( car, cdr ); }
+		ConsPtr   cons( ValuePtr car )              { return cons( car, nil );     }
+		LambdaPtr lambda( ListPtr params, ListPtr body, EnvPtr env ) {
+			return new Lambda( params, body, env );
+		}
+		ThunkPtr  thunk( ListPtr body, EnvPtr env ) {
+			return new Thunk( body, env );
+		}
+		RefPtr    ref() { return new Ref( nullptr ); }
+		RefPtr    ref( ValuePtr v ) { return new Ref( v ); }
 // ***** destructuring *******************************************************************
-		ValuePtr car( ValuePtr cons )  { return cast<Cons>( cons )->car; }
-		ValuePtr cdr( ValuePtr cons )  { return cast<Cons>( cons )->cdr; }
+		ValuePtr car( ListPtr cons )  { return cast<Cons>( cons )->car; }
+		ListPtr  cdr( ListPtr cons )  { return cast<Cons>( cons )->cdr; }
 
-		ValuePtr cadr( ValuePtr cons ) { return car( cdr( cons ) ); }
-		ValuePtr cdar( ValuePtr cons ) { return cdr( car( cons ) ); }
+		ValuePtr caar( ListPtr cons ) { return cast<Cons>( car( cons ) )->car; }
+		ValuePtr cadr( ListPtr cons ) { return car( cdr( cons ) ); }
+		ListPtr  cdar( ListPtr cons ) { return cast<Cons>( car( cons ) )->cdr; }
+		ListPtr  cddr( ListPtr cons ) { return cdr( cdr( cons ) ); }
 
-		ValuePtr cadar( ValuePtr cons ) { return car( cdr( car( cons ) ) ); }
-		ValuePtr caddr( ValuePtr cons ) { return car( cdr( cdr( cons ) ) ); }
+		ValuePtr cadar( ListPtr cons ) { return car( cast<Cons>( car( cons ) )->cdr ); }
+		ValuePtr caddr( ListPtr cons ) { return car( cdr( cdr( cons ) ) ); }
 // ***** predicates **********************************************************************
 // *** type checks ***********************************************************************
+// *** ref functions *********************************************************************
+		ValuePtr get( RefPtr ref ) { return ref->value; }
+		void     set( RefPtr ref, ValuePtr val ) { ref->value = val; }
 // *** misc ******************************************************************************
 		static inline bool equal( ConsPtr, ConsPtr );
 
@@ -115,16 +129,14 @@ namespace lllm {
 		}
 
 		// force instantiation of some constexprs
-/*		void force_constexpr_instantiation() {
-			nil();
-			True();
-			False();
+		void force_constexpr_instantiation() {
+			ValuePtr p;
 
-			Cons c( nil(), nil() );
-			car( &c );
-			cdr( &c );
+			p = nil;
+			p = True;
+			p = False;
 		}
-*/	} // end namespace val
+	} // end namespace val
 } // end namespace lllm
 
 

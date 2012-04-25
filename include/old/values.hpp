@@ -2,7 +2,6 @@
 #define __VALUES_HPP__ 1
 
 #include "Value.hpp"
-#include "Value_internals.hpp"
 #include "ValueIO.hpp"
 #include "ValueVisitor.hpp"
 
