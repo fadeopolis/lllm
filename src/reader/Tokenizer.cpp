@@ -7,12 +7,12 @@
 #include <cstring>
 #include <cassert>
 
-#include <iostream>
+//#include <iostream>
 
 using namespace lllm;
 
 static inline CStr skipWhitespace( SourceLocation& sl, CStr src ) {
-	std::cout << "SKIPPIN WHITESPACE FROM '" << src << "'" << std::endl;
+//	std::cout << "SKIPPIN WHITESPACE FROM '" << src << "'" << std::endl;
 
 	while ( true ) {
 		char c = *src;
@@ -28,7 +28,7 @@ static inline CStr skipWhitespace( SourceLocation& sl, CStr src ) {
 		src++;
 	}
 
-	std::cout << "SKIPPED WHITESPACE TO '" << src << "'" << std::endl;
+//	std::cout << "SKIPPED WHITESPACE TO '" << src << "'" << std::endl;
 
 	return src;
 }
@@ -77,7 +77,7 @@ Tokenizer Tokenizer::fromFile( CStr fileName ) {
 }
 
 bool Tokenizer::advance() {
-	std::cout << "ADVANCIN" << std::endl;
+//	std::cout << "ADVANCIN" << std::endl;
 
 	loc.incColumn( end - start );
 	end = start = skipWhitespace( loc, end );
@@ -117,7 +117,7 @@ bool Tokenizer::advance() {
 }
 
 CStr Tokenizer::token()    {
-	std::cout << "GETTIN TOKEN OF LEN " << (end - start) << std::endl;
+//	std::cout << "GETTIN TOKEN OF LEN " << (end - start) << std::endl;
 
 	if ( end == start ) return nullptr;
 

@@ -28,7 +28,7 @@ void IntTree::printTo( std::ostream& os )    const { os << value; }
 void RealTree::printTo( std::ostream& os )   const { os << value; }
 void CharTree::printTo( std::ostream& os )   const { os << value; }
 void StringTree::printTo( std::ostream& os ) const { os << value; }
-void SymbolTree::printTo( std::ostream& os ) const { os << value; }
+void SymbolTree::printTo( std::ostream& os ) const { os << '"' << value << "'"; }
 void ListTree::printTo( std::ostream& os )   const {
 	os << '(';
 	os << car;
@@ -106,7 +106,9 @@ static inline SourceLocation loc() {
 	return SourceLocation("*test*");
 }
 
-ParseTree* ParseTree::number( long value )                  { return new IntTree( loc(), value );     }
+ParseTree* ParseTree::number( int    value )                { return new IntTree( loc(), value );     }
+ParseTree* ParseTree::number( long   value )                { return new IntTree( loc(), value );     }
+ParseTree* ParseTree::number( float  value )                { return new RealTree( loc(), value );    }
 ParseTree* ParseTree::number( double value )                { return new RealTree( loc(), value );    }
 ParseTree* ParseTree::character( char value )               { return new CharTree( loc(), value );    }
 ParseTree* ParseTree::string( CStr value )                  { return new StringTree( loc(), value );  }

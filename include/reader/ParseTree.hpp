@@ -32,7 +32,9 @@ namespace lllm {
 			// these are here to help testing only
 			static bool equal( const ParseTree*, const ParseTree* );
 
+			static ParseTree* number( int );
 			static ParseTree* number( long );
+			static ParseTree* number( float );
 			static ParseTree* number( double );
 			static ParseTree* character( char );
 			static ParseTree* string( CStr );

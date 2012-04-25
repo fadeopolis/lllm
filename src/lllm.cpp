@@ -48,12 +48,7 @@ int main() {
 	cout << std::noboolalpha;
 */
 
-	cout << endl << ">>> TEST READER" << endl;
-
-	#define READ( A ) (void) ({ cout << "read(" A ") is " << read( A ) << endl; nullptr; })
-
-	READ("()");
-	READ("(lambda () a)");
+	testReader();
 
 /*
 	cout << endl << ">>> TEST EVAL" << endl;
@@ -84,6 +79,27 @@ static int runReaderTest( const char* str, const ParseTree& tree );
 static int runReaderTest( const char* str, const ParseTree* tree );
 
 int testReader() {
+	cout << endl << ">>> TESTING READER" << endl;
+
+	int testsRun = 0, testsPassed = 0;
+
+	#define TEST( NAME, REL, STR, OBJ )  ({											\
+		if ( ParseTree::equal( read( (STR) ), (OBJ) ) REL false ) {					\
+			cout << "Test: " NAME " failed: read(" STR ") == '" << read( (STR) );	\
+			cout << "' should equal '" << OBJ << "'" << endl;						\
+		} else {																	\
+			testsPassed++;															\
+		}																			\
+		testsRun++;																	\
+	})
+
+	TEST( "", ==, "1",   ParseTree::number( 1   ) );
+	TEST( "", ==, "1.5", ParseTree::number( 1.5 ) );
+	TEST( "", !=, "155", ParseTree::number( 1.5 ) );
+	TEST( "", ==, "1 5", ParseTree::number( 1   ) );
+
+	cout << ">>> READER PASSED " << testsPassed << " TESTS OUT OF " << testsRun << endl;
+
 	return 0;
 }
 
