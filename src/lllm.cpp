@@ -9,6 +9,8 @@
 
 #include "reader.hpp"
 
+#include "analyser/TypeSet.hpp"
+
 #include <cassert>
 #include <iostream>
 #include <typeinfo>
@@ -23,8 +25,46 @@ using namespace lllm::val;
 
 static int testReader();
 
+std::ostream& lllm::operator<<( std::ostream& os, const TypeSet& ts ) {
+	if ( !ts.mask ) {
+		return os << "{}";
+	} else {
+		os << '{';
+
+		if ( TypeSet::isBitSet( Type::Nil, ts.mask ) ) {
+			os << Type::Nil;
+		}
+		for ( Type t = (Type)(((long)Type::Nil) + 1); t < Type::MAX_TYPE; t = ((Type)((long) t+1)) ) {
+			if ( TypeSet::isBitSet( t, ts.mask ) ) os << ", " << t;
+		}
+
+		return os << '}';
+	}
+}
+std::ostream& lllm::operator<<( std::ostream& os, const Type& t ) {
+	switch ( t ) {
+		case Type::Nil:    return os << "Nil";
+		case Type::Cons:   return os << "Cons";
+		case Type::Int:    return os << "Int";
+		case Type::Real:   return os << "Real";
+		case Type::Char:   return os << "Char";
+		case Type::String: return os << "String";
+		case Type::Symbol: return os << "Symbol";
+		case Type::Ref:    return os << "Ref";
+		case Type::Lambda: return os << "Lambda";
+		case Type::Thunk:  return os << "Thunk";
+	}
+}
+
 int main() {
+	using namespace std;
+
 	std::cout << "LLLM says: 'Hi'" << std::endl << std::endl;
+
+	cout << TypeSet( Type::Nil ) << endl;
+	cout << (TypeSet::all() & TypeSet(Type::Nil)) << endl;
+
+
 /*
 	ValuePtr i = val::number( 5 );
 	
