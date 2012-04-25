@@ -110,6 +110,8 @@ int testReader() {
 
 	std::cout << ">>> READER PASSED " << testsPassed << " TESTS OUT OF " << testsRun << std::endl;
 
+	#undef TEST
+
 	return 0;
 }
 
