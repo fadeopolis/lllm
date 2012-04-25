@@ -31,11 +31,14 @@ std::ostream& lllm::operator<<( std::ostream& os, const TypeSet& ts ) {
 	} else {
 		os << '{';
 
-		if ( TypeSet::isBitSet( Type::Nil, ts.mask ) ) {
-			os << Type::Nil;
-		}
-		for ( Type t = (Type)(((long)Type::Nil) + 1); t < Type::MAX_TYPE; t = ((Type)((long) t+1)) ) {
-			if ( TypeSet::isBitSet( t, ts.mask ) ) os << ", " << t;
+		bool flag = false;
+
+		for ( Type t = Type::BEGIN; t <= Type::END; t = Type( long( t ) + 1 ) ) {
+			if ( ts.contains( t ) ) {
+				if ( flag ) os << ", ";
+				os << t;
+				flag = true;
+			}
 		}
 
 		return os << '}';
@@ -60,10 +63,6 @@ int main() {
 	using namespace std;
 
 	std::cout << "LLLM says: 'Hi'" << std::endl << std::endl;
-
-	cout << TypeSet( Type::Nil ) << endl;
-	cout << (TypeSet::all() & TypeSet(Type::Nil)) << endl;
-
 
 /*
 	ValuePtr i = val::number( 5 );

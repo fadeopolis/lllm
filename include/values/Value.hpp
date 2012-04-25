@@ -16,8 +16,8 @@ namespace lllm {
 		Lambda,
 		Thunk,
 		// markers
-		MIN_TYPE = Nil,
-		MAX_TYPE = Thunk
+		BEGIN = Nil,
+		END   = Thunk
 	};
 
 	std::ostream& operator<<( std::ostream&, const Type& );	
