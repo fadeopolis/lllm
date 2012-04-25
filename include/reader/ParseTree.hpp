@@ -11,6 +11,12 @@ namespace lllm {
 	typedef const char* CStr;
 
 	class ParseTree;
+	class IntTree;
+	class RealTree;
+	class CharTree;
+	class StringTree;
+	class SymbolTree;
+	class ListTree;
 
 	std::ostream& operator<<( std::ostream&, const ParseTree& );
 	std::ostream& operator<<( std::ostream&, const ParseTree* );
@@ -23,7 +29,20 @@ namespace lllm {
 
 			const SourceLocation location;
 
+			// these are here to help testing only
 			static bool equal( const ParseTree*, const ParseTree* );
+
+			static ParseTree* number( long );
+			static ParseTree* number( double );
+			static ParseTree* character( char );
+			static ParseTree* string( CStr );
+			static ParseTree* symbol( CStr );
+			static ParseTree* list( ParseTree*, ListTree* = nullptr );
+	
+			template<typename T, typename... Ts>
+			static ParseTree* list( T t, Ts... ts ) {
+				return list( t, list( ts... ) );
+			}
 		protected:
 			virtual void printTo( std::ostream& ) const = 0;
 

@@ -80,10 +80,17 @@ int main() {
 	return 0;
 }
 
-static int runReaderTest( const char* str, const ParseTree& tree ) {
+static int runReaderTest( const char* str, const ParseTree& tree );
+static int runReaderTest( const char* str, const ParseTree* tree );
+
+int testReader() {
 	return 0;
 }
-static int runReaderTest( const char* str, const ParseTree* tree ) {
+
+int runReaderTest( const char* str, const ParseTree& tree ) {
+	return 0;
+}
+int runReaderTest( const char* str, const ParseTree* tree ) {
 	return runReaderTest( str, *tree );
 }
 

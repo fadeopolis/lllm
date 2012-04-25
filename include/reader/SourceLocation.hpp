@@ -10,7 +10,7 @@ namespace lllm {
 		public:
 			inline constexpr SourceLocation( CStr file ) : _file( file ), _line( 0 ), _column( 0 ) {}
 			inline constexpr SourceLocation( CStr file, unsigned line, unsigned column ) : _file( file ), _line( line ), _column( column ) {}
-			inline constexpr SourceLocation( CStr file, const SourceLocation& sl ) : _file( file ), _line( sl._line ), _column( sl._column ) {}
+			inline constexpr SourceLocation( const SourceLocation& sl ) : _file( sl._file ), _line( sl._line ), _column( sl._column ) {}
 					
 			inline void incLine()   { _line++; _column = 0; }
 			inline void incColumn() { _column++; }

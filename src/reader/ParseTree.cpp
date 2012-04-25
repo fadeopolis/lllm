@@ -102,4 +102,14 @@ bool ParseTree::equal( const ParseTree* a, const ParseTree* b ) {
 	return false;
 }
 
+static inline SourceLocation loc() {
+	return SourceLocation("*test*");
+}
+
+ParseTree* ParseTree::number( long value )                  { return new IntTree( loc(), value );     }
+ParseTree* ParseTree::number( double value )                { return new RealTree( loc(), value );    }
+ParseTree* ParseTree::character( char value )               { return new CharTree( loc(), value );    }
+ParseTree* ParseTree::string( CStr value )                  { return new StringTree( loc(), value );  }
+ParseTree* ParseTree::symbol( CStr value )                  { return new SymbolTree( loc(), value );  }
+ParseTree* ParseTree::list( ParseTree* car, ListTree* cdr ) { return new ListTree( loc(), car, cdr ); }
 
