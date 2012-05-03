@@ -1,9 +1,12 @@
 
-#include "reader/SourceLocation.hpp"
+#include "lllm/reader/SourceLocation.hpp"
 
 #include <iostream>
 
-std::ostream& lllm::operator<<( std::ostream& os, const lllm::SourceLocation& sl ) {
+using namespace lllm;
+using namespace lllm::reader;
+
+std::ostream& reader::operator<<( std::ostream& os, const SourceLocation& sl ) {
 	return os << sl.file() << ':' << sl.line() << ':' << sl.column();
 }
 

@@ -1,5 +1,5 @@
 
-#include "fail.hpp"
+#include "lllm/util/fail.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -12,7 +12,7 @@ using namespace lllm;
 
 static inline void demangle( const char* symbol, std::string& dst );
 
-void lllm::fail( const char* file, const char* function, int line, const char* msg ) {
+void util::fail( const char* file, const char* function, int line, const char* msg ) {
 	void* stackFrames[MAX_FRAMES];
 
 	int    size    = backtrace( stackFrames, MAX_FRAMES );

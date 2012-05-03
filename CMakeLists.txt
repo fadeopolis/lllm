@@ -9,6 +9,6 @@ set( CMAKE_SHARED_LINKER_FLAGS -g -rdynamic )
 add_definitions(-std=gnu++11 -g)
 
 ## ADD SUBDIRS
-include_directories( include include/reader include/util )
+include_directories( include )
 add_subdirectory( src )
 

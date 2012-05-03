@@ -1,7 +1,6 @@
 
-#include "reader/Tokenizer.hpp"
-
-#include "util/fail.hpp"
+#include "lllm/reader/Tokenizer.hpp"
+#include "lllm/util/fail.hpp"
 
 #include <fstream>
 #include <cstring>
@@ -10,6 +9,10 @@
 //#include <iostream>
 
 using namespace lllm;
+using namespace lllm::reader;
+
+const CStr Tokenizer::PAREN_OPEN  = "(";
+const CStr Tokenizer::PAREN_CLOSE = ")";
 
 static inline CStr skipWhitespace( SourceLocation& sl, CStr src ) {
 //	std::cout << "SKIPPIN WHITESPACE FROM '" << src << "'" << std::endl;

@@ -1,3 +1,3 @@
 
-add_library( util fail.cpp )
+add_library( util fail.cpp InternedString.cpp )
 

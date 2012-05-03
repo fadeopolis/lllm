@@ -1,8 +1,7 @@
 
-#include "reader.hpp"
-
-#include "reader/Tokenizer.hpp"
-#include "util/fail.hpp"
+#include "lllm/reader.hpp"
+#include "lllm/reader/Tokenizer.hpp"
+#include "lllm/util/fail.hpp"
 
 #include <sstream>
 #include <cassert>
@@ -10,27 +9,29 @@
 #include <algorithm>
 
 using namespace lllm;
+using namespace lllm::util;
+using namespace lllm::reader;
 
-static ParseTree* _read( Tokenizer& ts );
+static SexprPtr _read( Tokenizer& ts );
 
-static ListTree*   _readList( Tokenizer& ts );
-static ListTree*   _readQuote( const SourceLocation& loc, Tokenizer& ts );
-static NumberTree* _readNumber( const SourceLocation& loc, CStr tok );
+static ListPtr   _readList( Tokenizer& ts );
+static ListPtr   _readQuote( const SourceLocation& loc, Tokenizer& ts );
+static SexprPtr  _readNumber( const SourceLocation& loc, CStr tok );
 
-static CharTree*   _readChar( const SourceLocation& loc, CStr tok );
-static StringTree* _readString( const SourceLocation& loc, CStr tok );
-static SymbolTree* _readSymbol( const SourceLocation& loc, CStr tok );
+static CharPtr   _readChar( const SourceLocation& loc, CStr tok );
+static StringPtr _readString( const SourceLocation& loc, CStr tok );
+static SymbolPtr _readSymbol( const SourceLocation& loc, CStr tok );
 
-ParseTree* lllm::read( CStr string ) {
+SexprPtr lllm::read( CStr string ) {
 	Tokenizer t = Tokenizer::fromString( string );
 	return _read( t );
 }
-ParseTree* lllm::readFile( CStr fileName ) {
+SexprPtr lllm::readFile( CStr fileName ) {
 	Tokenizer t = Tokenizer::fromFile( fileName );
 	return _read( t );
 }
 
-ParseTree* _read( Tokenizer& ts ) {
+SexprPtr _read( Tokenizer& ts ) {
 	while ( ts.advance() ) {
 		const SourceLocation& loc = ts.location();
 		CStr                  tok = ts.token();
@@ -65,11 +66,10 @@ ParseTree* _read( Tokenizer& ts ) {
 	LLLM_FAIL( ts.location() << ": EOF while reading" );
 }
 
-ListTree*   _readList( Tokenizer& ts ) {
+ListPtr   _readList( Tokenizer& ts ) {
 	SourceLocation start = ts.location();
 
-	ParseTree* car;
-	ListTree*  cdr;
+	std::vector<SexprPtr> exprs;
 
 	while ( ts.advance() ) {
 		const SourceLocation& loc = ts.location();
@@ -78,11 +78,11 @@ ListTree*   _readList( Tokenizer& ts ) {
 		assert( tok );
 
 		switch ( *tok ) {
-			case '(':  
-				car = _readList( ts );
-				cdr = _readList( ts );
-				return new ListTree( start, car, cdr );
-			case ')':  return nullptr;
+			case '(': 
+				exprs.push_back( _readList( ts ) );
+				break;
+			case ')':  
+				return new List( loc, exprs );
 			case '0':
 			case '1':
 			case '2':
@@ -93,37 +93,34 @@ ListTree*   _readList( Tokenizer& ts ) {
 			case '7':
 			case '8':
 			case '9':
-				car = _readNumber( loc, tok );
-				cdr = _readList( ts );
-				return new ListTree( start, car, cdr );
+				exprs.push_back( _readNumber( loc, tok ) );
+				break;
 			case '\\':
-				car = _readChar( loc, tok );
-				cdr = _readList( ts );
-				return new ListTree( start, car, cdr );
+				exprs.push_back( _readChar( loc, tok ) );
+				break;
 			case '\'':
-				car = _readQuote( loc, ts );
-				cdr = _readList( ts );
-				return new ListTree( start, car, cdr );
+				exprs.push_back( _readQuote( loc, ts ) );
+				break;
 			case '"':
-				car = _readString( loc, tok );
-				cdr = _readList( ts );
-				return new ListTree( start, car, cdr );
+				exprs.push_back( _readString( loc, tok ) );
+				break;
 			default:
-				car = _readSymbol( loc, tok );
-				cdr = _readList( ts );
-				return new ListTree( start, car, cdr );
+				exprs.push_back( _readSymbol( loc, tok ) );
+				break;
 		}
 	}
 
 	LLLM_FAIL( ts.location() << ": EOF while reading list" );
 }
-ListTree*   _readQuote( const SourceLocation& loc, Tokenizer& ts ) {
-	ParseTree* value = _read( ts );
-//	std::cout << "READ QUOTE: " << value << std::endl;
+ListPtr   _readQuote( const SourceLocation& loc, Tokenizer& ts ) {
+	std::vector<SexprPtr> exprs;
 
-	return new ListTree( loc, new SymbolTree( loc, "quote" ), new ListTree( loc, value, nullptr ) );
+	exprs.push_back( new Symbol( loc, "quote" ) );
+	exprs.push_back( _read( ts ) );
+
+	return new List( loc, exprs );
 }
-NumberTree* _readNumber( const SourceLocation& loc, CStr tok ) {
+SexprPtr _readNumber( const SourceLocation& loc, CStr tok ) {
 //	std::cout << "READ NUM: " << tok << std::endl;
 	std::stringstream str;
 
@@ -185,40 +182,40 @@ read_real:
 return_int:
 		long l;
 		str >> l;
-		return new IntTree( loc, l );
+		return new Int( loc, l );
 return_real:
 		double d;
 		str >> d;
-		return new RealTree( loc, d );
+		return new Real( loc, d );
 }
 
-CharTree*   _readChar( const SourceLocation& loc, CStr tok ) {
+CharPtr   _readChar( const SourceLocation& loc, CStr tok ) {
 //	std::cout << "READ CHAR: " << tok << std::endl;
 	assert( *tok == '\\' );
 
 	tok++;
 
 	if ( std::strcmp( "tab", tok ) == 0 ) {
-		return new CharTree( loc, '\t' );	
+		return new Char( loc, '\t' );	
 	}
 	if ( std::strcmp( "newline", tok ) == 0 ) {
-		return new CharTree( loc, '\n' );	
+		return new Char( loc, '\n' );	
 	}
 
 	assert( tok[1] == 0 );
 
-	return new CharTree( loc, *tok );	
+	return new Char( loc, *tok );	
 }
 
-StringTree* _readString( const SourceLocation& loc, CStr tok ) {
+StringPtr _readString( const SourceLocation& loc, CStr tok ) {
 //	std::cout << "READ STR: " << tok << std::endl;
 	// drop leading ", the " at the end was dropped by tokenizer
 	tok++;
 
-	return new StringTree( loc, tok );
+	return new String( loc, tok );
 }
-SymbolTree* _readSymbol( const SourceLocation& loc, CStr tok ) {
+SymbolPtr _readSymbol( const SourceLocation& loc, CStr tok ) {
 //	std::cout << "READ SYM: " << tok << std::endl;
-	return new SymbolTree( loc, tok );
+	return new Symbol( loc, tok );
 }
 
