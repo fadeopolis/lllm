@@ -98,7 +98,7 @@ static AstPtr analyzeDo( reader::ListPtr expr, ScopePtr ctx ) {
 	for ( auto it = ++(expr->begin()), end = expr->end(); it != end; ++it ) {
 		reader::SexprPtr sexpr = *it;
 
-		exprs.push_back( analyze_( expr, ctx ) );
+		exprs.push_back( analyze_( sexpr, ctx ) );
 	}
 
 	return new Do( expr->location, exprs );

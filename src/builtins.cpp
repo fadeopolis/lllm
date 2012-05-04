@@ -113,17 +113,34 @@ static ValuePtr builtin_minus( LambdaPtr fn, ValuePtr a, ValuePtr b ) {
 static ValuePtr builtin_equal( LambdaPtr fn, ValuePtr a, ValuePtr b ) {
 	return equal( a, b ) ? ((ValuePtr)symbol("true")) : ((ValuePtr)nil());
 }
+static ValuePtr builtin_print( LambdaPtr fn, ValuePtr v ) {
+	std::cout << v;
+	return nullptr;
+}
+static ValuePtr builtin_println( LambdaPtr fn, ValuePtr v ) {
+	std::cout << v << std::endl;
+	return nullptr;
+}
 
 BuiltinScope::BuiltinScope() {
-	_env = Env::make( "nil",   nil() )
-	           ->put( "true",  symbol("true") )
-	           ->put( "false", nil() )
-	           ->put( "cons",  mk_builtin_fn( (void*) builtin_cons,  2 ) )
-	           ->put( "car",   mk_builtin_fn( (void*) builtin_car,   1 ) )
-	           ->put( "cdr",   mk_builtin_fn( (void*) builtin_cdr,   1 ) )
-	           ->put( "+",     mk_builtin_fn( (void*) builtin_plus,  2 ) )
-	           ->put( "-",     mk_builtin_fn( (void*) builtin_minus, 2 ) )
-	           ->put( "=",     mk_builtin_fn( (void*) builtin_equal, 2 ) )
+	           //**** CONSTANTS
+	_env = Env::make( "nil",     nil() )
+	           ->put( "true",    symbol("true") )
+	           ->put( "false",   nil() )
+	           //**** LISTS
+	           ->put( "cons",    mk_builtin_fn( (void*) builtin_cons,    2 ) )
+	           ->put( "car",     mk_builtin_fn( (void*) builtin_car,     1 ) )
+	           ->put( "cdr",     mk_builtin_fn( (void*) builtin_cdr,     1 ) )
+	           //**** ARITHMETIC
+	           ->put( "+",       mk_builtin_fn( (void*) builtin_plus,    2 ) )
+	           ->put( "-",       mk_builtin_fn( (void*) builtin_minus,   2 ) )
+	           //**** LOGIC
+	           //**** EQUALITY
+	           ->put( "=",       mk_builtin_fn( (void*) builtin_equal,   2 ) )
+               //**** IO
+	           ->put( "print",   mk_builtin_fn( (void*) builtin_print,   1 ) )
+	           ->put( "println", mk_builtin_fn( (void*) builtin_println, 1 ) )
+	
 //	           ->put( "", )
 	;
 }

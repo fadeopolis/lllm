@@ -262,7 +262,11 @@ StringPtr Reader::readString() {
 	while ( true ) {
 		if ( la < 0 ) LLLM_FAIL( loc << ": Unexpected EOF while reading a string" );
 
-		if ( la == '"' ) break;
+		if ( la == '"' ) {
+			consume( '"' );
+			loc.incColumn();
+			break;
+		}
 
 		buf << ((char) la);
 

@@ -25,8 +25,8 @@ std::ostream& analyzer::operator<<( std::ostream& os, ConstAstPtr ast ) {
 			os << "(if " << ast->test << " " << ast->thenBranch << " " << ast->elseBranch << ")"; 
 		}
 		void visit( ConstDoPtr       ast, std::ostream& os ) const {
-			os << "(do " << ast->exprs.front();
-			for ( auto it = ast->exprs.begin()++, end = ast->exprs.end(); it != end; ++it ) {
+			os << "(do";
+			for ( auto it = ast->exprs.begin(), end = ast->exprs.end(); it != end; ++it ) {
 				os << ' ' << (*it);
 			}
 			os << ")";
