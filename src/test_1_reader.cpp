@@ -16,29 +16,29 @@ int main() {
 
 	#define TEST( NAME, REL, INPUT, EXPECTED )  ({									\
 		auto str      = (INPUT);													\
-		auto actual   = read(str);													\
+		auto actual   = read( (NAME), str);													\
 		auto expected = (EXPECTED);													\
 																					\
 		if ( (*actual) REL (*expected) ) {											\
 			testsPassed++;															\
 		} else {																	\
 			std::cout << "Test: " NAME " failed: ";									\
-			std::cout << "read(" << str << ") == '" << actual << "'";				\
+			std::cout << "read( " << str << " ) == '" << actual << "'";				\
 			std::cout << ", should be " #REL " '" << expected << "'" << std::endl;	\
 		}																			\
 		testsRun++;																	\
 	})
 
-	TEST( "", ==, "()",       nil() );
-	TEST( "", ==, "1",        number( 1 ) );
-	TEST( "", ==, "1.5",      number( 1.5 ) );
-	TEST( "", !=, "155",      number( 1.5 ) );
-	TEST( "", ==, "1 5",      number( 1 ) );
-	TEST( "", ==, "abba",     symbol( "abba" ) );
-	TEST( "", ==, "\"abba\"", string( "abba" ) );
-	TEST( "", ==, "(1)",      list( number( 1 ) ) );
-	TEST( "", ==, "(()())",   list( nil(), nil() ) );
-	TEST( "", ==, "(1 ())",   list( number( 1 ), nil() ) );
+	TEST( " 1", ==, "()",       nil() );
+	TEST( " 2", ==, "1",        number( 1 ) );
+	TEST( " 3", ==, "1.5",      number( 1.5 ) );
+	TEST( " 4", !=, "155",      number( 1.5 ) );
+	TEST( " 5", ==, "1 5",      number( 1 ) );
+	TEST( " 6", ==, "abba",     symbol( "abba" ) );
+	TEST( " 7", ==, "\"abba\"", string( "abba" ) );
+	TEST( " 8", ==, "(1)",      list( number( 1 ) ) );
+	TEST( " 9", ==, "(() ())",   list( nil(), nil() ) );
+	TEST( "10", ==, "(1 ())",   list( number( 1 ), nil() ) );
 
 	std::cout << ">>> READER PASSED " << testsPassed << " TESTS OUT OF " << testsRun << std::endl;
 

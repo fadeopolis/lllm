@@ -1,53 +1,35 @@
 
 #include "lllm/values/Value.hpp"
+#include "lllm/util/InternedString.hpp"
 
-#include <map>
 #include <cstring>
+#include <cstdlib>
 
 //#include <iostream>
 //#include "lllm/values/ValueIO.hpp"
 
 using namespace lllm;
 using namespace lllm::value;
+using namespace lllm::util;
+
+void* Value::operator new( size_t size ) {
+	return std::malloc( size );
+}
+void* Value::operator new( size_t size, void* mem ) {
+	return mem;
+}
 
 Cons::Cons( ValuePtr car, ListPtr cdr ) : List( Value::Cons ), car( car ), cdr( cdr ) {}
 Int::Int()                              : Int( 0 ) {}
-Int::Int( long value )                  : Value( Value::Int ), value( value ) {}
+Int::Int( long value )                  : Number( Value::Int ), value( value ) {}
 Real::Real()                            : Real( 0 ) {}
-Real::Real( double value )              : Value( Value::Real ), value( value ) {}
+Real::Real( double value )              : Number( Value::Real ), value( value ) {}
 Char::Char( char value )                : Value( Value::Char ), value( value ) {}
 String::String( CStr value )            : Value( Value::String ), value( value ) {}
-Symbol::Symbol( CStr value )            : Value( Value::Symbol ), value( value ) {}
+Symbol::Symbol( CStr value )            : Value( Value::Symbol ), value( InternedString::intern( value ) ) {}
 Ref::Ref()                              : Ref( nullptr ) {}
 Ref::Ref( ValuePtr value )              : Value( Value::Ref ), value( value ) {}
 Lambda::Lambda( size_t arity )          : Value( Value::Type(Value::Lambda + arity) ) {}
-
-SymbolPtr Symbol::make( CStr value ) {
-	struct CmpStr final {
-		bool operator()(char const *a, char const *b) { 
-			return std::strcmp(a, b) < 0;
-		}
-	};
-
-	typedef std::map<CStr, SymbolPtr, CmpStr> InternTable;
-
-	static InternTable intern_table;
-
-	auto lb = intern_table.lower_bound( value );
-
-	if ( lb != intern_table.end() && (std::strcmp( value, lb->first ) == 0) ) {
-		// symbol already exists
-		return lb->second;
-	} else {
-		// the symbol does not exist in the map
-		SymbolPtr sym = new Symbol( value );
-
-		// add it to the map using lb as a hint to insert, so it can avoid another lookup
-		intern_table.insert( lb, InternTable::value_type( value, sym ) );
-
-		return sym;
-	}
-}
 
 ValuePtr Ref::get()             const { return value; }
 ValuePtr Ref::set( ValuePtr v ) const {
@@ -96,11 +78,22 @@ bool value::equal( ValuePtr a, ValuePtr b ) {
 	return visit<bool>( a, V2(), b );
 }
 
+bool Value::isList( ValuePtr val ) {
+	return typeOf( val ) <= Value::Cons;
+}
+
 #define LLLM_VISITOR( TYPE ) 																\
 	TYPE##Ptr Value::as##TYPE( ValuePtr val ) { 											\
 		return (typeOf( val ) == Value::TYPE) ? static_cast<TYPE##Ptr>( val ) : nullptr;	\
 	}
 #include "lllm/values/Value_for_impl.inc"
+NumberPtr Value::asNumber( ValuePtr val ) {
+	switch ( typeOf( val ) ) {
+		case Value::Int:  return static_cast<IntPtr> ( val );
+		case Value::Real: return static_cast<RealPtr>( val );
+		default:          return nullptr;
+	}
+}
 LambdaPtr Value::asLambda( ValuePtr val, size_t arity ) {
 	if ( typeOf( val ) != (Value::Lambda + arity) ) return nullptr;
 
@@ -121,7 +114,7 @@ RealPtr   value::number( float  value )            { return new Real( value );  
 RealPtr   value::number( double value )            { return new Real( value );     }
 CharPtr   value::character( char value )           { return new Char( value );     }
 StringPtr value::string( CStr value )              { return new String( value );   }
-SymbolPtr value::symbol( CStr value )              { return Symbol::make( value ); }
+SymbolPtr value::symbol( CStr value )              { return new Symbol( value );   }
 RefPtr    value::ref()                             { return ref( nullptr );        }
 RefPtr    value::ref( ValuePtr value )             { return new Ref( value );      }
 

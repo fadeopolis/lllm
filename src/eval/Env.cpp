@@ -24,13 +24,14 @@ bool   Env::contains( CStr key ) const {
 		return false;
 	}
 }
-ValuePtr Env::get( CStr key ) const {
+bool Env::lookup( CStr key, ValuePtr* val ) const {
 	if ( binding.key && std::strcmp( binding.key, key ) == 0 ) {
-		return binding.val;
+		*val = binding.val;
+		return true;
 	} else if ( EnvPtr env = this->parent ) {
-		return env->get( key );
+		return env->lookup( key, val );
 	} else {
-		return nullptr;
+		return false;
 	}
 }
 EnvPtr Env::put( CStr key, ValuePtr val ) const {

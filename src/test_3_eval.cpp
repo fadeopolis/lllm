@@ -2,6 +2,7 @@
 #include "lllm/reader.hpp"
 #include "lllm/analyzer.hpp"
 #include "lllm/eval.hpp"
+#include "lllm/eval/Env.hpp"
 #include "lllm/builtins.hpp"
 #include "lllm/values/ValueIO.hpp"
 
@@ -18,10 +19,10 @@ int main() {
 
 	int testsRun = 0, testsPassed = 0;
 
-	GlobalScope globals( &BuiltinScope::builtins );
-/*
+	GlobalScope globals( BuiltinScope::builtins() );
+
 	GlobalScopePtr scope = &globals;
-	EnvPtr         env   = BuiltinScope::builtins.env();
+	EnvPtr         env   = BuiltinScope::builtins()->env();
 
 	#define TEST( NAME, REL, INPUT, EXPECTED )  ({									\
 		auto str      = (INPUT);													\
@@ -52,7 +53,9 @@ int main() {
 	TEST( "", ==, "'abba",              symbol( "abba" ) );
 	TEST( "", ==, "\"abba\"",           string( "abba" ) );
 	TEST( "", ==, "(car (cons 1 nil))", number( 1 ) );
-*/
+	TEST( "", ==, "(+ 4.5 5)",          number( 9.5 ) );
+	TEST( "", ==, "(define a 5)",       number( 5 ) );
+
 	std::cout << ">>> READER PASSED " << testsPassed << " TESTS OUT OF " << testsRun << std::endl;
 
 	#undef TEST

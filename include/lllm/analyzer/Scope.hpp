@@ -19,9 +19,9 @@ namespace lllm {
 				
 				VariablePtr get( const util::InternedString& name ) override final;
 
-				void addGlobal( const reader::SourceLocation&, const util::InternedString& name, AstPtr value );
+				GlobalPtr addGlobal( const reader::SourceLocation&, const util::InternedString& name, AstPtr value );
 			private:
-				std::vector<VariablePtr> values;
+				std::vector<GlobalPtr> values;
 
 				const ScopePtr parent;
 		};
@@ -31,15 +31,15 @@ namespace lllm {
 
 				VariablePtr get( const util::InternedString& name ) override final;
 
-				void addParameter( const reader::SourceLocation&, const util::InternedString& param );
+				ParameterPtr addParameter( const reader::SourceLocation&, const util::InternedString& param );
 
-				const std::vector<VariablePtr>& parameters() const;
-				const std::vector<VariablePtr>& captured()   const;
+				const std::vector<ParameterPtr>& parameters() const;
+				const std::vector<CapturedPtr>&  captured()   const;
 			private:
 				const ScopePtr parent;
 
-				std::vector<VariablePtr> _parameters;
-				std::vector<VariablePtr> _capturedVariables;
+				std::vector<ParameterPtr> _parameters;
+				std::vector<CapturedPtr>  _capturedVariables;
 		};
 		class LocalScope : public Scope {
 			public:
@@ -47,13 +47,13 @@ namespace lllm {
 
 				VariablePtr get( const util::InternedString& name ) override final;
 
-				void addLocal( const reader::SourceLocation&, const util::InternedString& name, AstPtr value );
+				LocalPtr addLocal( const reader::SourceLocation&, const util::InternedString& name, AstPtr value );
 
-				const std::vector<VariablePtr>& bindings() const;
+				const std::vector<LocalPtr>& bindings() const;
 			private:
 				const ScopePtr parent;
 				
-				std::vector<VariablePtr> _bindings;
+				std::vector<LocalPtr> _bindings;
 		};
 
 	}; // end namespace analyzer

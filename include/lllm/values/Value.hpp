@@ -9,17 +9,25 @@ namespace lllm {
 	namespace value {
 		class Value {
 			public:
+				static void* operator new( size_t size );
+				static void* operator new( size_t size, void* mem );
+
 				enum Type : long {
 					#define LLLM_VISITOR( TYPE ) TYPE, 
 					#include "lllm/values/Value_for_impl.inc"
+					// values after Type::Lambda are also lambdas.
+					// the arity of the lambda is (type - Type::Lambda).
 					Lambda,
 					// markers
 					BEGIN = Nil,
 					END   = Lambda
 				};
 			
+				static bool isList( ValuePtr val );
+
 				#define LLLM_VISITOR( TYPE ) static TYPE##Ptr as##TYPE( ValuePtr val );
 				#include "lllm/values/Value_for_impl.inc"
+				static NumberPtr asNumber( ValuePtr val );
 				static LambdaPtr asLambda( ValuePtr val, size_t arity );
 
 				const Type type;
@@ -46,14 +54,21 @@ namespace lllm {
 				const ValuePtr car;
 				const ListPtr  cdr;
 		};
-		class Int : public Value {
+		class Number : public Value {
+			private:
+				inline constexpr Number( Type t ) : Value( t ) {}
+
+			friend class Int;
+			friend class Real;
+		};
+		class Int : public Number {
 			public:
 				Int();
 				Int( long );
 				
 				const long value;
 		};
-		class Real : public Value {
+		class Real : public Number {
 			public:
 				Real();
 				Real( double );
@@ -74,11 +89,9 @@ namespace lllm {
 		};
 		class Symbol : public Value {
 			public:
-				static SymbolPtr make( CStr str );				
+				Symbol( CStr );
 
 				const CStr value;
-			private:
-				Symbol( CStr );
 		};
 		class Ref : public Value {
 			public:
@@ -103,9 +116,6 @@ namespace lllm {
 				ValuePtr                 env[0];
 			private:
 				Lambda( size_t arity );
-		};
-		class Thunk : public Value {
-
 		};
 
 		bool operator==( const Value&, const Value& );

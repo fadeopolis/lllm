@@ -21,6 +21,8 @@ namespace {
 };
 
 CStr lllm::util::InternedString::intern( CStr str ) {
+	if ( !str ) return str;
+
 	auto lb = intern_table.lower_bound( str );
 
 	if ( lb != intern_table.end() && (std::strcmp( str, *lb ) == 0) ) {

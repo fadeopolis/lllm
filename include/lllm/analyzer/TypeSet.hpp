@@ -52,7 +52,9 @@ namespace lllm {
 			short mask;
 
 			static inline constexpr short bits()                       { return 0; }
-			static inline constexpr short bits( value::Value::Type t ) { return 1 << ((short) t); }
+			static inline constexpr short bits( value::Value::Type t ) { 
+				return 1 << ((short) (t > value::Value::Lambda ? value::Value::Lambda : t)); 
+			}
 			static inline constexpr short bits( const TypeSet& t )     { return t.mask; }
 			template<typename... Ts>
 			static inline constexpr short bits( value::Value::Type t, Ts... ts ) { return bits( t ) | bits( ts... ); }

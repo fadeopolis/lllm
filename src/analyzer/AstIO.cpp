@@ -1,5 +1,6 @@
 
 #include "lllm/analyzer/AstIO.hpp"
+#include "lllm/values/ValueIO.hpp"
 
 #include <iostream>
 
@@ -31,7 +32,7 @@ std::ostream& analyzer::operator<<( std::ostream& os, ConstAstPtr ast ) {
 			os << ")";
 		}
 		void visit( ConstDefinePtr   ast, std::ostream& os ) const {
-			os << "(define " << ast->name << " " << ast->var << ")";
+			os << "(define " << ast->var->name << " " << ast->var->value << ")";
 		}
 		void visit( ConstLetPtr      ast, std::ostream& os ) const {
 			os << "(let (";
@@ -42,7 +43,7 @@ std::ostream& analyzer::operator<<( std::ostream& os, ConstAstPtr ast ) {
 				visit_( *it, os );
 			}
 
-			os << ") " << ast->expr;
+			os << ") " << ast->body;
 			os << ")";
 		}
 		void visit( ConstLambdaPtr ast, std::ostream& os ) const {
@@ -53,7 +54,7 @@ std::ostream& analyzer::operator<<( std::ostream& os, ConstAstPtr ast ) {
 				os << " " << *it;
 			}
 
-			os << ") " << ast->expr;
+			os << ") " << ast->body;
 			os << ")";
 		}
 		void visit( ConstApplicationPtr ast, std::ostream& os ) const {
@@ -64,11 +65,8 @@ std::ostream& analyzer::operator<<( std::ostream& os, ConstAstPtr ast ) {
 			}
 			os << ')';
 		}
-		void visit( ConstBuiltinPtr ast, std::ostream& os ) const {
 
-		}
-
-		void visit_( ConstVariablePtr binding, std::ostream& os ) const {
+		void visit_( ConstLocalPtr binding, std::ostream& os ) const {
 			os << '(' << binding->name << ' ' << binding->value << ')';
 		}
 	};

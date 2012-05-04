@@ -1,140 +1,148 @@
 
 #include "lllm/reader.hpp"
-#include "lllm/reader/Tokenizer.hpp"
 #include "lllm/util/fail.hpp"
 
+#include <iostream>
+#include <fstream>
 #include <sstream>
 #include <cassert>
 #include <cstring>
 #include <algorithm>
 
+using namespace std;
 using namespace lllm;
 using namespace lllm::util;
 using namespace lllm::reader;
 
-static SexprPtr _read( Tokenizer& ts );
-
-static ListPtr   _readList( Tokenizer& ts );
-static ListPtr   _readQuote( const SourceLocation& loc, Tokenizer& ts );
-static SexprPtr  _readNumber( const SourceLocation& loc, CStr tok );
-
-static CharPtr   _readChar( const SourceLocation& loc, CStr tok );
-static StringPtr _readString( const SourceLocation& loc, CStr tok );
-static SymbolPtr _readSymbol( const SourceLocation& loc, CStr tok );
-
-SexprPtr lllm::read( CStr string ) {
-	Tokenizer t = Tokenizer::fromString( string );
-	return _read( t );
+reader::SexprPtr lllm::read( CStr str ) {
+	return Reader::fromString( str ).read();
 }
-SexprPtr lllm::readFile( CStr fileName ) {
-	Tokenizer t = Tokenizer::fromFile( fileName );
-	return _read( t );
+reader::SexprPtr lllm::read( CStr srcName, CStr str ) {
+	return Reader::fromString( srcName, str ).read();
 }
 
-SexprPtr _read( Tokenizer& ts ) {
-	while ( ts.advance() ) {
-		const SourceLocation& loc = ts.location();
-		CStr                  tok = ts.token();
+Reader Reader::fromString( CStr source ) {
+	return fromString( "*string*", source );
+}
+Reader Reader::fromString( CStr sourceName, CStr source ) {
+	return Reader( sourceName, new stringstream( source ) );
+}
+	
+Reader Reader::fromFile( CStr fileName ) {
+	return Reader( fileName, new fstream( fileName ) );
+}
+Reader Reader::fromStdin() {
+	return Reader( "*stdin*", &cin );
+}
 
-		assert( tok );
+Reader::Reader( CStr srcName, std::istream* src ) : stream( src ), loc( srcName ) {
+	la = stream->get();
+}
 
-		switch ( *tok ) {
-			case '(':  return _readList( ts );
-			case ')':  LLLM_FAIL( "Unexpected ')' in " << loc );
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':  return _readNumber( loc, tok );
-			case '\\': return _readChar( loc, tok );
-			case '\'': return _readQuote( loc, ts );
-			case '"':  return _readString( loc, tok );
-			default:   return _readSymbol( loc, tok );
-		}
+Reader::~Reader() { 
+	if ( stream != &cin ) delete stream;
+}
 
-		if ( tok == Tokenizer::PAREN_OPEN  ) return _readList( ts );
-		if ( tok == Tokenizer::PAREN_CLOSE ) {
-			LLLM_FAIL( "Unexpected ')' in " << loc );
-		}
+SexprPtr Reader::read() {
+	skipWhitespace();
+
+	// return null if we reach EOF
+	if ( la < 0 ) return nullptr;
+
+	// at this point there is at least one 
+	// valid char left in the input
+
+//	cout << "DISPATCHING " << (char)la << endl;
+
+	switch ( la ) {
+		case '(':  return readList();
+		case ')':  LLLM_FAIL( "Unexpected ')' in " << loc );
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':  return readNumber();
+		case '\\': return readChar();
+		case '\'': return readQuote();
+		case '"':  return readString();
+		default:   return readSymbol();
 	}
 
-	LLLM_FAIL( ts.location() << ": EOF while reading" );
+	return nullptr;
 }
 
-ListPtr   _readList( Tokenizer& ts ) {
-	SourceLocation start = ts.location();
+ListPtr   Reader::readList() {
+	SourceLocation start = loc;
+
+	consume( '(' );
+	loc.incColumn();	
 
 	std::vector<SexprPtr> exprs;
-
-	while ( ts.advance() ) {
-		const SourceLocation& loc = ts.location();
-		CStr                  tok = ts.token();
-
-		assert( tok );
-
-		switch ( *tok ) {
-			case '(': 
-				exprs.push_back( _readList( ts ) );
-				break;
-			case ')':  
-				return new List( loc, exprs );
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-				exprs.push_back( _readNumber( loc, tok ) );
-				break;
-			case '\\':
-				exprs.push_back( _readChar( loc, tok ) );
-				break;
-			case '\'':
-				exprs.push_back( _readQuote( loc, ts ) );
-				break;
-			case '"':
-				exprs.push_back( _readString( loc, tok ) );
-				break;
-			default:
-				exprs.push_back( _readSymbol( loc, tok ) );
-				break;
-		}
-	}
-
-	LLLM_FAIL( ts.location() << ": EOF while reading list" );
-}
-ListPtr   _readQuote( const SourceLocation& loc, Tokenizer& ts ) {
-	std::vector<SexprPtr> exprs;
-
-	exprs.push_back( new Symbol( loc, "quote" ) );
-	exprs.push_back( _read( ts ) );
-
-	return new List( loc, exprs );
-}
-SexprPtr _readNumber( const SourceLocation& loc, CStr tok ) {
-//	std::cout << "READ NUM: " << tok << std::endl;
-	std::stringstream str;
-
-	str << *tok;
 
 	while ( true ) {
-		tok++;
-		switch ( *tok ) {
-			case 0:
+		skipWhitespace();
+
+		if ( la < 0 ) LLLM_FAIL( loc << ": Unexpected EOF while reading a list" );
+
+		if ( la == ')' ) {
+			consume(')');
+			loc.incColumn();
+			break;
+		}
+
+		exprs.push_back( read() );
+	}
+
+	return new List( start, exprs );
+}
+
+ListPtr   Reader::readQuote() {
+	SourceLocation start = loc;
+
+	consume( '\'' );
+
+	SymbolPtr sym = new Symbol( start, "quote" );
+	loc.incColumn();
+
+	SexprPtr val = read();
+
+	if ( !val ) LLLM_FAIL( loc << ": Unexpected EOF while reading a quotation" );
+
+	std::vector<SexprPtr> exprs;
+	exprs.push_back( sym );
+	exprs.push_back( val );
+
+	return new List( start, exprs );
+}
+
+SexprPtr  Reader::readNumber() {
+	SourceLocation start = loc;
+
+	assert( ('0' <= la && la <= '9') || (la == '_') || (la == '.') );
+
+	std::stringstream str;
+
+	while ( true ) {
+		if ( la < 0 ) goto return_int;
+
+		switch ( la ) {
+			case ' ':
+			case '\t':
+			case '\n':
+			case '(':
+			case ')':
 				goto return_int;
 			case '.':
 				str << '.';
+				loc.incColumn();
 				goto read_real;
 			case '_':
+				loc.incColumn();
 				break; // underscores in numbers are ignored
 			case '0':
 			case '1':
@@ -146,21 +154,34 @@ SexprPtr _readNumber( const SourceLocation& loc, CStr tok ) {
 			case '7':
 			case '8':
 			case '9':
-				str << *tok;
+				str << ((char)la);
+				loc.incColumn();
 				break;
 			default:
-				LLLM_FAIL( loc << ": Illegal character '" << (*tok) << "' in number literal" );
+				LLLM_FAIL( loc << ": Illegal character '" << la << "' in number literal" );
+				break;
 		}
+
+		la = stream->get();
 	}
 read_real:
 	while ( true ) {
-		tok++;
-		switch ( *tok ) {
-			case 0:
+		la = stream->get();
+
+		if ( la < 0 ) goto return_real;
+
+		switch ( la ) {
+			case ' ':
+			case '\t':
+			case '\n':
+			case '(':
+			case ')':
 				goto return_real;
 			case '.':
 				LLLM_FAIL( loc << ": More than one decimal point in a number literal" );
+				break;
 			case '_':
+				loc.incColumn();
 				break; // underscores in numbers are ignored
 			case '0':
 			case '1':
@@ -172,50 +193,149 @@ read_real:
 			case '7':
 			case '8':
 			case '9':
-				str << *tok;
+				str << ((char)la);
+				loc.incColumn();
 				break;
 			default:
-				LLLM_FAIL( loc << ": Illegal character '" << (*tok) << "' in number literal" );
+				LLLM_FAIL( loc << ": Illegal character '" << la << "' in number literal" );
+				break;
 		}
 	}
 
 return_int:
 		long l;
 		str >> l;
-		return new Int( loc, l );
+		return new Int( start, l );
 return_real:
 		double d;
 		str >> d;
-		return new Real( loc, d );
+		return new Real( start, d );
 }
 
-CharPtr   _readChar( const SourceLocation& loc, CStr tok ) {
-//	std::cout << "READ CHAR: " << tok << std::endl;
-	assert( *tok == '\\' );
+CharPtr   Reader::readChar() {
+	SourceLocation start = loc;
 
-	tok++;
+	consume( '\\' );
+	loc.incColumn();
 
-	if ( std::strcmp( "tab", tok ) == 0 ) {
-		return new Char( loc, '\t' );	
+	stringstream buf;
+
+	while ( true ) {
+		la = stream->get();
+
+		if ( la < 0 ) goto loop_end;
+
+		switch ( la ) {
+			case ' ':
+			case '\t':
+			case '\n':
+			case '(':
+			case ')':
+				goto loop_end;
+			default:
+				buf << ((char)la);
+				loc.incColumn();
+		}
 	}
-	if ( std::strcmp( "newline", tok ) == 0 ) {
-		return new Char( loc, '\n' );	
+loop_end:
+	const std::string& str = buf.str();
+
+	if ( str.size() == 1 ) {
+		return new Char( start, str[0] );
+	} else if ( str == "tab" ) {
+		return new Char( start, '\t' );
+	} else if ( str == "newline" ) {
+		return new Char( start, '\n' );
+	} else {
+		LLLM_FAIL( loc << ": Illegal character literal '\\" << str << "'" );
+	}
+}
+
+StringPtr Reader::readString() {
+	SourceLocation start = loc;
+
+	consume( '"' );
+	loc.incColumn();
+
+	stringstream buf;
+
+	while ( true ) {
+		if ( la < 0 ) LLLM_FAIL( loc << ": Unexpected EOF while reading a string" );
+
+		if ( la == '"' ) break;
+
+		buf << ((char) la);
+
+		la = stream->get();
+		loc.incColumn();
 	}
 
-	assert( tok[1] == 0 );
+	const std::string& str = buf.str();
+	char*              out = new char[str.size()];
 
-	return new Char( loc, *tok );	
+	strcpy( out, str.c_str() );
+
+	return new String( start, out );
 }
 
-StringPtr _readString( const SourceLocation& loc, CStr tok ) {
-//	std::cout << "READ STR: " << tok << std::endl;
-	// drop leading ", the " at the end was dropped by tokenizer
-	tok++;
+SymbolPtr Reader::readSymbol() {
+	SourceLocation start = loc;
 
-	return new String( loc, tok );
+	stringstream buf;
+
+	while ( true ) {
+		buf << ((char) la);
+
+		la = stream->get();
+
+		if ( la < 0 ) goto loop_end;
+
+		switch ( la ) {
+			case ' ':
+			case '\t':
+			case '\n':
+			case '(':
+			case ')':
+				goto loop_end;
+			case '\'':
+				LLLM_FAIL( loc << ": Unexpected ' in symbol" );
+			case '\\':
+				LLLM_FAIL( loc << ": Unexpected \\ in symbol" );
+			default:
+				loc.incColumn();
+				break;
+		}
+	}
+loop_end:
+	const std::string& str = buf.str();
+	char*              out = new char[str.size()];
+
+	strcpy( out, str.c_str() );
+
+	return new Symbol( start, out );
 }
-SymbolPtr _readSymbol( const SourceLocation& loc, CStr tok ) {
-//	std::cout << "READ SYM: " << tok << std::endl;
-	return new Symbol( loc, tok );
+
+void Reader::consume( char expected ) {
+	assert( la == expected );
+
+	la = stream->get();
+}
+
+void Reader::skipWhitespace() {
+	while ( true ) {
+		switch ( la ) {
+			case '\n':
+				loc.incLine();
+				break;
+			case ' ':
+			case '\t':
+				loc.incColumn();
+				break;
+			default:
+				return;
+		}
+
+		la = stream->get();
+	}
 }
 

@@ -22,8 +22,9 @@ namespace lllm {
 				inline constexpr bool operator==( const InternedString& that ) const {
 					return string == that.string;
 				}
-			private:
+
 				static CStr intern( CStr );
+			private:
 
 				CStr string;
 		};

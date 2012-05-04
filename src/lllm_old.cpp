@@ -24,25 +24,7 @@ using namespace lllm::val;
 
 static int testReader();
 
-std::ostream& lllm::operator<<( std::ostream& os, const TypeSet& ts ) {
-	if ( !ts.mask ) {
-		return os << "{}";
-	} else {
-		os << '{';
 
-		bool flag = false;
-
-		for ( Type t = Type::BEGIN; t <= Type::END; t = Type( long( t ) + 1 ) ) {
-			if ( ts.contains( t ) ) {
-				if ( flag ) os << ", ";
-				os << t;
-				flag = true;
-			}
-		}
-
-		return os << '}';
-	}
-}
 std::ostream& lllm::operator<<( std::ostream& os, const Type& t ) {
 	switch ( t ) {
 		case Type::Nil:    return os << "Nil";

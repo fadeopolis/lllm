@@ -39,19 +39,25 @@ VariablePtr LocalScope::get( const util::InternedString& name ) {
 	return parent->get( name );
 }
 
-void GlobalScope::addGlobal( const reader::SourceLocation& loc, const util::InternedString& name, AstPtr value ) {
-	values.push_back( new Variable( loc, name, value, Variable::GLOBAL ) );
+GlobalPtr    GlobalScope::addGlobal( const reader::SourceLocation& loc, const util::InternedString& name, AstPtr value ) {
+	auto var = new Global( loc, name, value );
+	values.push_back( var );
+	return var;
 }
-void LambdaScope::addParameter( const reader::SourceLocation& loc, const util::InternedString& param ) {
-	_parameters.push_back( new Variable( loc, param, nullptr, Variable::PARAMETER ) );
+ParameterPtr LambdaScope::addParameter( const reader::SourceLocation& loc, const util::InternedString& name ) {
+	auto var = new Parameter( loc, name );
+	_parameters.push_back( var );
+	return var;
 }
-void LocalScope::addLocal( const reader::SourceLocation& loc, const util::InternedString& name, AstPtr value ) {
-	_bindings.push_back( new Variable( loc, name, value, Variable::LOCAL ) );
+LocalPtr     LocalScope::addLocal( const reader::SourceLocation& loc, const util::InternedString& name, AstPtr value ) {
+	auto var = new Local( loc, name, value );
+	_bindings.push_back( var );
+	return var;
 }
 
-const std::vector<VariablePtr>& LambdaScope::parameters() const { return _parameters;        }
-const std::vector<VariablePtr>& LambdaScope::captured()   const { return _capturedVariables; }
-const std::vector<VariablePtr>& LocalScope::bindings()    const { return _bindings;          }
+const std::vector<ParameterPtr>& LambdaScope::parameters() const { return _parameters;        }
+const std::vector<CapturedPtr>&  LambdaScope::captured()   const { return _capturedVariables; }
+const std::vector<LocalPtr>&     LocalScope::bindings()    const { return _bindings;          }
 
 //LambdaScope::iterator LambdaScope::begin() { return parameters.begin(); }
 //LambdaScope::iterator LambdaScope::end()   { return parameters.end();   }

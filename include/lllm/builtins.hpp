@@ -3,6 +3,8 @@
 
 #include "lllm/analyzer/Scope.hpp"
 
+#include <map>
+
 namespace lllm {
 	class BuiltinScope;
 
@@ -10,7 +12,7 @@ namespace lllm {
 
 	class BuiltinScope : public analyzer::Scope {
 		public:
-			static BuiltinScope builtins;
+			static BuiltinScopePtr builtins();
 
 			analyzer::VariablePtr get( const util::InternedString& name ) override final;
 		
@@ -19,9 +21,36 @@ namespace lllm {
 			BuiltinScope();
 			BuiltinScope& operator=( const BuiltinScope& ) = delete;
 
-			void add( const util::InternedString& name, value::ValuePtr val, analyzer::VariablePtr ast );
+			void add( const util::InternedString& name, value::ValuePtr val, analyzer::AstPtr ast );
+		
+			eval::EnvPtr _env;
+			
+			static BuiltinScopePtr INSTANCE;
 	};
 }; // end namespace lllm
 
 #endif /* __BUILTINS_HPP__ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

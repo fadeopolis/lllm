@@ -17,8 +17,8 @@ namespace lllm {
 			public:
 				static EnvPtr make( CStr key, value::ValuePtr val );
 	
-				bool            contains( CStr key ) const;			
-				value::ValuePtr get( CStr key ) const;
+				bool contains( CStr key ) const;			
+				bool lookup( CStr key, value::ValuePtr* val ) const;
 
 				EnvPtr put( CStr key, value::ValuePtr val ) const;
 				EnvPtr put( const Binding& ) const;

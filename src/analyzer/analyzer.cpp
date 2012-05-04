@@ -81,7 +81,7 @@ static AstPtr analyzeLet( reader::ListPtr expr, ScopePtr ctx ) {
 			}
 		}
 	} else {
-		LLLM_FAIL( expr[1].location << ": The second argument of a let must be of the form ((<name> <value>)...) not " << expr[1] );
+		LLLM_FAIL( (*expr)[1]->location << ": The second argument of a let must be of the form ((<name> <value>)...) not " << expr[1] );
 	}
 
 	AstPtr body   = analyze_( (*expr)[2], localCtx );
@@ -103,28 +103,40 @@ static AstPtr analyzeDo( reader::ListPtr expr, ScopePtr ctx ) {
 
 	return new Do( expr->location, exprs );
 }
-static AstPtr analyzeDefine( reader::ListPtr expr, GlobalScopePtr ctx ) {
+
+static inline bool isLambda( reader::SexprPtr form );
+
+static AstPtr analyzeDefine( reader::ListPtr expr, ScopePtr ctx ) {
 	if ( expr->length() != 3 ) LLLM_FAIL( expr->location << ": A define must be of the form (define <name> <value>) not " << expr );
 
 	if ( reader::SymbolPtr sym = (*expr)[1]->asSymbol() ) {
-		CStr   key = sym->value;
-		AstPtr val = analyze_( (*expr)[2], ctx ); // TODO What about recursive functions
+		CStr name = sym->value;
 
-		ctx->addGlobal( expr->location, key, val );
+		reader::SexprPtr body = (*expr)[2];
 
-		return new Define( expr->location, key, val ); 
+		if ( isLambda( body ) ) {
+			// add name to scope before analyzing body to allow for recursive functions
+			LambdaScopePtr lambda = new LambdaScope( ctx );
+			lambda->addParameter( expr->location, name );
+
+			ctx = lambda;
+		}
+
+		AstPtr val = analyze_( body, ctx );
+
+		return new Define( expr->location, new Global( expr->location, name, val ) ); 
 	} else {
 		LLLM_FAIL( expr->location << ": A define must be of the form (define <name> <value>) not " << expr );
 	}
 }
 static AstPtr analyzeLambda( reader::ListPtr expr, ScopePtr ctx ) {
 	if ( expr->length() != 3 ) 
-		LLLM_FAIL( expr->location << ": A lambda must be of the form (define (<name>...) <expr>) not " << expr );
+		LLLM_FAIL( expr->location << ": A lambda must be of the form (lambda (<name>...) <expr>) not " << expr << " " << expr->length() );
 
 	LambdaScopePtr localCtx = new LambdaScope( ctx );
 
 	// check parameter list
-	if ( reader::ListPtr paramNames = expr[1].asList() ) {
+	if ( reader::ListPtr paramNames = (*expr)[1]->asList() ) {
 		for ( auto it = paramNames->begin(), end = paramNames->end(); it != end; ++it ) {
 			if ( reader::SymbolPtr param = (*it)->asSymbol() ) {
 				localCtx->addParameter( param->location, param->value );
@@ -133,7 +145,7 @@ static AstPtr analyzeLambda( reader::ListPtr expr, ScopePtr ctx ) {
 			}
 		}
 	} else {
-		LLLM_FAIL( expr->location << ": A lambda must be of the form (define (<name>...) <expr>) not " << expr );
+		LLLM_FAIL( expr->location << ": A lambda must be of the form (lambda (<name>...) <expr>) not " << expr );
 	}
 
 	// get variables captured from outer scopes in body
@@ -147,7 +159,8 @@ static AstPtr analyzeApplication( reader::ListPtr expr, ScopePtr ctx ) {
 	AstPtr fun = analyze_( (*expr)[0], ctx );
 
 	if ( !fun->possibleTypes().contains( value::Value::Type::Lambda ) )
-		LLLM_FAIL( expr->location << " : The head of an application must be a function, " << fun << " isn't one	" );
+//		LLLM_FAIL( expr->location << " : The head of an application must be a function, " << fun << " isn't one	" );
+		LLLM_FAIL( expr->location << " : Head of app " << fun << ", typeOf is " << fun->possibleTypes() );
 
 	std::vector<AstPtr> args;
 	
@@ -204,6 +217,21 @@ static AstPtr analyze_( reader::SexprPtr expr, ScopePtr ctx ) {
 }
 
 AstPtr lllm::analyze( reader::SexprPtr expr, GlobalScopePtr scope ) {
-	return analyze_( expr, scope );
+//	if ( reader::ListPtr form = expr->asList() ) {
+//		if ( reader::SymbolPtr sym = (*form)[0]->asSymbol() ) {
+//			if ( std::strcmp( "define", sym->value ) == 0 ) return analyzeDefine( expr, scope );
+//		}		
+//	} else {
+		return analyze_( expr, scope );
+//	}
+}
+
+bool isLambda( reader::SexprPtr expr ) {
+	if ( reader::ListPtr form = expr->asList() ) {
+		if ( reader::SymbolPtr sym = (*form)[0]->asSymbol() ) {
+			if ( std::strcmp( "lambda", sym->value ) == 0 ) return true;
+		}
+	}
+	return false;
 }
 

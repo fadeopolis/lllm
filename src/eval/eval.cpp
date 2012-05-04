@@ -7,6 +7,8 @@
 #include "lllm/util/fail.hpp"
 
 #include <cassert>
+#include "lllm/analyzer/AstIO.hpp"
+#include <iostream>
 
 using namespace lllm;
 using namespace lllm::eval;
@@ -18,7 +20,7 @@ static ValuePtr applyAST( LambdaPtr fn, EnvPtr env, const std::vector<ValuePtr>&
 	size_t i;
 
 	// add captured variables from clojure to env
-	const analyzer::Lambda::VarList& capturedVars = fn->ast->capturedVariables;
+	const std::vector<analyzer::CapturedPtr>& capturedVars = fn->ast->capturedVariables;
 
 	i = 0;
 	for ( auto it = capturedVars.begin(), end = capturedVars.end(); it != end; ++it, ++i ) {
@@ -26,22 +28,25 @@ static ValuePtr applyAST( LambdaPtr fn, EnvPtr env, const std::vector<ValuePtr>&
 	}
 
 	// add args to env
-	const analyzer::Lambda::VarList& parameters = fn->ast->parameters;
+	const std::vector<analyzer::ParameterPtr>& parameters = fn->ast->parameters;
 
 	i = 0;
 	for ( auto it = parameters.begin(), end = parameters.end(); it != end; ++it, ++i ) {
 		env = env->put( (*it)->name, args[i] );
 	}		
 
+//	std::cout << "APPLYING " << fn->ast << " TO ";
+//	for ( auto it = args.begin(), end = args.end(); it != end; ++it ) {
+//		std::cout << *it << " ";
+//	}
+//	std::cout << std::endl;
+
 	// eval body
-	return evaluate( fn->ast, env );
+	return evaluate( fn->ast->body, env );
 }
 
 ValuePtr lllm::evaluate( analyzer::ConstAstPtr ast, EnvPtr env ) {
 	struct Visitor {
-		ValuePtr visit( analyzer::ConstAstPtr ast, EnvPtr env ) const {
-			return nullptr;
-		}
 		// ***** ATOMS
 		ValuePtr visit( analyzer::ConstNilPtr    ast, EnvPtr env ) const {
 			return nil();
@@ -59,7 +64,12 @@ ValuePtr lllm::evaluate( analyzer::ConstAstPtr ast, EnvPtr env ) {
 			return string( ast->value );
 		}
 		ValuePtr visit( analyzer::ConstVariablePtr ast, EnvPtr env ) const {
-			return env->get( ast->name );
+			ValuePtr val;
+			if ( env->lookup( ast->name, &val ) ) {
+				return val;
+			} else {
+				LLLM_FAIL( ast->location << ": Unknown variable " << ast->name );
+			}
 		}	
 		// ***** SPECIAL FORMS
 		ValuePtr visit( analyzer::ConstQuotePtr ast, EnvPtr env ) const {
@@ -88,7 +98,7 @@ ValuePtr lllm::evaluate( analyzer::ConstAstPtr ast, EnvPtr env ) {
 				env = env->put( var->name, val );
 			}
 
-			return evaluate( ast->expr, env );
+			return evaluate( ast->body, env );
 		}	
 		ValuePtr visit( analyzer::ConstLambdaPtr ast, EnvPtr env ) const {
 			Lambda* clojure = Lambda::alloc( ast->arity(), ast->capturedVariables.size() );
@@ -97,17 +107,27 @@ ValuePtr lllm::evaluate( analyzer::ConstAstPtr ast, EnvPtr env ) {
 
 			size_t i = 0;
 			for ( auto it = ast->capturedVariables.begin(), end = ast->capturedVariables.end(); it != end; ++it, ++i ) {
-				analyzer::ConstVariablePtr var = *it;
+				analyzer::ConstCapturedPtr var = *it;
 
-				assert( var->storage == analyzer::Variable::CAPTURED );
+				ValuePtr val;
+				if ( env->lookup( var->name, &val ) ) {
+					return val;
+				} else {
+					LLLM_FAIL( var->location << ": Unknown variable " << var->name );
+				}
 
-				clojure->env[i] = env->get( var->name );
+				clojure->env[i] = val;
 			}
 
 			return clojure;
 		}
+		ValuePtr visit( analyzer::ConstDefinePtr ast, EnvPtr env ) const {
+			return evaluate( ast->var->value, env );
+		}
 		// ***** FUNCTION APPLICATION
 		ValuePtr visit( analyzer::ConstApplicationPtr ast, EnvPtr env ) const {
+//			std::cout << "APP" << std::endl;
+
 			ValuePtr head = evaluate( ast->fun, env );
 
 			if ( LambdaPtr fun = Value::asLambda( head, ast->args.size() ) ) {
@@ -123,6 +143,9 @@ ValuePtr lllm::evaluate( analyzer::ConstAstPtr ast, EnvPtr env ) {
 				// apply function to args
 				if ( fun->fun ) {
 					switch ( fun->arity() ) {
+						case 0:  return fun->fun( fun );
+						case 1:  return ((ValuePtr(*)(LambdaPtr,ValuePtr))         fun->fun)( fun, evaluatedArgs[0] );
+						case 2:  return ((ValuePtr(*)(LambdaPtr,ValuePtr,ValuePtr))fun->fun)( fun, evaluatedArgs[0], evaluatedArgs[1] );
 						default: LLLM_FAIL( ast->location << ": The interpreter cannot apply functions of arity " << fun->arity() );
 					}
 				} else {
@@ -141,5 +164,10 @@ ValuePtr lllm::evaluate( analyzer::ConstAstPtr ast, EnvPtr env ) {
 	return ast->visit<ValuePtr>( Visitor(), env );
 //	return nullptr;
 }
+
+
+
+
+
 
 

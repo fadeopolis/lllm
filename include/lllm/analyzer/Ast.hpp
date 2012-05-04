@@ -16,9 +16,7 @@ namespace lllm {
 			private:
 				enum class Type {
 					#define LLLM_VISITOR( TYPE ) TYPE, 
-					#include "lllm/analyzer/Ast.inc"
-					// values after Type::Lambda are also lambdas.
-					// the arity of the lambda is (type - Type::Lambda).
+					#include "lllm/analyzer/Ast_concrete_only.inc"
 				};
 			public:
 				Ast( const Ast::Type& t, const reader::SourceLocation& );
@@ -84,52 +82,54 @@ namespace lllm {
 
 		//***** VARIABLES            ****************************************************************//
 		class Variable : public Ast {
+			private:
+				Variable( Type, const reader::SourceLocation&, const util::InternedString& );
 			public:
-				enum StorageType { EXTERN, GLOBAL, CAPTURED, PARAMETER, LOCAL };
+				const util::InternedString name;
 
-				Variable( const reader::SourceLocation&, const util::InternedString&, AstPtr, StorageType );
+			friend class Builtin;
+			friend class Global;
+			friend class Parameter;
+			friend class Captured;
+			friend class Local;
+		};
+		class Builtin final : public Variable {
+			public:
+				Builtin( const util::InternedString&, TypeSet );
 
 				TypeSet possibleTypes() const override final;
-	
-				const util::InternedString name;
-				const AstPtr               value;
-				const StorageType          storage;
-
-//			friend class GlobalVariable;
-//			friend class Parameter;
-//			friend class LocalVariable;
-//			friend class CapturedVariable;
+			private:
+				const TypeSet _types;
 		};
-/*		class GlobalVariable final : public Variable {
+		class Global final : public Variable {
 			public:
-				GlobalVariable( const reader::SourceLocation&, const util::InternedString&, AstPtr value );
+				Global( const reader::SourceLocation&, const util::InternedString&, AstPtr value );
+
+				TypeSet possibleTypes() const override final;
 
 				const AstPtr value;
+		};
+		class Captured final : public Variable {
+			public:
+				Captured( const reader::SourceLocation&, const util::InternedString&, TypeSet );
+
+				TypeSet possibleTypes() const override final;
+			private:
+				const TypeSet _types;
 		};
 		class Parameter final : public Variable {
 			public:
 				Parameter( const reader::SourceLocation&, const util::InternedString& );
-		};
-		class LocalVariable final : public Variable {
-			public:
-				LocalVariable( const reader::SourceLocation&, const util::InternedString&, AstPtr value );
 
-				const AstPtr value;
+				TypeSet possibleTypes() const override final;
 		};
-		class CapturedVariable final : public Variable {
+		class Local final : public Variable {
 			public:
-				CapturedVariable( const reader::SourceLocation&, const util::InternedString& );
-		};
-*/
-		class Builtin : public Ast {
-			public:
-				Builtin( const util::InternedString& name, TypeSet possibleTypes );
+				Local( const reader::SourceLocation&, const util::InternedString&, AstPtr value );
 
 				TypeSet possibleTypes() const override final;
 
-				const util::InternedString name;
-			private:
-				const TypeSet              _possibleTypes;
+				const AstPtr value;
 		};
 
 		//***** SPECIAL FORMS        ****************************************************************//
@@ -159,40 +159,38 @@ namespace lllm {
 	
 				const std::vector<AstPtr> exprs;
 		};
-		class Define : public Ast {
-			public:
-				Define( const reader::SourceLocation&, const util::InternedString& name, AstPtr var );
-	
-				TypeSet possibleTypes() const override final;
-	
-				const util::InternedString name;
-				const AstPtr               var;
-		};
 		class Let : public Ast {
 			public:
-				typedef std::vector<VariablePtr> Bindings;
-
-				Let( const reader::SourceLocation&, const Bindings& bindings, AstPtr expr );
+				Let( const reader::SourceLocation&, const std::vector<LocalPtr>&, AstPtr );
 
 				TypeSet possibleTypes() const override final;
 
-				const Bindings bindings;
-				const AstPtr   expr;
+				const std::vector<LocalPtr> bindings;
+				const AstPtr                body;
 		};
 		class Lambda : public Ast {
 			public:
-				typedef std::vector<VariablePtr> VarList;
-
-				Lambda( const reader::SourceLocation&, LambdaPtr parent, const VarList& parameters, const VarList& captured, AstPtr expr );
+				Lambda( const reader::SourceLocation&, LambdaPtr parent, 
+				        const std::vector<ParameterPtr>&, 
+				        const std::vector<CapturedPtr>&, 
+				        AstPtr );
 
 				TypeSet possibleTypes() const override final;
 
 				size_t arity() const;
 
-				const LambdaPtr parent;
-				const VarList   parameters;
-				const VarList   capturedVariables;
-				const AstPtr    expr;
+				const LambdaPtr                 parent;
+				const std::vector<ParameterPtr> parameters;
+				const std::vector<CapturedPtr>  capturedVariables;
+				const AstPtr                    body;
+		};
+		class Define : public Ast {
+			public:
+				Define( const reader::SourceLocation&, GlobalPtr var );
+	
+				TypeSet possibleTypes() const override final;
+	
+				const GlobalPtr var;
 		};
 
 		//***** FUNCTION APPLICATION ****************************************************************//
@@ -211,7 +209,7 @@ namespace lllm {
 		Return Ast::visit( Visitor& v, Args&... args ) {
 			switch ( type ) {
 				#define LLLM_VISITOR( TYPE ) case Ast::Type::TYPE: return v.visit( dynamic_cast<TYPE##Ptr>( this ), args... );
-				#include "lllm/analyzer/Ast.inc"
+				#include "lllm/analyzer/Ast_concrete_only.inc"
 				default: return v.visit( dynamic_cast<LambdaPtr>( this ), args... );
 			}
 		}
@@ -219,7 +217,7 @@ namespace lllm {
 		Return Ast::visit( Visitor& v, Args&... args ) const {
 			switch ( type ) {
 				#define LLLM_VISITOR( TYPE ) case Ast::Type::TYPE: return v.visit( dynamic_cast<Const##TYPE##Ptr>( this ), args... );
-				#include "lllm/analyzer/Ast.inc"
+				#include "lllm/analyzer/Ast_concrete_only.inc"
 				default: return v.visit( dynamic_cast<ConstLambdaPtr>( this ), args... );
 			}
 		}
@@ -227,7 +225,7 @@ namespace lllm {
 		Return Ast::visit( const Visitor& v, Args&... args ) {
 			switch ( type ) {
 				#define LLLM_VISITOR( TYPE ) case Ast::Type::TYPE: return v.visit( dynamic_cast<TYPE##Ptr>( this ), args... );
-				#include "lllm/analyzer/Ast.inc"
+				#include "lllm/analyzer/Ast_concrete_only.inc"
 				default: return v.visit( dynamic_cast<LambdaPtr>( this ), args... );
 			}
 		}
@@ -235,7 +233,7 @@ namespace lllm {
 		Return Ast::visit( const Visitor& v, Args&... args ) const {
 			switch ( type ) {
 				#define LLLM_VISITOR( TYPE ) case Ast::Type::TYPE: return v.visit( dynamic_cast<Const##TYPE##Ptr>( this ), args... );
-				#include "lllm/analyzer/Ast.inc"
+				#include "lllm/analyzer/Ast_concrete_only.inc"
 				default: return v.visit( dynamic_cast<ConstLambdaPtr>( this ), args... );
 			}
 		}
