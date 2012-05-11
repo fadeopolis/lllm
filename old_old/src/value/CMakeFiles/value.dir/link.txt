@@ -1,0 +1,2 @@
+/usr/bin/ar cr libvalue.a  CMakeFiles/value.dir/Value.cpp.o CMakeFiles/value.dir/builtins.cpp.o CMakeFiles/value.dir/ValueIO.cpp.o
+/usr/bin/ranlib libvalue.a

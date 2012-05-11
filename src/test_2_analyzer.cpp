@@ -1,12 +1,12 @@
 
-#include "lllm/analyzer.hpp"
-#include "lllm/analyzer/AstIO.hpp"
+#include "lllm/Analyzer.hpp"
+#include "lllm/ast/AstIO.hpp"
 
 #include <cassert>
 #include <iostream>
 
 using namespace lllm;
-using namespace lllm::analyzer;
+using namespace lllm::ast;
 
 int main() {
 	std::cout << ">>> TESTING ANALYZER" << std::endl;

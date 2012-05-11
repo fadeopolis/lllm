@@ -1,9 +1,11 @@
-#ifndef __INTERNED_STRING_HPP__
-#define __INTERNED_STRING_HPP__
+#ifndef __STRINGS_HPP__
+#define __STRINGS_HPP__ 1
+
+#include "lllm/lllm.hpp"
+
+#include <cstring>
 
 namespace lllm {
-	typedef const char* CStr;
-
 	namespace util {
 		class InternedString {
 			public:
@@ -12,25 +14,27 @@ namespace lllm {
 				inline constexpr InternedString( const InternedString&  str ) : string( str.string ) {}
 				inline constexpr InternedString( const InternedString&& str ) : string( str.string ) {}
 
-				inline constexpr operator CStr() const { return string; }
-			
+				inline constexpr operator CStr()  const { return string; }
+
 				inline InternedString& operator=( const InternedString& str ) {
 					string = str.string;
 					return *this;
 				}
 
-				inline constexpr bool operator==( const InternedString& that ) const {
-					return string == that.string;
+				inline constexpr bool operator<( const InternedString& str ) {
+					return std::strcmp( string, str.string ) < 0;
 				}
 
 				static CStr intern( CStr );
 			private:
-
 				CStr string;
 		};
-	}; // end namespace util
-}; // end namespace lllm
+	};	
 
-#endif /* __INTERNED_STRING_HPP__ */
+	constexpr bool operator==( const util::InternedString& a, const util::InternedString& b ) { return ((util::CStr)a) == ((util::CStr)b); }
+	constexpr bool operator==( util::CStr                  a, const util::InternedString& b ) { return std::strcmp( a, b ) == 0; }
+	constexpr bool operator==( const util::InternedString& a, util::CStr                  b ) { return std::strcmp( a, b ) == 0; }
+};
 
+#endif /* __STRINGS_HPP__ */
 
