@@ -84,7 +84,7 @@ int main() {
 	TEST( " 5",           ==, "((lambda let1 (x) (let ((a 5)) a)) 7)",             number(5)     );
 	TEST( " 6",           ==, "(sum 1000 7)",                                     number(1007) );
 	TEST( "const fn",     ==, "((lambda a () 5))",  number( 5 ) );
-	TEST( "const lambda", ==, "(((lambda const (x) (lambda (y) x)) 'x) 'y)",  symbol("x") );
+	TEST( "const lambda", ==, "((const 'x) 'y)",  symbol("x") );
 	TEST( " 7",           ==, "(((lambda const (x) (lambda inner (y) x)) 'x) 'y)", symbol("x")   );
 
 	std::cout << ">>> JIT PASSED " << testsPassed << " TESTS OUT OF " << testsRun << std::endl;
