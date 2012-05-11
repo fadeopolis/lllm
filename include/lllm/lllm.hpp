@@ -3,7 +3,7 @@
 
 #include <gc/gc_cpp.h>
 
-#define DBG_LVL 4
+#define LLLM_DBG_LVL 0
 
 namespace lllm {
 

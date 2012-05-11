@@ -51,20 +51,19 @@ int main() {
 
 // (define sum (lambda sum (a b) (if (= a 0) b (sum (- a 1) (+ 1 b)))))
 
-	TEST( " 1", ==, "()",                 nil );
-	TEST( " 2", ==, "1",                  number( 1 ) );
-	TEST( " 3", ==, "1.5",                number( 1.5 ) );
-	TEST( " 4", !=, "155",                number( 1.5 ) );
-	TEST( " 5", ==, "1 5",                number( 1 ) );
-	TEST( " 6", ==, "'abba",              symbol( "abba" ) );
-	TEST( " 7", ==, "\"abba\"",           string( "abba" ) );
-	TEST( " 8", ==, "(car (cons 1 nil))", number( 1 ) );
-	TEST( " 9", ==, "(+ 4.5 5)",          number( 9.5 ) );
-	TEST( "10", ==, "(define a 5)",       number( 5 ) );
-	TEST( "11", ==, "((lambda () 5))",    number( 5 ) );
-	TEST( "12", ==, "((lambda a () 5))",  number( 5 ) );
-	TEST( "13", ==, "(((lambda const (x) (lambda (y) x)) 'x) 'y)",  symbol("x") );
-	TEST( "recursion", ==, "((lambda sum (a b) (if (= a 0) b (sum (- a 1) (+ 1 b)))) 5 5)", number( 10 ) );
+	TEST( " 1",            ==, "()",                 nil );
+	TEST( " 2",            ==, "1",                  number( 1 ) );
+	TEST( " 3",            ==, "1.5",                number( 1.5 ) );
+	TEST( " 4",            !=, "155",                number( 1.5 ) );
+	TEST( " 5",            ==, "1 5",                number( 1 ) );
+	TEST( " 6",            ==, "'abba",              symbol( "abba" ) );
+	TEST( " 7",            ==, "\"abba\"",           string( "abba" ) );
+	TEST( " 8",            ==, "(car (cons 1 nil))", number( 1 ) );
+	TEST( " 9",            ==, "(+ 4.5 5)",          number( 9.5 ) );
+	TEST( "10",            ==, "(define a 5)",       number( 5 ) );
+	TEST( "const fn",      ==, "((lambda a () 5))",  number( 5 ) );
+	TEST( "const lambda",  ==, "(((lambda const (x) (lambda (y) x)) 'x) 'y)",  symbol("x") );
+	TEST( "recursion",     ==, "((lambda sum (a b) (if (= a 0) b (sum (- a 1) (+ 1 b)))) 5 5)", number( 10 ) );
 
 	std::cout << ">>> EVALUATOR PASSED " << testsPassed << " TESTS OUT OF " << testsRun << std::endl;
 

@@ -12,7 +12,7 @@
 #include <cstdio>
 #include <iostream>
 
-#if LLLM_DBG_LVL > 3
+#if LLLM_DBG_LVL > 0
 #	define DBG( TYPE ) (void) ({ std::cout << "{VISITING " << #TYPE << "}" << std::endl; nullptr; })
 #else 
 #	define DBG( TYPE ) (void) ({ nullptr; })
@@ -138,20 +138,9 @@ struct Jit::SharedData {
 	jit_type_t symbol_t;
 	jit_type_t ref_t;
 
-	jit_type_t ptr_to_value_t;
-	jit_type_t ptr_to_cons_t;
-	jit_type_t ptr_to_int_t;
-	jit_type_t ptr_to_real_t;
-	jit_type_t ptr_to_char_t;
-	jit_type_t ptr_to_string_t;
-	jit_type_t ptr_to_symbol_t;
-	jit_type_t ptr_to_ref_t;
-
 	std::map<size_t, jit_type_t> signature_ts;
-	std::map<size_t, jit_type_t> closure_ts;
 
 	jit_type_t signature( size_t arity );
-	jit_type_t closure( size_t envSize );
 };
 
 static inline int envElementOffset( int elemIdx ) {
@@ -177,32 +166,30 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 	
 	ast::LambdaPtr      ast = fn->data->ast;
 
-	printf( "JITTING %s\n", (util::CStr)ast->name );
-
 	jit_function_t fnIr = jit_function_create( shared->ctx, shared->signature( fn->arity() ) );
 	
 	struct Visitor {
-		jit_value_t visit( ast::NilPtr         ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::NilPtr         ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Nil );
-			return jit_value_create_long_constant( ir, shared->ptr_to_value_t, 0 );
+			return jit_value_create_long_constant( ir, jit_type_long, 0 );
 		}
-		jit_value_t visit( ast::IntPtr         ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::IntPtr         ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Int );
-			return jit_value_create_long_constant( ir, shared->ptr_to_value_t, (long)(void*) number( ast->value ) );
+			return jit_value_create_long_constant( ir, jit_type_long, (long)(void*) number( ast->value ) );
 		}
-		jit_value_t visit( ast::RealPtr        ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::RealPtr        ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Real );
-			return jit_value_create_long_constant( ir, shared->ptr_to_value_t, (long)(void*) number( ast->value ) );
+			return jit_value_create_long_constant( ir, jit_type_long, (long)(void*) number( ast->value ) );
 		}
-		jit_value_t visit( ast::CharPtr        ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::CharPtr        ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Char );
-			return jit_value_create_long_constant( ir, shared->ptr_to_value_t, (long)(void*) character( ast->value ) );
+			return jit_value_create_long_constant( ir, jit_type_long, (long)(void*) character( ast->value ) );
 		}
-		jit_value_t visit( ast::StringPtr      ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::StringPtr      ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( String );
-			return jit_value_create_long_constant( ir, shared->ptr_to_value_t, (long)(void*) string( ast->value ) );
+			return jit_value_create_long_constant( ir, jit_type_long, (long)(void*) string( ast->value ) );
 		}
-		jit_value_t visit( ast::VariablePtr    ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::VariablePtr    ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Variable );
 			jit_value_t val;
 			if ( scope->lookup( ast->name, &val ) ) {
@@ -211,65 +198,65 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 				LLLM_FAIL( ast->location << ": Undefined variable " << ast );
 			}
 		}
-		jit_value_t visit( ast::QuotePtr       ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::QuotePtr       ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Quote );
 			return jit_value_create_long_constant( ir, jit_type_long, (long)(void*) ast->value );
 		}
-		jit_value_t visit( ast::IfPtr          ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::IfPtr          ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( If );
 
 			jit_label_t elseLabel = jit_label_undefined;
 			jit_label_t endLabel  = jit_label_undefined;
 
-			jit_value_t result = jit_value_create( ir, shared->ptr_to_value_t );
+			jit_value_t result = jit_value_create( ir, jit_type_long );
 
 			// emit test code
-			jit_value_t test = ast->test->visit<jit_value_t>( *this, ir, scope ); 
+			jit_value_t test = ast->test->visit<jit_value_t>( *this, ir, scope, false ); 
 			// branch to else part if test == 0
 			jit_insn_branch_if_not( ir, test, &elseLabel );    
 			// emit then part
-			jit_value_t thenResult = ast->thenBranch->visit<jit_value_t>( *this, ir, scope );
+			jit_value_t thenResult = ast->thenBranch->visit<jit_value_t>( *this, ir, scope, tail );
 			jit_insn_store( ir, result, thenResult );
 			jit_insn_branch( ir, &endLabel );
 			// emit else part
 			jit_insn_label( ir, &elseLabel );
-			jit_value_t elseResult = ast->elseBranch->visit<jit_value_t>( *this, ir, scope );
+			jit_value_t elseResult = ast->elseBranch->visit<jit_value_t>( *this, ir, scope, tail );
 			jit_insn_store( ir, result, elseResult );
 			// emit end part
 			jit_insn_label( ir, &endLabel );
 
 			return result;
 		}
-		jit_value_t visit( ast::DoPtr          ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::DoPtr          ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Do );
 
 			for ( auto it = ast->begin(), end = --(ast->end()); it != end; ++it ) {
-				(*it)->visit<jit_value_t>( *this, ir, scope );
+				(*it)->visit<jit_value_t>( *this, ir, scope, false );
 			}
 
-			return ast->back()->visit<jit_value_t>( *this, ir, scope );
+			return ast->back()->visit<jit_value_t>( *this, ir, scope, tail );
 		}
-		jit_value_t visit( ast::LetPtr         ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::LetPtr         ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Let );
 
 			for ( auto it = ast->begin(), end = ast->end(); it != end; ++it ) {
 				const ast::Let::Binding& b = *it;
 
 				auto name = b.first;
-				auto val  = b.second->visit<jit_value_t>( *this, ir, scope );
+				auto val  = b.second->visit<jit_value_t>( *this, ir, scope, false );
 
 				val = jit_insn_load( ir, val );
 
 				scope = new JitValueScope( name, val , scope );
 			}
 
-			return ast->body->visit<jit_value_t>( *this, ir, scope );
+			return ast->body->visit<jit_value_t>( *this, ir, scope, tail );
 		}
-		jit_value_t visit( ast::LambdaPtr      ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::LambdaPtr      ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Lambda );
 
 			jit_value_t args[1];
-			args[0] = jit_value_create_long_constant( ir, shared->ptr_to_value_t, (long)(void*) ast );
+			args[0] = jit_value_create_long_constant( ir, jit_type_long, (long)(void*) ast );
 
 			// create closure
 			jit_value_t lambda = jit_insn_call_native( ir, "lllm::value::Lambda::alloc", (void*)lllm_alloc_lambda, 
@@ -288,13 +275,13 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 
 			return lambda;
 		}
-		jit_value_t visit( ast::ApplicationPtr ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::ApplicationPtr ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Application );
 
 			size_t arity = ast->arity();
 	
 			// emit code for function
-			jit_value_t  fun  = ast->fun->visit<jit_value_t>( *this, ir, scope );
+			jit_value_t  fun  = ast->fun->visit<jit_value_t>( *this, ir, scope, false );
 
 			// emit code for args
 			jit_value_t* args = new jit_value_t[ast->args.size() + 1];
@@ -303,7 +290,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 
 			int idx = 1;
 			for ( auto it = ast->begin(), end = ast->end(); it != end; ++it, ++idx ) {
-				args[idx] = (*it)->visit<jit_value_t>( *this, ir, scope );
+				args[idx] = (*it)->visit<jit_value_t>( *this, ir, scope, false );
 			}
 
 			jit_value_t failArgs[1] = { fun };
@@ -335,7 +322,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 			jit_insn_label( ir, &end );
 			return result;
 		}
-		jit_value_t visit( ast::DefinePtr      ast, jit_function_t ir, JitScopePtr scope ) const {
+		jit_value_t visit( ast::DefinePtr      ast, jit_function_t ir, JitScopePtr scope, bool tail ) const {
 			DBG( Define );
 			LLLM_FAIL( ast->location << ": Define statements may not appear within a function" );
 		}
@@ -350,7 +337,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 
 	idx = 0;
 	for ( auto it = ast->capturedVariables.begin(), end = ast->capturedVariables.end(); it != end; ++it, ++idx ) {
-		jit_value_t envElem = jit_insn_load_relative( fnIr, env, envElementOffset( idx ), shared->ptr_to_value_t );
+		jit_value_t envElem = jit_insn_load_relative( fnIr, env, envElementOffset( idx ), jit_type_long );
 
 		scope = new JitValueScope( (*it)->name, envElem, scope );
 	}
@@ -367,7 +354,9 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 		scope = new JitValueScope( (*it)->name, jit_value_get_param( fnIr, idx ), scope );
 	}	
 
-	jit_value_t retVal = ast->body->visit<jit_value_t>( Visitor(), fnIr, scope );
+	jit_value_t retVal = ast->body->visit<jit_value_t>( Visitor(), fnIr, scope, true );
+//	jit_value_t retVal = jit_value_create_long_constant( fnIr, jit_type_long, 0 );
+
 	jit_insn_return( fnIr, retVal );
 
 //	std::printf("-- ABOUT TO COMPILE %s ------------------------------------\n", (util::CStr)ast->name );
@@ -398,9 +387,6 @@ Jit::SharedData::SharedData() {
 	jit_type_t* value_fields  = new jit_type_t[1];
 	value_fields[0] = jit_type_long;
 
-	value_t        = jit_type_create_struct( value_fields,  1, 1 );
-	ptr_to_value_t = jit_type_long;//jit_type_create_pointer( value_t, 1 );
-
 	jit_type_t* cons_fields = new jit_type_t[3];
 	cons_fields[0] = jit_type_long;
 	cons_fields[1] = value_t;
@@ -416,29 +402,23 @@ Jit::SharedData::SharedData() {
 
 	jit_type_t* string_fields = new jit_type_t[2];
 	string_fields[0] = jit_type_long;
-	string_fields[1] = jit_type_void_ptr;
+	string_fields[1] = jit_type_long;
 
 	jit_type_t* symbol_fields = new jit_type_t[2];
 	symbol_fields[0] = jit_type_long;
-	symbol_fields[1] = jit_type_void_ptr;
+	symbol_fields[1] = jit_type_long;
 
 	jit_type_t* ref_fields = new jit_type_t[2];
 	ref_fields[0] = jit_type_long;
-	ref_fields[0] = value_t;
+	ref_fields[0] = jit_type_long;
 
-	cons_t   = jit_type_create_struct( cons_fields,   2, 1 );
+	value_t  = jit_type_create_struct( value_fields,  1, 1 );
+	cons_t   = jit_type_create_struct( cons_fields,   3, 1 );
 	int_t    = jit_type_create_struct( int_fields,    2, 1 );
 	real_t   = jit_type_create_struct( real_fields,   2, 1 );
 	string_t = jit_type_create_struct( string_fields, 2, 1 );
 	symbol_t = jit_type_create_struct( symbol_fields, 2, 1 );
 	ref_t    = jit_type_create_struct( ref_fields,    2, 1 );
-
-	ptr_to_cons_t   = jit_type_long;//jit_type_create_pointer( cons_t,   1 );
-	ptr_to_int_t    = jit_type_long;//jit_type_create_pointer( int_t,    1 );
-	ptr_to_real_t   = jit_type_long;//jit_type_create_pointer( real_t,   1 );
-	ptr_to_string_t = jit_type_long;//jit_type_create_pointer( string_t, 1 );
-	ptr_to_symbol_t = jit_type_long;//jit_type_create_pointer( symbol_t, 1 );
-	ptr_to_ref_t    = jit_type_long;//jit_type_create_pointer( ref_t,    1 );	
 }
 
 jit_type_t Jit::SharedData::SharedData::signature( size_t arity ) {
@@ -452,15 +432,14 @@ jit_type_t Jit::SharedData::SharedData::signature( size_t arity ) {
 		jit_type_t* params = new jit_type_t[arity + 1];
 
 		for ( size_t i = 0; i <= arity; i++ ) {
-			params[i] = ptr_to_value_t;
+			params[i] = jit_type_long;
 		}
 
-		auto ty = jit_type_create_signature( jit_abi_cdecl, ptr_to_value_t, params, arity + 1, 1 );
+		auto ty = jit_type_create_signature( jit_abi_cdecl, jit_type_long, params, arity + 1, 1 );
 		
 		signature_ts.insert( lb, std::make_pair( arity, ty ) );
 
 		return ty;
 	}
 }
-
 
