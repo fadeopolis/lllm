@@ -83,7 +83,7 @@ std::ostream& lllm::operator<<( std::ostream& os, ConstAstPtr ast ) {
 		}
 		void visit( ConstLetPtr      ast, std::ostream& os ) const {
 			DBG_BEGIN( Let );
-			os << "(let (";
+			os << "(let ";
 
 			visit_( ast->bindings.front(), os );
 			for ( auto it = ++(ast->bindings.begin()), end = ast->bindings.end(); it != end; ++it ) {
@@ -91,7 +91,21 @@ std::ostream& lllm::operator<<( std::ostream& os, ConstAstPtr ast ) {
 				visit_( *it, os );
 			}
 
-			os << ") " << ast->body;
+			os << " " << ast->body;
+			os << ")";
+			DBG_END( Let );
+		}
+		void visit( ConstLetStarPtr   ast, std::ostream& os ) const {
+			DBG_BEGIN( LetStar );
+			os << "(let* ";
+
+			visit_( ast->bindings.front(), os );
+			for ( auto it = ++(ast->bindings.begin()), end = ast->bindings.end(); it != end; ++it ) {
+				os << ' ';
+				visit_( *it, os );
+			}
+
+			os << " " << ast->body;
 			os << ")";
 			DBG_END( Let );
 		}
@@ -105,9 +119,9 @@ std::ostream& lllm::operator<<( std::ostream& os, ConstAstPtr ast ) {
 
 			os << "(";
 			
-			if ( ast->parameters.size() > 0 ) {
-				os << ast->parameters.front();
-				for ( auto it = ++(ast->parameters.begin()), end = ast->parameters.end(); it != end; ++it ) {
+			if ( ast->arity() > 0 ) {
+				os << ast->params.front();
+				for ( auto it = ++(ast->params_begin()), end = ast->params_end(); it != end; ++it ) {
 					os << " " << *it;
 				}
 			}	

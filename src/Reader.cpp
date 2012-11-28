@@ -69,6 +69,7 @@ SexprPtr Reader::read() {
 	switch ( la ) {
 		case '(':  expr = readList(); break;
 		case ')':  LLLM_FAIL( "Unexpected ')' in " << loc );
+		case '.':
 		case '0':
 		case '1':
 		case '2':
@@ -174,7 +175,7 @@ SexprPtr  Reader::readNumber() {
 				loc.incColumn();
 				break;
 			default:
-				LLLM_FAIL( loc << ": Illegal character '" << la << "' in number literal" );
+				LLLM_FAIL( loc << ": Illegal character '" << (char) la << "' in number literal" );
 				break;
 		}
 
@@ -213,7 +214,7 @@ read_real:
 				loc.incColumn();
 				break;
 			default:
-				LLLM_FAIL( loc << ": Illegal character '" << la << "' in number literal" );
+				LLLM_FAIL( loc << ": Illegal character '" << (char) la << "' in number literal" );
 				break;
 		}
 	}
@@ -351,6 +352,9 @@ void Reader::skipWhitespace() {
 			case '\t':
 				loc.incColumn();
 				break;
+			case ';':
+				skipComment();
+				break;
 			default:
 				return;
 		}
@@ -358,4 +362,20 @@ void Reader::skipWhitespace() {
 		la = stream->get();
 	}
 }
+void Reader::skipComment() {
+	consume(';');
+
+	while ( true ) {
+		if ( la == '\n' ) {
+			loc.incLine();
+			return;
+		}
+
+		la = stream->get();
+	}
+}
+
+
+
+
 

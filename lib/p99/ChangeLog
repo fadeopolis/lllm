@@ -1,0 +1,3390 @@
+commit eea23534bd1000e57a3c5eb5968a8213787e90ba
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat May 19 09:24:13 2012 +0200
+
+    introduce type generic macros to return the object behind a pointer or
+    array
+
+p99/p99_generic.h
+
+commit 790c711d5051a59b6f35a7ce4fedbbe8fe1c136a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri May 18 22:11:21 2012 +0200
+
+    Ad macros to capture the size of an object behind a pointer or array
+    value
+
+doxy/p99-tagfile
+p99/p99_generic.h
+p99/p99_special.c
+tests/Makefile
+tests/test-p99-c11.c
+
+commit 959c217940ce6b6b7d2007b71a1700896ec2d770
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat May 5 09:59:17 2012 +0200
+
+    better not reference the macro name in the argument documentations. this makes doxygen expand it repeatedly
+
+doxy/p99-tagfile
+p99/p99_for.h
+p99/p99_paste.h
+
+commit c0cd9bd32519bd2d40b56cf317f6f7a42a3c16ea
+Author: (no author) <(no author)@no.where>
+Date:   Wed May 2 23:15:55 2012 +0200
+
+    copyright and whitespace
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+.gitignore
+p99/p99.h
+p99/p99_args.h
+p99/p99_atomic.h
+p99/p99_atomic_arm.h
+p99/p99_atomic_x86.h
+p99/p99_block.h
+p99/p99_c99.h
+p99/p99_c99_default.h
+p99/p99_choice.h
+p99/p99_classification.h
+p99/p99_clib.h
+p99/p99_compiler.h
+p99/p99_defarg.h
+p99/p99_double.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_generated.h
+p99/p99_generic.h
+p99/p99_id.h
+p99/p99_if.h
+p99/p99_int.h
+p99/p99_list.h
+p99/p99_logical.h
+p99/p99_map.h
+p99/p99_new.h
+p99/p99_paste.h
+p99/p99_posix_default.h
+p99/p99_special.c
+p99/p99_str.h
+p99/p99_swap.h
+p99/p99_threads.h
+p99/p99_try.h
+p99/p99_tss.h
+p99/p99_type.h
+p99/p99_typenames.h
+
+commit f1a8de3fd1021669ec50cd561d3e6c25cf37be62
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed May 2 22:48:16 2012 +0200
+
+    repair a bug in an untested execution path for openMP
+
+tests/test-p99-pow.c
+
+commit f10abeaafce47dcdbf21d70b1956e2c3956796a0
+Author: William Morris <wrm@hushmail.com>
+Date:   Wed May 2 22:35:47 2012 +0200
+
+    documentation and grammar update, files "t"
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_threads.h
+p99/p99_try.h
+p99/p99_tss.h
+p99/p99_type.h
+p99/p99_typenames.h
+
+commit 4891a83477e37b1ff731b1759ef0e68658d7d4f0
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed May 2 09:45:05 2012 +0200
+
+    document the id parameter of P99_TSS_DECLARE_LOCAL
+
+p99/p99_tss.h
+
+commit 8f5f0b9493faf4218b10f192fb2e26966648b89c
+Author: William Morris <wrm@hushmail.com>
+Date:   Wed May 2 09:34:02 2012 +0200
+
+    documentation and grammar update, files "p" and "s"
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_paste.h
+p99/p99_posix_default.h
+p99/p99_str.h
+p99/p99_swap.h
+
+commit 12e1fef4744e162abb8a28b660a43b7842d7b0d0
+Author: William Morris <wrm@hushmail.com>
+Date:   Tue May 1 22:40:31 2012 +0200
+
+    documentation and grammar update, files "m" and "n"
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_map.h
+p99/p99_new.h
+
+commit 3f7e36ff4ea784b479e13301d631e0483b453c56
+Author: William Morris <wrm@hushmail.com>
+Date:   Tue May 1 09:14:56 2012 +0200
+
+    documentation and grammar update, files "i"
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_id.h
+p99/p99_if.h
+p99/p99_int.h
+
+commit 1346849b07b3e35daeb99118fbf138e7eebea3fe
+Author: William Morris <wrm@hushmail.com>
+Date:   Mon Apr 30 09:16:39 2012 +0200
+
+    documentation and grammar update, files "f" and "g"
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_for.h
+p99/p99_generic.h
+
+commit db74ac18a2db06b8f40ca8c3c3a3cd4b9b0a84e8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Apr 27 14:37:18 2012 +0200
+
+    add warnings about necessity of volatile in certain cases
+
+doxy/p99-tagfile
+p99/p99.h
+p99/p99_block.h
+p99/p99_try.h
+
+commit 154b503f4f2997e832e6e150698d5c3480cba9e1
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Apr 27 12:03:13 2012 +0200
+
+    avoid unwind protect for P99_HANDLE_ERRNO
+
+p99/p99_block.h
+
+commit b80a6d2630d119aee5e29f94313d226c876793b3
+Author: William Morris <wrm@hushmail.com>
+Date:   Thu Apr 26 18:28:06 2012 +0200
+
+    documentation and grammar update, files "d" and "e"
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_defarg.h
+p99/p99_double.h
+p99/p99_enum.h
+
+commit 8573cd8e109c0906619d88c7d9216850f1d54c7a
+Author: William Morris <wrm@hushmail.com>
+Date:   Thu Apr 26 10:38:13 2012 +0200
+
+    documentation and grammar update, files "b" and "c"
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_block.h
+p99/p99_c99_default.h
+p99/p99_choice.h
+p99/p99_classification.h
+p99/p99_clib.h
+p99/p99_compiler.h
+
+commit f335d388f2903958eaabcfda31d4a023f6da0977
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Apr 25 15:34:05 2012 +0200
+
+    another attempt to accomodate the permission for the transfer via rsync
+
+Makefile
+
+commit b5fc021f9dc3228f2b180654b25a95928998b221
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Apr 25 14:59:28 2012 +0200
+
+    clarify the approach that p99_tss provides as an extension of tss_t
+
+doxy/p99-doxygen
+doxy/p99-tagfile
+p99/p99_clib.h
+p99/p99_tss.h
+
+commit 3a873a12d581fccac0dd2314243a35b03baecca7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Apr 25 09:53:14 2012 +0200
+
+    resolving questions posed by William
+
+p99/p99_args.h
+p99/p99_atomic.h
+
+commit fcae80690153d208c76f67b9f1f84ca05384ab4e
+Author: William Morris <wrm@hushmail.com>
+Date:   Wed Apr 25 08:40:41 2012 +0200
+
+    documentation and grammar update
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_args.h
+p99/p99_atomic.h
+p99/p99_atomic_arm.h
+p99/p99_atomic_x86.h
+
+commit 3f0260f587539072e08cbf4d6892e02ffb4c4987
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Apr 25 08:16:10 2012 +0200
+
+    change the permission of the html files for the upload
+
+Makefile
+
+commit 141cc57ce29591537b368da987176d4baa32c20d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Apr 24 16:42:14 2012 +0200
+
+    add C11 implementation to the front presentation
+
+doxy/p99-tagfile
+p99/p99.h
+
+commit 12235ddc45697a2cab02923e3c4f9be0408e4700
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Apr 24 10:41:56 2012 +0200
+
+    clarify some points in the documentation as detected by William
+
+doxy/p99-tagfile
+p99/p99.h
+
+commit 9689cfb2f32f6d8fb49985e44fc0794ba0c91da9
+Author: William Morris <wrm@hushmail.com>
+Date:   Tue Apr 24 10:17:05 2012 +0200
+
+    documentation and grammar update
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99.h
+
+commit d473eec93e7fc3856a617e5827968818b511cae5
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Apr 17 16:02:53 2012 +0200
+
+    implement a at_thrd_exit functionality
+
+p99/p99_clib.h
+p99/p99_special.c
+p99/p99_tss.h
+tests/test-p99-thread.c
+
+commit 3080ed81d538aa5d584ab31028dbbb25f0c48cf4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Apr 17 12:21:49 2012 +0200
+
+    addapt to doxygen
+    
+    doxygen is quite picky in what is possible with macros
+    basically things like p99_generic.h are not possible to map well to it,
+    so avoid that doxygen ever sees this complicated code
+
+Doxyfile-p99
+doxy/p99-doxygen
+doxy/p99-doxygen.css
+doxy/p99-tagfile
+p99/p99_atomic.h
+p99/p99_block.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_generic.h
+p99/p99_map.h
+p99/p99_new.h
+p99/p99_threads.h
+p99/p99_type.h
+
+commit 1e71d13a47bd1f0328933fab0d4795b4645cf83d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Apr 15 00:41:37 2012 +0200
+
+    little improvements on documentation
+
+doxy/p99-doxygen
+p99/p99_defarg.h
+p99/p99_enum.h
+p99/p99_threads.h
+
+commit 0a0e7f6d3505a83eb2561b7e9b0929f4d1cb1d36
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Mar 22 22:43:36 2012 +0100
+
+    simplify version control for compilers and support for pseudo C11
+    compilers
+    
+    clang 3.1 and gcc 4.7 pretend to be C11 compilers when run with -std=c11
+    but they are really only partial implementations
+
+p99/p99_compiler.h
+
+commit eef3caa9f65173b236c626718057338c704ca605
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Mar 16 15:06:22 2012 +0100
+
+    Allow the use of the -pedantic compiler option
+
+p99/p99_atomic.h
+p99/p99_block.h
+p99/p99_compiler.h
+p99/p99_generic.h
+p99/p99_list.h
+p99/p99_new.h
+p99/p99_threads.h
+p99/p99_type.h
+tests/test-p99-thread.c
+
+commit 3f167075266409f4c6e46d0b2f0b9afc4e42623f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Feb 26 18:09:07 2012 +0100
+
+    export an error reporting function
+
+p99/p99_try.h
+
+commit 2ddbed9fe5426af62676599d92d2dd950df0cda8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Feb 25 09:47:27 2012 +0100
+
+    only reset the thread local variables at the end of a catch clause if the
+    code was non null
+
+p99/p99_try.h
+
+commit 6ca7d565987887ae9f42303faf7b925307a3de4b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Feb 24 13:55:28 2012 +0100
+
+    bugfix: be sure to erase all traces of a caught exception
+
+p99/p99_try.h
+
+commit f39291bf76488ae8e19952a619977842306bc329
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Feb 23 16:09:00 2012 +0100
+
+    improve the output of uncaught exceptions a bit
+
+p99/p99_try.h
+
+commit 2ea935295df81b854b79438373a5db9ae6d6f74f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Feb 23 16:08:27 2012 +0100
+
+    implement an atomic maximum
+
+p99/p99_atomic.h
+
+commit 7762cfb26abe8e2ba587222b2db16f89dd2a496a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Feb 21 20:24:03 2012 +0100
+
+    documentation update
+
+doxy/p99-tagfile
+p99/p99_try.h
+
+commit bfe4ed31ea37f4ba9d038f831bffce742ca047b2
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Feb 21 16:03:05 2012 +0100
+
+    minor adjustments on the thread code
+
+p99/p99_threads.h
+p99/p99_tss.h
+
+commit 02f1c8419c83a5d9392b56e7b55dff66c9365657
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Feb 20 20:17:01 2012 +0100
+
+    allow the declaration of the code variable for P99_CATCH to be empty
+
+p99/p99_try.h
+
+commit 303db738fa0fd87ca5c1b070bd719ac945c8081f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Feb 20 20:16:17 2012 +0100
+
+    ensure that P99_TRY is always followed by a P99_CATCH or P99_FINALLY
+
+p99/p99_try.h
+
+commit c5b77d40ca6451499f79f9a8cee888546747ccca
+Author: (no author) <(no author)@no.where>
+Date:   Mon Feb 20 16:22:22 2012 +0100
+
+    whitespace and copyright
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_atomic.h
+p99/p99_block.h
+p99/p99_enum.h
+p99/p99_special.c
+p99/p99_tss.h
+
+commit 9076e7d83f611fe936c7f193b1a5f0b9e23da0c0
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Feb 20 16:16:36 2012 +0100
+
+    add try, catch, finally clauses
+
+doxy/p99-tagfile
+p99/p99_generated.h
+p99/p99_try.h
+scripts/p99_generate.pl
+tests/test-p99-block.c
+
+commit 66d3a22cbafd0500f8ec5a29e117a1b5ed40e3ea
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Feb 20 15:14:52 2012 +0100
+
+    put the calls to longjmp inside a common interface
+    add a pointer to the the englobing P99_UNWIND_PROTECT, if any
+
+p99/p99_block.h
+p99/p99_tss.h
+
+commit 3e0ed682af845e03c0a7dc876bab49ed655547a2
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Feb 19 23:09:15 2012 +0100
+
+    make the jmp buffer a lifo element
+
+p99/p99_block.h
+
+commit 3cc3286752d626a786295c3d09f709a957d3f610
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Feb 19 17:43:40 2012 +0100
+
+    move the thread specific variable code to a separate file
+
+p99/p99_threads.h
+p99/p99_tss.h
+
+commit af92e56d73c891b9951fe4499d836bc1d44ff0ce
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Feb 3 09:33:57 2012 +0100
+
+    minor documentation fix
+
+p99/p99_enum.h
+p99/p99_special.c
+
+commit c0eda5ed9737d6536357ec560eeef8f2d60cebd4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Feb 3 00:31:48 2012 +0100
+
+    serialize a LIFO
+
+p99/p99_atomic.h
+
+commit fad2a7af426bff4f8cbad2166a45fb23af0eaefa
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Feb 3 00:31:06 2012 +0100
+
+    add simplified interfaces for qsort
+
+p99/p99_swap.h
+
+commit d97ebaa322ffcafb56d8d1ae370ffc218693d958
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Feb 1 16:25:18 2012 +0100
+
+    the type of the desired value for fetch_and_store must be of the base
+    type of the atomic variable, otherwise 0 wouldn't work for pointer types
+
+p99/p99_atomic.h
+
+commit b473cdd3b7579d7bf5db2db7a3c004872b2d24b3
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 31 23:42:16 2012 +0100
+
+    also generate a parse function for enumeration types
+
+p99/p99_enum.h
+
+commit 096b466432bb2af9aaa7b4372a1598e89d7a0856
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 31 10:40:24 2012 +0100
+
+    correct a forgotten debug flag
+
+p99/p99_compiler.h
+
+commit 71a41b52dfd4c5d32b9b7fcb0def1584dd9e696a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 30 16:53:59 2012 +0100
+
+    check P99_GENERIC in global scope as well
+
+tests/test-p99-c11.c
+
+commit 60c3b59b59030016dca0dc57d18cb2f8b12830a8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 30 16:53:17 2012 +0100
+
+    clang doesn't like an alignment specification in front of a type
+
+p99/p99_compiler.h
+
+commit 5c87ac6865761999543131a25f0ceed8623b1aa2
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 30 15:45:12 2012 +0100
+
+    properly document more of the C11 features
+
+doxy/p99-doxygen
+doxy/p99-tagfile
+p99/p99_compiler.h
+p99/p99_threads.h
+tests/test-p99-c11.c
+tests/test-p99-thread.c
+
+commit c8bd08e446ce8834d86f4c815a58a715311809fb
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 30 15:44:40 2012 +0100
+
+    have better diagnostics if P99_GENERIC fails in absence of a default
+    choice
+
+p99/p99_generic.h
+
+commit 447c5d420b08f5283b16007703ba849341166301
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 30 00:36:55 2012 +0100
+
+    implement the unconditional store directly for arm and x86
+    
+    arm is not yet tested...
+
+p99/p99_atomic.h
+p99/p99_atomic_arm.h
+p99/p99_atomic_x86.h
+p99/p99_special.c
+
+commit d9d3f0797c6a1db949b2911bdedf7eb735dbbdb7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 29 18:48:56 2012 +0100
+
+    introduce a fetch_and_load operation
+    
+    finally this is what x86 and arm both do
+
+p99/p99_atomic.h
+
+commit c8a72c18a9732aa67bc02ae834e1994979291072
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 28 21:54:21 2012 +0100
+
+    an overhaul of part of the documentation
+
+doxy/p99-tagfile
+p99/p99.h
+p99/p99_atomic.h
+p99/p99_c99_default.h
+p99/p99_choice.h
+p99/p99_clib.h
+p99/p99_defarg.h
+p99/p99_enum.h
+p99/p99_id.h
+p99/p99_int.h
+p99/p99_map.h
+p99/p99_special.c
+p99/p99_str.h
+p99/p99_swap.h
+p99/p99_threads.h
+
+commit 18b50f6471a5cfe08206613133b0d91c930456d4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 28 21:54:21 2012 +0100
+
+    an overhaul of part of the documentation
+
+doxy/p99-doxygen
+doxy/p99-tagfile
+p99/p99_clib.h
+p99/p99_compiler.h
+p99/p99_threads.h
+
+commit 8aa94ca3516714c0f6f441f5d25be1f77392d05d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 28 20:54:42 2012 +0100
+
+    implement the at_quick_exit queue with the atomic LIFO
+
+p99/p99_clib.h
+
+commit c5fb7a44b11b4b2d2c6b1ea33560bf06d45eed58
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 28 20:53:22 2012 +0100
+
+    implement an atomic LIFO
+
+p99/p99_atomic.h
+
+commit 32c7eadd86d4e2907bb0967fb39f9345b7410866
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 28 20:52:30 2012 +0100
+
+    implement an atomic unconditional swap operation
+
+p99/p99_atomic.h
+
+commit 08db24039ea2c886f6f486d990e741afa2f7a0aa
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 28 20:49:26 2012 +0100
+
+    gcc has atomic swap operation on some processors but the correponding integer type is only provided through a compiler extension
+
+p99/p99_atomic.h
+
+commit 620e8f0c51a86ac03f16ec49d48e9ec043ed8f1e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 27 17:06:49 2012 +0100
+
+    add more on type generic macros
+
+p99/p99_generic.h
+p99/p99_special.c
+tests/test-p99-thread.c
+
+commit 820d6adafd30f5bd60b88dfc1091000f544463e4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 27 17:06:19 2012 +0100
+
+    for some unknown reason the check pipeline had false positive for P99_PZERO
+
+p99/p99_new.h
+
+commit cecd5dd4656448007fe5d8a4bd279f1af838f206
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 27 17:05:02 2012 +0100
+
+    create also short extensions lists for the standard types
+
+p99/p99_type.h
+
+commit 8bb5c5c63b513baf2157e347df9d2b0a56b0c748
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 27 17:02:32 2012 +0100
+
+    add some more information for the builtin types
+
+p99/p99_generated.h
+scripts/p99_generate.pl
+
+commit add505dd1bcbf917224ba3582295814383a23e4a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Jan 26 18:02:30 2012 +0100
+
+    push the C11 library support to its own file and add quick_exit
+    facilities
+
+p99/p99_c99.h
+p99/p99_clib.h
+tests/test-p99-thread.c
+
+commit ca12c7c158e74fd25ab00c06a8219a8d40e96efe
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 25 12:10:11 2012 +0100
+
+    track down used symbols with potentially conflicting names
+    
+    all parameters or local variable of inline functions could clash with a
+    user defined macro
+
+p99/p99_atomic.h
+p99/p99_atomic_arm.h
+p99/p99_atomic_x86.h
+p99/p99_block.h
+p99/p99_c99.h
+p99/p99_c99_default.h
+p99/p99_choice.h
+p99/p99_compiler.h
+p99/p99_defarg.h
+p99/p99_enum.h
+p99/p99_generic.h
+p99/p99_id.h
+p99/p99_if.h
+p99/p99_int.h
+p99/p99_map.h
+p99/p99_new.h
+p99/p99_str.h
+p99/p99_swap.h
+p99/p99_threads.h
+p99/p99_type.h
+p99/p99_used_symbols.txt
+
+commit 8f4e0b332af1be413d2e677a2e071da2c8b14bb9
+Author: Jens Gustedt <jens.gustedt@loria.fr>
+Date:   Tue Jan 24 14:24:20 2012 +0100
+
+    add some special cases for thumb mode on arm
+
+p99/p99_atomic_arm.h
+
+commit 615e01d5a87a5533bcd537520aa0f3a9c8f88efd
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 24 13:11:47 2012 +0100
+
+    review the lock_release fallback on x86
+
+p99/p99_atomic.h
+p99/p99_atomic_x86.h
+
+commit 664dcacbd0778ec773e1afae988475edcb493a6c
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 24 00:18:05 2012 +0100
+
+    test the atomic replacement more thoroughly
+
+p99/p99_atomic.h
+
+commit 9dc9352519168b379cbe31e91613ba67200c4c81
+Author: Jens Gustedt <jens.gustedt@loria.fr>
+Date:   Mon Jan 23 21:44:13 2012 +0100
+
+    add lock-free atomics for 4 byte quantitis on arm
+
+p99/p99_atomic_arm.h
+
+commit cbc4807869af14758dfac703d35a19b18893188b
+Author: Jens Gustedt <jens.gustedt@loria.fr>
+Date:   Mon Jan 23 16:19:33 2012 +0100
+
+    get inline correct for gcc 4.2
+    
+    - correct processing of the configuration macros
+    - reorder the thread code such that a function is never called before its
+      definition
+
+p99/p99_compiler.h
+p99/p99_threads.h
+
+commit 76eb6247836b0019ead0b276a5ea669cc5c6f334
+Author: Jens Gustedt <jens.gustedt@loria.fr>
+Date:   Mon Jan 23 16:18:19 2012 +0100
+
+    the fence stub had been mixed up between arm and x86
+
+p99/p99_atomic_arm.h
+
+commit ebdc1933fa9f4b80b6be099a6dbcdb289648c4ea
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 23 15:01:34 2012 +0100
+
+    get some attributes riqht
+
+p99/p99_compiler.h
+
+commit 52eb5577ad86cfe1421c900bd26444a1e233099e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 20 17:45:31 2012 +0100
+
+    interface documentation of the generic interfaces
+    
+    plus some minor doc stuff here and there
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+p99/p99_c99.h
+p99/p99_for.h
+p99/p99_generated.h
+p99/p99_generic.h
+p99/p99_special.c
+p99/p99_threads.h
+scripts/p99_generate.pl
+tests/test-p99-c11.c
+
+commit 41b628cd592de081a7c27f97c3b08cbd7a6508e6
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 20 10:55:52 2012 +0100
+
+    chose the type to store atomically also through a union
+
+p99/p99_atomic.h
+
+commit c9ccb2a9309be3278d831e9b5d1a0014e6dcb0db
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 20 10:55:05 2012 +0100
+
+    a systematic approach to the GENERIC MACROS
+
+p99/p99_atomic.h
+p99/p99_generic.h
+
+commit a85604f2192a5279b26f0ff32159a553716f8a66
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Jan 19 16:07:24 2012 +0100
+
+    implement _Atomic also for pointer types
+    
+    as a side effect have _Atomic operations also lock-free for all types
+    that have the same size as some unsigned integer type, with the notable
+    exception of floating point types. For those we have to use an
+    atomic_flag to protect them if they are used with atomic arithmetic
+    operations.
+    
+    also classify the lock-free types much more systematically
+
+p99/p99_atomic.h
+p99/p99_compiler.h
+p99/p99_for.h
+p99/p99_generic.h
+tests/test-p99-c11.c
+
+commit 54d0e3ff283e264792981024c298396657c3246c
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 18 21:49:31 2012 +0100
+
+    also introduce qualifiers to the base type of a pointer type
+
+p99/p99_atomic.h
+p99/p99_for.h
+
+commit aa32a6abd7b598d151b22712e3ff2fd9b5ffc98b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 18 17:15:56 2012 +0100
+
+    add qualifiers to the variables that hold macro arguments
+
+p99/p99_atomic.h
+p99/p99_for.h
+
+commit bab3327a8b8139ef30c53cea2a286cac45eaf05d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 18 16:21:58 2012 +0100
+
+    avoid some bogus warnings on initialization
+
+p99/p99_atomic.h
+
+commit bc1ec0a3167551498788fe701a6bd7558ac1b862
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 18 16:12:31 2012 +0100
+
+    simplify the definitions of the atomic operations by introducing a
+    compile time ternary operator
+
+p99/p99_atomic.h
+p99/p99_generic.h
+
+commit 92b4ed97d1ac1efad9710667809214d61550b007
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 18 14:33:17 2012 +0100
+
+    P99_GENERIC, wrong counting of the arguments
+
+p99/p99_generic.h
+
+commit c6ea7a685e224adf62688585b9f19594907b875d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 17 14:23:46 2012 +0100
+
+    renaming and documentation
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+p99/p99_for.h
+
+commit 8233e5afad62f20bc3462027d5bf7206d741b4f9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 16 22:55:27 2012 +0100
+
+    introduce scoped variables for macro block expressions à la gcc
+    
+    macro expressions with ({ .... }) are a powerful tool if used together
+    with the __typeof__ extension. But there is a danger that in something
+    like
+    
+    __typeof__(BLA) p00_bla = (BLA);
+    
+    the variable name p00_bla is already used on the right hand side, hidden
+    in the evaluation of the macro parameter BLA.
+    
+    We introduce a macro that first evaluates all macro arguments in dummy
+    variables and then creates variables with names given by the programmer
+    for all these values. By that we can freely dispose of names macro for
+    macro parameters.
+
+p99/p99_atomic.h
+
+commit 3f03e424f5175d7498b65503b72c4697fb55ef34
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 16 21:03:37 2012 +0100
+
+    add a volatile to a compare-exchange loop
+
+p99/p99_atomic.h
+
+commit 813901ce5e28772fdaa9ceaeaed844f9dbdf1ff7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 16 17:54:14 2012 +0100
+
+    add a test for atomic_compare_exchange_weak
+
+tests/test-p99-thread.c
+
+commit c245cdd2895ec9bc576c3f711be9c4e008f53755
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 16 17:53:40 2012 +0100
+
+    renaming and casts
+
+p99/p99_atomic.h
+
+commit ed4b5c010495926628bcb2d1c287953d64a8204b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 16 10:55:04 2012 +0100
+
+    fix a negation error that freed some thread context too early
+
+p99/p99_threads.h
+
+commit 7253f52eebcf800fe9ed115edda1465bde1f035b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 15 23:25:02 2012 +0100
+
+    ensure proper initialization of all fields regardles of the chosen layout
+
+p99/p99_atomic.h
+
+commit 1316fcda663ac014873a8088938e46cf0aa0e1f9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 15 18:29:27 2012 +0100
+
+    always generate the struct and union for atomic types
+
+p99/p99_atomic.h
+
+commit 145eb2ac9a5e4348c5e7d9e6924c53b61e582c92
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 15 11:56:06 2012 +0100
+
+    use P99_SPIN_EXCLUDE also for threads
+
+p99/p99_threads.h
+
+commit 17fc6de2cab4b8a15e8f78d94c991cebdc0f3d8f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 15 11:51:36 2012 +0100
+
+    use a block macro for spinlock protection by a named lock
+
+p99/p99_atomic.h
+
+commit 6f60308cb132b9b5e539688b7685fc1aec5cb1c7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 15 11:34:39 2012 +0100
+
+    whitespace and copyright
+
+p99/p99_atomic.h
+p99/p99_atomic_arm.h
+p99/p99_atomic_x86.h
+p99/p99_block.h
+p99/p99_c99.h
+p99/p99_generic.h
+p99/p99_if.h
+p99/p99_special.c
+p99/p99_threads.h
+
+commit 2fffe80e4e87aa72ee4e1b4389f775e2f0c83f0e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 15 00:18:24 2012 +0100
+
+
+p99/p99_threads.h
+
+commit 0125a62fbd5702ae2ca2537c201e92b6304f8962
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 14 18:41:12 2012 +0100
+
+    add the possibility to give the init function to p99_once_flag through initialization
+
+p99/p99_threads.h
+
+commit 30ccf2e2d5bc732f0a194d21e61ff1d8bae4c3df
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 14 18:19:33 2012 +0100
+
+    name the data structure that implements the extended once_flag
+    functionality
+
+p99/p99_threads.h
+
+commit 54b8ea155917a0e2a211f4360b1d034cdfaa4f11
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 14 17:58:45 2012 +0100
+
+    now that we have the lock structures here in P99, move the block
+    protection macros to the appropriate places
+
+p99/p99_atomic.h
+p99/p99_threads.h
+
+commit 2b01e526e3fd2fa22dc3ae81b233e741e74b464f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 14 01:13:35 2012 +0100
+
+    protect once_flag against recursive calls
+
+p99/p99_threads.h
+
+commit d172e8e75e3f9d409fe5b2aa318a5487480d4650
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 13 23:10:29 2012 +0100
+
+    documentation and a bit of testing
+
+doxy/p99-doxygen
+doxy/p99-tagfile
+tests/test-p99-c11.c
+
+commit c04316a34fe3d2c044b9c0d651858f6dc9ed0605
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 13 23:09:05 2012 +0100
+
+    inline and weak don't work well together
+
+p99/p99_compiler.h
+
+commit 1da954cb990c57d9721574420dc707d72408479c
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 13 00:25:07 2012 +0100
+
+    fix the handling of threads that were not created by us
+
+p99/p99_threads.h
+
+commit 87cdcd3736c827c3bc9c844d66fc00f09ee2d509
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 13 00:24:11 2012 +0100
+
+    ensure that p00_thrd_create is emitted as weak symbol if inlining is not possible
+
+p99/p99_compiler.h
+p99/p99_threads.h
+
+commit ea8e14ff8b22f102da6806607fec908fc5885a71
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Jan 12 09:57:03 2012 +0100
+
+    protect the feature meta macros by an #ifdef
+
+p99/p99_compiler.h
+
+commit 844a840f66cec5fe9351b9e8b328628b80c0db13
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Jan 12 00:11:25 2012 +0100
+
+    clang found problems with dangling else
+
+p99/p99_block.h
+
+commit 7240c0517c2c50f15713f3d3540e66b0a3591969
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Jan 12 00:10:48 2012 +0100
+
+    apply the new configuration macros
+
+p99/p99_generic.h
+tests/test-p99-c11.c
+
+commit a445ba4be73214f235641fac40fb9445a3017294
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Jan 12 00:09:49 2012 +0100
+
+    a structured implementation of implementation features
+
+p99/p99_compiler.h
+p99/p99_if.h
+
+commit b08172aff0faa22758fc8c9b43de1dbd0f036424
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 23:00:12 2012 +0100
+
+    get _Static_assert right with clang 3.0
+
+doxy/p99-tagfile
+p99/p99_compiler.h
+
+commit ed0f8514f5c5ca7f43a7e69288e0523954ffeccf
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 22:59:07 2012 +0100
+
+    avoid a dangling else warning with clang 3.0
+
+p99/p99_block.h
+
+commit 6c548d31ba91ef65359369b433d4760b5d9a0d67
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 21:38:04 2012 +0100
+
+    missing comma in the C11 version of P99_GENERIC
+
+p99/p99_generic.h
+
+commit 86044c1b4646eab2145429799e6d610527d0ee72
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 20:31:34 2012 +0100
+
+    take some clang specialities into account
+
+p99/p99_compiler.h
+p99/p99_generic.h
+tests/test-p99-c11.c
+
+commit 53a0728a7ec1e54079be2cc2dddb35922df98a5e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 17:56:30 2012 +0100
+
+    add alligned_alloc if we are on a POSIX system
+
+p99/p99_c99.h
+
+commit c2ba15d98a5f78e4e5177624bea309ecca2ec24e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 17:13:19 2012 +0100
+
+    also provide fallbacks for a simple memory fence
+
+p99/p99_atomic.h
+p99/p99_atomic_arm.h
+p99/p99_atomic_x86.h
+
+commit d43326ddacc10df6ba46141230e4b583e6f9b0dc
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 13:38:39 2012 +0100
+
+    don't include the main part of the file if we didn't find atomic support
+
+p99/p99_atomic.h
+
+commit 2301dba1d1ee8aff6c68991e3774961396cf26e4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 11:21:03 2012 +0100
+
+    capture the case that the set of lock-free types is empty
+
+p99/p99_atomic.h
+
+commit 84ecde349de32a9cc0d0a715525b1e4199b26b36
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 10:30:53 2012 +0100
+
+    move processor specific stubs to files of their own
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+p99/p99_atomic_arm.h
+p99/p99_atomic_x86.h
+
+commit 34e14db3c948ab46eff2811cf533418803591c3f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 09:34:42 2012 +0100
+
+    improve the lock_test_and_set operation on ARM a bit
+
+p99/p99_atomic.h
+
+commit c9c4e1d17a0411f0cf07651c457d7b7dd4c90aaf
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 10 00:08:08 2012 +0100
+
+    implement the type specifier variant of the _Atomic keyword
+
+p99/p99_atomic.h
+
+commit 99f50653439145a17999d9d276c4477c361a3fe4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 9 18:16:24 2012 +0100
+
+    implement once_flag with atomic_flag
+
+p99/p99_threads.h
+
+commit 8c1f67c0591e028eb0ed19c1eaebd46e7fabf947
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 9 13:45:00 2012 +0100
+
+    a source reordering had made the fallback code for thread local variable
+    non functional. repair that
+
+p99/p99_threads.h
+
+commit 9e7eef2188a396dfd71d5c481010343a25cb39c2
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 9 00:45:48 2012 +0100
+
+    some minor adjustments to have it less verbose
+
+p99/p99_atomic.h
+
+commit 3be233712d2c69c192a4a10e2d5f976c1e8c38dc
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 8 21:42:22 2012 +0100
+
+    documentation
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+p99/p99_compiler.h
+p99/p99_generic.h
+p99/p99_special.c
+p99/p99_threads.h
+p99/p99_type.h
+
+commit 47f458c0672a20e9163c7d38c61bd68ead2026be
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 8 17:27:08 2012 +0100
+
+    change the x86 fallback to xchgl
+
+p99/p99_atomic.h
+
+commit 16748fad3a92b3cdeb4b6439c3bde10fdbe9056a
+Author: Jens Gustedt <jens.gustedt@loria.fr>
+Date:   Sun Jan 8 16:35:48 2012 +0100
+
+    add implementations for the __sync_lock_test_and_set operations for x86 and arm
+    
+    this is only needed as a fallback for acient gcc that don't provide the
+    corresponding __sync_lock_test_and_set operation
+
+p99/p99_atomic.h
+
+commit 779d0cf31f34fd9d82e2e718c3c7b75e1272b1e7
+Author: Jens Gustedt <jens.gustedt@loria.fr>
+Date:   Sun Jan 8 13:04:05 2012 +0100
+
+    reorder the thread implementation such that older versions of gcc are
+    capable of inlining
+
+p99/p99_threads.h
+
+commit eaa704d6968946b6c100efe68a9a36a5c56ea080
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 8 12:33:47 2012 +0100
+
+    make the atomic objects volatile inside the macros
+
+p99/p99_atomic.h
+
+commit 0bfae9a66c0e353cbdb98a7048172a9459de8e6a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 7 17:40:59 2012 +0100
+
+    transform the atomic_flag utilities into functions
+    since this is not type generic anyhow, there is no reason to keep this in
+    a macro
+
+p99/p99_atomic.h
+
+commit 1bf08f3ea801ee59c94da19c26d2c3336817a393
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 7 00:22:20 2012 +0100
+
+    only use the builtin lock features and fence from gcc to implement
+    atomic_flag
+
+p99/p99_atomic.h
+
+commit 41fea3e8b796df502bf32d3312830b6901306af6
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 7 00:20:42 2012 +0100
+
+    implement the detection scheme for atomic operations
+
+p99/p99_atomic.h
+
+commit 8c9a750a6adccb519333bec448380facbfffbdaf
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 6 21:08:01 2012 +0100
+
+    case analysis for the presence of the different features provided by C99
+    or C11
+
+p99/p99_atomic.h
+p99/p99_c99.h
+p99/p99_compiler.h
+p99/p99_type.h
+
+commit 1279a634cd16789520dd0e8c1638458bb32f7dce
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 6 21:06:24 2012 +0100
+
+    add a variant of P99_GENERIC with (type0, type1) pairs whos results are
+    literals of type1
+
+p99/p99_generic.h
+
+commit 4054758c1c39c9e7b41c3a16cca4d574efee1ef5
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 6 01:00:23 2012 +0100
+
+    finetune the choice of the atomic structure for the basic integer types
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+
+commit b0918212376e3b3af98edbe01136b63b8e3573fc
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Jan 5 16:50:19 2012 +0100
+
+    condition the special integer case of the atomic operations on the
+    existences of types in the list
+
+p99/p99_atomic.h
+
+commit cfa1db2b729bcc86aff62dbed74c8e6263d795f3
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 3 22:57:17 2012 +0100
+
+    change the atomic operations to use a list of the types that have direct,
+    lock-free implementations
+
+p99/p99_atomic.h
+p99/p99_generic.h
+p99/p99_type.h
+tests/test-p99-thread.c
+
+commit 0d475775b5cd1ae2ea8a370d230458f92898ef60
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 3 20:56:54 2012 +0100
+
+    reorganize the classification of the basic types
+
+p99/p99_generic.h
+p99/p99_type.h
+
+commit 5a16d56fec56ed1bcb20db495f508af887a088f6
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 3 17:54:51 2012 +0100
+
+    change some local names in the atomic macros and add some more tests
+
+p99/p99_atomic.h
+tests/test-p99-thread.c
+
+commit c0da9f20e1f2745384372be91944dac0151413a3
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 3 17:53:17 2012 +0100
+
+    make alignas and alignof visible to doxygen
+
+p99/p99_compiler.h
+
+commit ab124fdee308d7af4f3c94506ae1be08fcdfceab
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jan 3 00:12:35 2012 +0100
+
+    add generic functions for the atomic_fetch_and_op interfaces
+    
+    also to some cleanup and bug fixing
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+p99/p99_threads.h
+tests/test-p99-thread.c
+
+commit 02b5362dbfafa26b65fb92a6d95dbb73f2f2a3eb
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 2 15:54:28 2012 +0100
+
+    a new macro P99_WEAK for weak symbols
+
+doxy/p99-tagfile
+p99/p99_compiler.h
+p99/p99_threads.h
+p99/p99_type.h
+
+commit 1cbd022f4872ed8c19e6b1ad8998ace5ac7351e4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 2 15:53:42 2012 +0100
+
+    add diab compiler
+
+p99/p99_generated.h
+scripts/p99_generate.pl
+
+commit a252a623f2dba34f2cff2ca9dd87060d1002e4b9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 2 13:39:55 2012 +0100
+
+    documentation, identation and alike
+
+doxy/p99-tagfile
+p99/p99.h
+p99/p99_atomic.h
+p99/p99_compiler.h
+p99/p99_generated.h
+p99/p99_generic.h
+p99/p99_threads.h
+p99/p99_type.h
+scripts/p99_generate.pl
+
+commit 6fe2a1d2e6d3a8b8266458b2b94179edcb29d638
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 2 00:30:47 2012 +0100
+
+    start to convert the atomic functions into real generic ones
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+tests/test-p99-thread.c
+
+commit d479ef25ebc19163293a3731fedeb1b7b8332b21
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 2 00:30:13 2012 +0100
+
+    add generic to the header file collection
+
+p99/p99.h
+
+commit d7dd2477c9f5931659481902cc0b0e9532855043
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 2 00:28:58 2012 +0100
+
+    add some macros for type classification
+
+p99/p99_generic.h
+
+commit 2c8a4cbf09a647b7edd27fc76619abd83ca49323
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 1 21:35:47 2012 +0100
+
+    add a macro that emulates _Generic
+
+p99/p99_generic.h
+
+commit 3a1546fb5d026dd48a1e12bb69e85b88644ec5f9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Dec 30 14:43:39 2011 +0100
+
+    use tss only if thread_local is not available
+
+doxy/p99-tagfile
+p99/p99_threads.h
+
+commit fa1f3f1e1b8a4c6af746fbaaa5f70aa27622b570
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Dec 30 00:13:51 2011 +0100
+
+    move type encapsulation to p99_type.h
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+p99/p99_type.h
+
+commit 266fbe27f1a2e5f9068f750aadfa487ff5cbc783
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Dec 29 22:49:31 2011 +0100
+
+    add lock-free macros
+
+p99/p99_atomic.h
+
+commit 8c37a8774d9909725d42d521ec516dc41bbe0b2e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Dec 29 22:47:48 2011 +0100
+
+    cleanup of the include hierarchy
+
+p99/p99.h
+p99/p99_block.h
+p99/p99_compiler.h
+p99/p99_defarg.h
+p99/p99_map.h
+p99/p99_special.c
+p99/p99_swap.h
+p99/p99_threads.h
+
+commit 581915f8c81b083a0ab836c96420f278f26de486
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Dec 29 15:46:02 2011 +0100
+
+    clean up the macro for type encapsulation
+
+doxy/p99-tagfile
+p99/p99_atomic.h
+p99/p99_threads.h
+
+commit 103080ebae1bdf87cbf793777757d351cebf73f6
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Dec 29 11:41:24 2011 +0100
+
+    use a memory fence for call_once such that the fast path is just one load
+    and check
+
+p99/p99_threads.h
+
+commit 82423462a3b3c32b69aa0a90241ca391e74160d7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Dec 29 09:33:48 2011 +0100
+
+    add a simple fence to the atomic interfaces
+
+p99/p99_atomic.h
+
+commit 61c4d0921411f325776560907ab33e6136029d9b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 28 15:04:59 2011 +0100
+
+    fix some documentation
+
+doxy/p99-tagfile
+p99/p99_threads.h
+
+commit b73a97e2db52c76cb43a1be54dc55cdbb78f7dcf
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 28 14:45:55 2011 +0100
+
+    use tss_t and call_once to handle the thread state instead of using
+    thread_local
+
+doxy/p99-tagfile
+p99/p99_threads.h
+
+commit 05ad11925f1330335c20a012e16f7d92513c50c7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 28 14:44:11 2011 +0100
+
+    cook once_flag ourselves such that we know that it is correctly initialized by zero
+
+p99/p99_threads.h
+
+commit d1224f0356129a8e3915ae173b8431792754600d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 28 13:49:41 2011 +0100
+
+    fix a copy & paste error in atomic_load
+
+p99/p99_atomic.h
+
+commit 7b8ddd3f42cb40b8b5525a1060e3d14862dd80af
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 28 10:26:34 2011 +0100
+
+    document the return types of the thread functions
+
+doxy/p99-tagfile
+p99/p99_threads.h
+
+commit 554c34b164cbb3841516f1946b12a30b8b52a617
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 28 10:25:56 2011 +0100
+
+    move the atomic operations to their proper file
+
+p99/p99_atomic.h
+p99/p99_threads.h
+
+commit 2d2711644233e846f48d8fd0a12d61f54cb9322a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Dec 27 17:15:13 2011 +0100
+
+    add more atomic types and operations
+    
+    this is still only suitable for gcc
+    this should be separated in a file of its own
+
+p99/p99_threads.h
+
+commit ed63e4f4685d4855b384e72c917139160e1007a8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Dec 27 17:13:14 2011 +0100
+
+    some minor optimizations
+
+p99/p99_threads.h
+
+commit f6ccba4f2be2b0ffc0107202f53271323efdee5f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Dec 27 00:15:15 2011 +0100
+
+    some documentation
+
+doxy/p99-tagfile
+p99/Makefile
+p99/p99_compiler.h
+p99/p99_special.c
+p99/p99_threads.h
+
+commit 0ae8391447abad3829a83670055d9a26f58d646a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Dec 27 00:12:33 2011 +0100
+
+    encapsulate the types and document a bit
+
+p99/p99_threads.h
+
+commit f5469112d971325a2e61018dac573a3d8d7157f0
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Dec 26 22:49:24 2011 +0100
+
+    add an emulation of P11 threads
+    
+    this needs POSIX threads as a base
+    
+    for the moment this also needs special gcc features
+     - thread local storage
+     - atomic builtin
+    
+    but these should easily be replaced by the corresponding P11 features
+
+p99/p99_threads.h
+tests/Makefile
+tests/test-p99-thread.c
+
+commit 2999396ffa9e57130078db63e92bc77ce9e00003
+Author: (no author) <(no author)@no.where>
+Date:   Mon Dec 26 22:44:28 2011 +0100
+
+    whitespace
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_block.h
+p99/p99_compiler.h
+p99/p99_for.h
+
+commit 6d228dea7ff77d9867e134c4ba49e8bf5d523cf7
+Author: (no author) <(no author)@no.where>
+Date:   Mon Dec 26 20:53:23 2011 +0100
+
+    change the tests to the correct licence
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+tests/test-p99-block.c
+tests/test-p99-c11.c
+tests/test-p99-cases.c
+tests/test-p99-choice.c
+tests/test-p99-classification.c
+tests/test-p99-compound.c
+tests/test-p99-double.c
+tests/test-p99-int.c
+tests/test-p99-ndim.c
+tests/test-p99-pow.c
+tests/test-p99-va-arg.c
+
+commit 531e91d1e4a125ffa2e9923dc2aecc61d4b4a5ae
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Dec 26 20:13:14 2011 +0100
+
+    emulate some C11 features
+
+p99/p99_compiler.h
+tests/Makefile
+tests/test-p99-c11.c
+
+commit 93660e5d22a8d30af6bcbfefec91e21b0bbbfe2c
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 7 11:26:55 2011 +0100
+
+    correct two bare returns from protected blocks
+
+tests/test-p99-block.c
+
+commit 5e4e56fc6f2ef89f23de7d2d77b6dee24c7832ac
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 7 11:25:44 2011 +0100
+
+    add utility to check that there is no bare return inside an
+    unwind_protect
+
+p99/p99_block.h
+
+commit b07f6d50def475dff10161e236ad943db722e850
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Dec 6 12:14:47 2011 +0100
+
+    use P99_STRINGIFY for static_assert
+
+p99/p99_compiler.h
+
+commit 844539e4c5c9c57d6a221f4552405580c09dc274
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Dec 6 12:07:18 2011 +0100
+
+    annotate P99_LITERAL correctly
+
+p99/p99_for.h
+
+commit d2612c8bc9b15cb2805236095d130493acd971e2
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Nov 22 18:15:24 2011 +0100
+
+    add some more functionalities to the struct handling
+
+p99/p99_for.h
+
+commit 709d90aefed861767ba258ee22da0e5d1999b6c1
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Nov 21 11:23:44 2011 +0100
+
+    some cosmetical changes to the P99 block code
+
+p99/p99_block.h
+
+commit d2a175ed5e17403aa837bffb59d228e5561fdc91
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Nov 20 19:18:52 2011 +0100
+
+    implement helpers for the declaration and use of struct
+
+p99/p99_for.h
+p99/p99_special.c
+
+commit 43ae40ddc38e1d422278bcb4b0d25810594ddc68
+Author: (no author) <(no author)@no.where>
+Date:   Thu Nov 17 21:25:33 2011 +0100
+
+    white space and documentation
+
+doxy/p99-tagfile
+p99/p99_compiler.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_posix_default.h
+p99/p99_special.c
+p99/p99_type.h
+
+commit db91e0333b8a8cec6d0f9fabd5bc0ecbcd0196be
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Nov 17 21:23:10 2011 +0100
+
+    apply the new "for" macros where this is possible
+
+p99/p99_c99_default.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_str.h
+tests/test-p99-cases.c
+
+commit e1d413bf5818c3d100b5354d98d418f63e5e7cf3
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Nov 17 21:12:28 2011 +0100
+
+    add some missing macro argument documentation
+
+p99/p99_int.h
+
+commit fa7937c4389b20d7e98034205d050929036fa868
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Nov 17 21:11:15 2011 +0100
+
+    add specializations of the P99_FOR macro that are more user friendly
+
+p99/p99_for.h
+
+commit 4e71eb30455da9caebcfcd2c31e8246485aa4386
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Nov 17 21:06:24 2011 +0100
+
+    add some missing macro argument documentation
+
+p99/p99_type.h
+
+commit 31d8c43731dc73984d49d3daba7c4904410a3e09
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Nov 16 16:57:25 2011 +0100
+
+    have the documentation also accept greek utf8 letters
+
+Doxyfile-p99
+Makefile
+greekUTF8.sty
+
+commit 84ab1293f82cfdf8e749e98beda6f459fff665f8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Nov 16 15:41:28 2011 +0100
+
+    have P99_IS_EMPTY capture another border case, namely if call with a
+    macro as an argument that expects no arguments by itself
+
+p99/p99_args.h
+
+commit 8f68440f20a4a7e950fa42db405434355cd632f2
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Nov 5 13:02:04 2011 +0100
+
+    quiencen a (here) useless warning of clang
+
+tests/test-p99-int.c
+
+commit acf6847fd5eaca0fb371a049b87427491594df53
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Nov 5 12:09:20 2011 +0100
+
+    add 128 bit support to the endianness test
+
+p99/p99_int.h
+tests/Makefile
+tests/test-p99-int.c
+
+commit 211ccb4ec17a7654c8f97240dd26bb921ea35eaa
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Nov 5 00:48:36 2011 +0100
+
+    documentation
+
+doxy/p99-tagfile
+p99/p99_int.h
+
+commit 3a6a27b35dfb615f5cacbc43554542495afca24d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Nov 5 00:35:31 2011 +0100
+
+    add a tests for endianess
+
+p99/p99_enum.h
+p99/p99_int.h
+tests/test-p99-int.c
+
+commit 8f3d8f991f1cac0e4c60eca3e23537570b13e908
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Nov 2 22:13:39 2011 +0100
+
+    documentation update
+
+doxy/p99-tagfile
+p99/p99.h
+
+commit 18feb94589f86fee2c1994c8df7d9f4a3eb8d00b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Nov 2 22:10:07 2011 +0100
+
+    add a handcoded function bool_getname
+    
+    this was not possible through a macro since false and true themselves are
+    macros
+
+p99/p99_enum.h
+
+commit 2d5aae4040047feb280190eb573c00ba06f583f4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Nov 1 23:34:11 2011 +0100
+
+    add a default argument for {g|s}etsockopt
+
+p99/p99_posix_default.h
+
+commit 28b83f176dddd72698cb9d793b370291eeab6bf9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Oct 25 11:26:26 2011 +0200
+
+    add a macro to define a union
+    
+    this adds a hidden first members that is just a byte array
+
+p99/p99_type.h
+
+commit 9a3554b03a71a675de21246fb88f0407e1bb8590
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Oct 16 18:27:23 2011 +0200
+
+    avoid the "unused label" warning for case ranges
+
+p99/p99_for.h
+tests/test-p99-cases.c
+
+commit 536b7279856b86c865a328c286fb553d88ade2f5
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Oct 16 17:43:09 2011 +0200
+
+    change the P99_COMPILETIME_ASSERT to static_assert and use the same
+    syntax as C1x
+
+p99/p99_compiler.h
+p99/p99_id.h
+
+commit e81d242d82f78c7446ca97764a383ee1e9afd23b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Oct 11 10:13:16 2011 +0200
+
+    use a more generic approach to compute masks that works for any word size <= 128
+
+p99/p99_generated.h
+p99/p99_int.h
+scripts/p99_generate.pl
+
+commit 7480d3f4a7ae2f9a86fffa3bf35337b13285b33f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Oct 10 21:15:53 2011 +0200
+
+    minor update
+
+p99/p99_enum.h
+scripts/AUTHORS.txt
+
+commit 4be54646192e0d3387f8ad6af215fe2cbee376b1
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Oct 10 21:15:08 2011 +0200
+
+    add P99_HMASK
+
+p99/p99_generated.h
+p99/p99_int.h
+scripts/p99_generate.pl
+
+commit 30865653a387fcaae3027f34ae957d06b4498e22
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Oct 10 18:13:12 2011 +0200
+
+    fix the documentation of the allocation macros
+
+p99/p99_new.h
+
+commit 88702fbf002f5dda3199d08e6023fb1a20e74f3e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Oct 6 17:32:58 2011 +0200
+
+    some small fixes for doxygen
+
+doxy/p99-doxygen
+p99/p99_compiler.h
+p99/p99_new.h
+
+commit d2c082dd7b9857fa9026f0c93c82a44c8e22b067
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Oct 6 10:49:18 2011 +0200
+
+    cover up some doxygen bugs
+
+p99/p99_block.h
+p99/p99_enum.h
+p99/p99_int.h
+
+commit 08e203233b1b9c8e6fc00a23f13839adc219c138
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Oct 4 17:28:31 2011 +0200
+
+    add a command to list all effective commits
+
+Makefile
+
+commit c1116ad6092d297015e6185f41a8f5e4b71ebad3
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Oct 4 16:44:13 2011 +0200
+
+    move all P99 one level up
+
+Doxyfile-p99
+LICENSE-QPL.txt
+Makefile
+SHORTLICENCE-closed.txt
+SHORTLICENCE-open.txt
+doxy/p99-doxygen
+doxy/p99-doxygen.css
+gforge-p99/.htaccess
+gforge-p99/HEADER.html
+gforge-p99/README.html
+gforge-p99/c99-conformance/c99-conformance-clang-2.9.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.1.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.2.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.3.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.4.html
+gforge-p99/c99-conformance/c99-conformance-icc-12.0.0.html
+gforge-p99/c99-conformance/c99-conformance-opencc-4.2.4.html
+gforge-p99/c99-conformance/c99-conformance-p99-gcc-4.1.html
+gforge-p99/c99-conformance/c99-conformance-p99-gcc-4.2.html
+gforge-p99/c99-conformance/c99-conformance-p99-gcc-4.3.html
+gforge-p99/c99-conformance/c99-conformance-p99-gcc-4.4.html
+gforge-p99/c99-conformance/c99-conformance-pcc-0.9.9.html
+gforge-p99/c99-conformance/c99-conformance-tcc-0.9.25.html
+p99/LICENSE
+p99/Makefile
+p99/SHORTLICENCE-closed.txt
+p99/SHORTLICENCE-open.txt
+p99/p99.h
+p99/p99_args.h
+p99/p99_block.h
+p99/p99_c99.h
+p99/p99_c99_default.h
+p99/p99_choice.h
+p99/p99_classification.h
+p99/p99_compiler.h
+p99/p99_defarg.h
+p99/p99_double.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_generated.h
+p99/p99_id.h
+p99/p99_if.h
+p99/p99_int.h
+p99/p99_list.h
+p99/p99_logical.h
+p99/p99_map.h
+p99/p99_new.h
+p99/p99_paste.h
+p99/p99_posix_default.h
+p99/p99_special.c
+p99/p99_str.h
+p99/p99_swap.h
+p99/p99_type.h
+p99/p99_typenames.h
+scripts/p99-gcc-4.1
+scripts/p99-gcc-4.2
+scripts/p99-gcc-4.3
+scripts/p99-gcc-4.4
+scripts/p99-pcc
+scripts/p99_conformance.pl
+scripts/p99_find_args.pl
+scripts/p99_find_macros.pl
+scripts/p99_find_ternary.pl
+scripts/p99_generate.pl
+scripts/p99cc
+scripts/p99pro.pl
+tests/Makefile
+tests/test-p99-block.c
+tests/test-p99-cases.c
+tests/test-p99-choice.c
+tests/test-p99-classification.c
+tests/test-p99-compound.c
+tests/test-p99-conformance.c
+tests/test-p99-double.c
+tests/test-p99-inline-empty.c
+tests/test-p99-inline.c
+tests/test-p99-int.c
+tests/test-p99-ndim.c
+tests/test-p99-pow.c
+tests/test-p99-va-arg.c
+
+commit a547f732796d8a3a3e870a5999fe79f6bb2715bb
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Oct 4 16:13:01 2011 +0200
+
+    adapt the release generation to the new paths
+
+p99-source/Makefile
+p99-source/p99/Makefile
+p99-source/p99/p99_generated.h
+
+commit 76408ac44ec11836f07d992baa4ccd0eb33d392a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Oct 4 14:12:02 2011 +0200
+
+    move all P99 to a proper directory
+
+Makefile
+doxy
+p99
+p99-source/Doxyfile-p99
+p99-source/Makefile
+p99-source/doxy/p99-doxygen
+p99-source/doxy/p99-doxygen.css
+p99-source/p99/LICENSE
+p99-source/p99/Makefile
+p99-source/p99/SHORTLICENCE-closed.txt
+p99-source/p99/SHORTLICENCE-open.txt
+p99-source/p99/p99.h
+p99-source/p99/p99_args.h
+p99-source/p99/p99_block.h
+p99-source/p99/p99_c99.h
+p99-source/p99/p99_c99_default.h
+p99-source/p99/p99_choice.h
+p99-source/p99/p99_classification.h
+p99-source/p99/p99_compiler.h
+p99-source/p99/p99_defarg.h
+p99-source/p99/p99_double.h
+p99-source/p99/p99_enum.h
+p99-source/p99/p99_for.h
+p99-source/p99/p99_generated.h
+p99-source/p99/p99_id.h
+p99-source/p99/p99_if.h
+p99-source/p99/p99_int.h
+p99-source/p99/p99_list.h
+p99-source/p99/p99_logical.h
+p99-source/p99/p99_map.h
+p99-source/p99/p99_new.h
+p99-source/p99/p99_paste.h
+p99-source/p99/p99_posix_default.h
+p99-source/p99/p99_special.c
+p99-source/p99/p99_str.h
+p99-source/p99/p99_swap.h
+p99-source/p99/p99_type.h
+p99-source/p99/p99_typenames.h
+p99-source/scripts/p99-gcc-4.1
+p99-source/scripts/p99-gcc-4.2
+p99-source/scripts/p99-gcc-4.3
+p99-source/scripts/p99-gcc-4.4
+p99-source/scripts/p99-pcc
+p99-source/scripts/p99_conformance.pl
+p99-source/scripts/p99_find_args.pl
+p99-source/scripts/p99_find_macros.pl
+p99-source/scripts/p99_find_ternary.pl
+p99-source/scripts/p99_generate.pl
+p99-source/scripts/p99cc
+p99-source/scripts/p99pro.pl
+p99-source/tests/Makefile
+p99-source/tests/test-p99-block.c
+p99-source/tests/test-p99-cases.c
+p99-source/tests/test-p99-choice.c
+p99-source/tests/test-p99-classification.c
+p99-source/tests/test-p99-compound.c
+p99-source/tests/test-p99-conformance.c
+p99-source/tests/test-p99-double.c
+p99-source/tests/test-p99-inline-empty.c
+p99-source/tests/test-p99-inline.c
+p99-source/tests/test-p99-int.c
+p99-source/tests/test-p99-ndim.c
+p99-source/tests/test-p99-pow.c
+p99-source/tests/test-p99-va-arg.c
+tests/Makefile
+
+commit 1dbac665e326602c50f56e866b0b52cda45d9823
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Oct 4 11:14:23 2011 +0200
+
+    add a macro that can preprocessor compatible constants that evaluate to
+    an expression that has a specific type in other contexts
+
+p99/p99_int.h
+tests/test-p99-int.c
+
+commit bdcd0e2680a1fdf798267db21c47fd8bcfa4b4b5
+Author: Jens Gustedt <jens.gustedt@loria.fr>
+Date:   Fri Sep 23 21:50:42 2011 +0200
+
+    capture platforms that do not handle "static" array bounds in function
+    parameters
+
+p99/p99_compiler.h
+p99/p99_int.h
+tests/test-p99-int.c
+
+commit 6f2a11fa3baee82c524ef5ac8427109a29a7b1fe
+Author: (no author) <(no author)@no.where>
+Date:   Tue Sep 20 14:20:24 2011 +0200
+
+    whitespace and copyright
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+tests/test-p99-int.c
+
+commit 53e2c2f4af2cfe0c2ee0bafa44a7dceb31dfeacb
+Author: (no author) <(no author)@no.where>
+Date:   Tue Sep 20 13:57:45 2011 +0200
+
+    adjust whitespace
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+p99/p99_int.h
+
+commit dc5c959d0516a43c009b9f6b1fcc37a1d44f3159
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Sep 17 16:53:13 2011 +0200
+
+    add some documentation to the enumation macros
+
+p99/p99_enum.h
+
+commit 591f4cc70ceff6db4e4056f704e56b9fa6e8a306
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Aug 17 18:18:39 2011 +0200
+
+    add subtract and a test
+
+p99/p99_int.h
+tests/test-p99-int.c
+
+commit 95a5ff3a3f48e314cf28ce5de053ef9b1778cfe9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Aug 13 17:14:16 2011 +0200
+
+    capture all cases for the p99_add functions
+
+p99/p99_int.h
+
+commit 8c983c6e3ef64929d3736636f3c7a331c65b1cc3
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Aug 3 00:32:52 2011 +0200
+
+    better separate the case for named array types with unknown basetype
+
+p99/p99_block.h
+p99/p99_int.h
+
+commit 17d9b8fa3820beec2f154b06bdefb9dc6ad0a395
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Aug 2 00:14:06 2011 +0200
+
+    extend P99_RVAL to produce a 0 initialized const value even if we don't
+    know the structure of the type
+
+p99/p99_block.h
+p99/p99_int.h
+
+commit ca8ee791cc63b546ee85ba63c054535a6fbeabf2
+Author: (no author) <(no author)@no.where>
+Date:   Thu Jul 21 18:09:10 2011 +0200
+
+    beautify the code
+    
+    Signed-off-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+
+include/semaphore_nointr.h
+p99/p99.h
+p99/p99_args.h
+p99/p99_block.h
+p99/p99_c99.h
+p99/p99_c99_default.h
+p99/p99_choice.h
+p99/p99_classification.h
+p99/p99_defarg.h
+p99/p99_double.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_generated.h
+p99/p99_id.h
+p99/p99_if.h
+p99/p99_int.h
+p99/p99_list.h
+p99/p99_logical.h
+p99/p99_map.h
+p99/p99_new.h
+p99/p99_paste.h
+p99/p99_posix_default.h
+p99/p99_special.c
+p99/p99_str.h
+p99/p99_swap.h
+p99/p99_type.h
+p99/p99_typenames.h
+tests/test-p99-block.c
+tests/test-p99-cases.c
+tests/test-p99-compound.c
+tests/test-p99-int.c
+tests/test-p99-ndim.c
+tests/test-p99-pow.c
+
+commit 7c8cb352317d8cdce0c77e56e722d49530e72c84
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jul 20 18:20:51 2011 +0200
+
+    force the generation of refman.pdf for the distribution
+
+Doxyfile-p99
+Makefile
+
+commit 3c8f657c3854be400a2353c3ea5596950584b6d4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jul 17 17:00:51 2011 +0200
+
+    implement array assignment
+
+p99/p99_map.h
+p99/p99_special.c
+
+commit aa0b1cc77158b75333f827e7b8ad2c92783a5c01
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jul 17 16:51:06 2011 +0200
+
+    advance the strcat buffer with stpcpy
+
+p99/p99_map.h
+
+commit 87f67dfe2c5caab44770b964e62a85aea121f522
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jul 17 10:26:05 2011 +0200
+
+    make the macro consistency test also work on i386
+
+p99/p99_int.h
+
+commit b9429a250153ee4a6f783ce4ee8bc5d6ac33921d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jul 17 00:58:07 2011 +0200
+
+    macros to initialize constant sized arrays
+
+p99/p99_map.h
+p99/p99_special.c
+
+commit e09cb4651ba5b63d401019c3d4960640b9e3da5c
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jul 9 22:22:50 2011 +0200
+
+    add macros for copy constructors
+
+doxy/p99-doxygen
+p99/p99_map.h
+p99/p99_paste.h
+p99/p99_special.c
+scripts/p99_find_macros.pl
+tests/test-p99-compound.c
+
+commit e4d41710f911bd37175a778ace84f2f9b3820f4d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jul 3 12:31:47 2011 +0200
+
+    add a typed realloc to P99
+
+p99/p99_new.h
+
+commit e0550c8ac4210dff60ed729052988de7b552a351
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Jun 14 10:14:33 2011 +0200
+
+    move predefined type names to P99
+
+doxy/p99-doxygen
+p99/p99_c99.h
+p99/p99_generated.h
+p99/p99_new.h
+p99/p99_paste.h
+p99/p99_special.c
+p99/p99_type.h
+p99/p99_typenames.h
+scripts/p99_find_macros.pl
+scripts/p99_generate.pl
+
+commit 2bd297f27d78bde1f2bb4e59d2ec5a82c6d02d7b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jun 13 20:53:04 2011 +0200
+
+
+p99/p99_new.h
+
+commit 998ba78295a7b9b2fc0d2c14a4c125b0f5f49066
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jun 13 15:41:24 2011 +0200
+
+    P99_EXPECT only works with integer expressions, so ensure that LIKELY
+    expressions are converted to int.
+
+p99/p99_compiler.h
+
+commit cc68829b5c36ecb7dfee3017d7052fa226b0e1d9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jun 12 15:25:17 2011 +0200
+
+    documentation
+
+Doxyfile
+doxy/p99-doxygen
+p99/p99_enum.h
+p99/p99_type.h
+
+commit 4167ec698e01ea0d55ae2160f60c75de2f0389fa
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue May 24 17:48:40 2011 +0200
+
+    capture the name mangling more accurately
+
+gforge-p99/c99-conformance/c99-conformance-clang-2.9.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.1.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.2.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.3.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.4.html
+gforge-p99/c99-conformance/c99-conformance-icc-12.0.0.html
+gforge-p99/c99-conformance/c99-conformance-opencc-4.2.4.html
+gforge-p99/c99-conformance/c99-conformance-p99-gcc-4.1.html
+gforge-p99/c99-conformance/c99-conformance-p99-gcc-4.2.html
+gforge-p99/c99-conformance/c99-conformance-p99-gcc-4.3.html
+gforge-p99/c99-conformance/c99-conformance-p99-gcc-4.4.html
+gforge-p99/c99-conformance/c99-conformance-pcc-0.9.9.html
+gforge-p99/c99-conformance/c99-conformance-tcc-0.9.25.html
+scripts/p99_conformance.pl
+tests/Makefile
+tests/test-p99-conformance.c
+
+commit d4d935240e6127f9d83ccc93df4d9474ce835570
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat May 21 23:24:23 2011 +0200
+
+    conformance test, make a clearer distinction for the different cases of
+    comma operator in integer constant expressions
+
+gforge-p99/c99-conformance/c99-conformance-clang-2.9.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.1.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.2.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.3.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.4.html
+gforge-p99/c99-conformance/c99-conformance-icc-12.0.0.html
+gforge-p99/c99-conformance/c99-conformance-opencc-4.2.4.html
+gforge-p99/c99-conformance/c99-conformance-pcc-0.9.9.html
+gforge-p99/c99-conformance/c99-conformance-tcc-0.9.25.html
+scripts/p99_conformance.pl
+tests/test-p99-conformance.c
+
+commit 002964da7184ff2cd77ef14a57b9a16f850210d9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat May 21 11:46:58 2011 +0200
+
+    add some more conformance tests to the web site
+
+gforge-p99/README.html
+gforge-p99/c99-conformance/c99-conformance-clang-2.9.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.1.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.2.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.3.html
+gforge-p99/c99-conformance/c99-conformance-gcc-4.4.html
+gforge-p99/c99-conformance/c99-conformance-icc-12.0.0.html
+gforge-p99/c99-conformance/c99-conformance-opencc-4.2.4.html
+gforge-p99/c99-conformance/c99-conformance-tcc-0.9.25.html
+scripts/p99_conformance.pl
+tests/test-p99-conformance.c
+
+commit 3663bd6df2bcbcd64dbd0c239e8a67796fab1291
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri May 20 15:06:56 2011 +0200
+
+    test if identifier starting with \u is collated to the preceding word
+
+tests/test-p99-conformance.c
+
+commit 6f4695413b5f73f0161d54b3b6d7be50bef09216
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri May 20 14:53:33 2011 +0200
+
+    add a conformance test for utf8 support in source files
+
+tests/test-p99-conformance.c
+
+commit 813e631f92048eb4c40d719ba46be873fd11cbb4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri May 20 10:32:05 2011 +0200
+
+    Add a new conformance test that checks for correct placeholder tokens
+
+tests/test-p99-conformance.c
+
+commit fbccadd7f694d368ceb434c393e37c66d094da3e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed May 18 15:01:49 2011 +0200
+
+    add a macro P99_DEPRECATED to deprecate a function
+    
+    for moment works only with gcc and followers
+
+p99/p99_compiler.h
+
+commit 0692c2f9cd370cede8791c62ea1603265c670610
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue May 17 17:07:21 2011 +0200
+
+    Bugfix: compile time assertions didn't trigger
+    
+    Some compilers seem to accept typedefs of zero length arrays.
+    
+    Also add arguments to allow to distinguish several assertions that end up
+    on the same logical source line.
+
+p99/p99_id.h
+
+commit 9a0cdf67b9113b6c5f0417bb6091422ec00f40bb
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Apr 27 18:35:24 2011 +0200
+
+    add some more arithmetic conformance tests
+
+tests/test-p99-conformance.c
+
+commit 0c97444e53a45b88df3ad2a336a28682e2c5cd43
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Apr 3 01:43:46 2011 +0200
+
+    p99pro.pl: Don't have ... in replacement sequence
+
+p99/p99_generated.h
+scripts/p99_generate.pl
+
+commit a6737a4bdf811fba6b0d4e7503ccf3d464ab9e0b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Mar 31 15:39:27 2011 +0200
+
+    correct a typo in a macro name
+
+p99/p99_compiler.h
+
+commit 03099f920fee8ed6b945cc5c534840bd101158d6
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Mar 31 12:15:18 2011 +0200
+
+    correct some duplicate macros in the generated header
+
+p99/p99_generated.h
+p99/p99_special.c
+scripts/p99_generate.pl
+
+commit 4d0c20b1a35ba6f89ebc57f69ba4eccae24ab8e3
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Mar 30 16:33:45 2011 +0200
+
+    more on regexps and documentation of p99pro.pl
+
+scripts/p99pro.pl
+tests/test-p99-conformance.c
+
+commit 55c742f680ddd8e6c0d8b22048df85575180fdd7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Mar 29 10:01:02 2011 +0200
+
+    minor improvement on conformance test
+
+p99/p99_paste.h
+tests/test-p99-conformance.c
+
+commit fadd71f970b86bdf3950b44ed2c35b3fa2ae1a9e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Mar 22 18:33:15 2011 +0100
+
+    Revert "Added header for POSIX regular expressions."
+    
+    This reverts commit b13771eddabe0cdca2c9cb4976f5105e1c289f6d.
+    
+    p99_c99 should only include C99 header files.
+
+p99/p99_c99.h
+
+commit b13771eddabe0cdca2c9cb4976f5105e1c289f6d
+Author: Emmanuel Jeanvoine <emmanuel.jeanvoine@inria.fr>
+Date:   Tue Mar 22 18:19:02 2011 +0100
+
+    Added header for POSIX regular expressions.
+
+p99/p99_c99.h
+
+commit cb6803bfd93e2e3a06b292a6ba8e5f9ba19affc5
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Mar 22 11:06:17 2011 +0100
+
+    add p99_special.c to the sources
+
+Makefile
+
+commit 3cf22d8a86fb8b696bbcb8c6896db098ae1c777f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Mar 22 10:58:02 2011 +0100
+
+    rework the annotations for multiply evaluated arguments
+
+p99/Makefile
+p99/p99_block.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_int.h
+p99/p99_map.h
+p99/p99_new.h
+p99/p99_paste.h
+p99/p99_swap.h
+p99/p99_type.h
+
+commit c38982741c419b7ad296817030baa782fd22cabc
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Mar 19 12:50:53 2011 +0100
+
+    add some more generic expression generation macros
+
+p99/p99_for.h
+p99/p99_map.h
+
+commit 25cb1cac8ea81783486ed53b7fb00f03fa1fc695
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Mar 17 10:11:42 2011 +0100
+
+    correct a type in the documentation
+
+p99/p99_for.h
+
+commit 0266ee4d4d5f261e5388ab10a6b6e73144b1d961
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Mar 16 17:32:09 2011 +0100
+
+    implement malloc and calloc replacements
+
+p99/p99_new.h
+tests/test-p99-pow.c
+
+commit 6051c001aaf6b0a7f0d8b9a25184830be3d2a1f8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Mar 14 00:14:12 2011 +0100
+
+    minor fix for freeing a const qualified pointer
+
+tests/test-p99-pow.c
+
+commit 2735df4f07be288d79cab701da11054defda634d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Mar 14 00:11:11 2011 +0100
+
+    allocation of struct with flexible array members
+
+p99/p99_new.h
+p99/p99_type.h
+
+commit bab8f3765bca33834ed4c636dcf4ccbc9bad7915
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Mar 14 00:09:22 2011 +0100
+
+    a new macro to join a list of arguments with a specific token given as
+    first argument
+
+p99/p99_for.h
+
+commit db83b6be64a713ddd9ea68ade3bace06c45a64d9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Mar 14 00:03:50 2011 +0100
+
+    documentation
+
+Doxyfile
+doxy/p99-doxygen
+p99/p99_compiler.h
+
+commit 9b0ffa348a3101c4a8a7ee09dd9d70771b7511f1
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Mar 12 00:20:01 2011 +0100
+
+    some minor updates
+
+p99/p99.h
+
+commit c2e10f9b4dd085cf3996df9eafc25caacbcf98a8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Mar 11 23:51:01 2011 +0100
+
+    handle one special case of realloc correctly
+
+p99/p99_type.h
+
+commit b19677c9268cd866b62a4d7e0aeb51261716dc11
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Mar 9 11:06:29 2011 +0100
+
+    add some more ifdefs
+
+tests/test-p99-conformance.c
+
+commit 969979f933680a07824ba959c7a677a149de2c85
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Mar 8 21:35:59 2011 +0100
+
+    clang: better capture the version
+
+p99/p99_compiler.h
+
+commit b8f76d8b2f868fb37b90b5765de6e4327a3d2cf8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Mar 7 17:51:57 2011 +0100
+
+    include the conformance test in the doxygen documentation
+
+p99/p99_compiler.h
+tests/test-p99-conformance.c
+
+commit 5f3e2aad9ccc66efa3cf3b2937cf130c6848785e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Mar 7 16:44:36 2011 +0100
+
+    unify the naming of the symbols in the conformance test
+
+p99/Makefile
+p99/p99_conformity.c
+
+commit 42ac4b350768916aba2d702d746b0c24f40e86a9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Mar 7 10:11:04 2011 +0100
+
+    add a C99 conformity test
+
+p99/p99_conformity.c
+
+commit 0aa6b00fc474925d947163cc7efcbe437f4069d7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Mar 6 12:20:32 2011 +0100
+
+    add test to have compilation fail early if the preprocessor doesn't work with P99
+
+p99/p99_compiler.h
+
+commit 61a36a1fc62704a9617b75f35d22f29071ceeb06
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Mar 6 11:08:33 2011 +0100
+
+    reintroduce two forgotten argument check macros
+
+p99/p99_int.h
+
+commit 724d98f769f799d1f400f9721a8f0a8d7611a594
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Mar 6 09:50:51 2011 +0100
+
+    better capture the capacities of TinyC
+    
+    - check for iso646 (argh!)
+    - it doesn't support the -dM flag, so we really have to get out some of
+      the #define manually. But it doesn't support bigraphs either so replace
+      that.
+
+lib/Makefile
+p99/p99_c99.h
+scripts/Makefile-DEFINE
+scripts/Makefile-iso646
+tests/Makefile
+
+commit 19fd15c1f104584572ad5611f3ebdbcd97078b48
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Mar 5 12:07:14 2011 +0100
+
+    add tiny C to the list of compilers
+    
+    this one is clearly not conform, since it evaluates macros in wrong order
+
+p99/p99_c99.h
+p99/p99_choice.h
+p99/p99_compiler.h
+p99/p99_defarg.h
+p99/p99_generated.h
+p99/p99_posix_default.h
+p99/p99_swap.h
+scripts/p99_generate.pl
+
+commit ac3886e0dc31f7aec373a7477162dae24020e74f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Mar 5 12:04:45 2011 +0100
+
+    ease the work for compilers that have no 128 bit extended integer
+
+p99/p99_int.h
+
+commit 36ed9b83f89718205899012c54991925560c0579
+Author: (no author) <(no author)@no.where>
+Date:   Fri Mar 4 15:54:54 2011 +0100
+
+    copyright & whitespace
+
+include/Makefile
+include/semaphore_nointr.h
+lib/Makefile
+lib/semaphore_nointr.c
+scripts/AUTHORS.txt
+tests/Makefile
+tests/test-p99-block.c
+tests/test-p99-cases.c
+tests/test-p99-choice.c
+tests/test-p99-classification.c
+tests/test-p99-compound.c
+tests/test-p99-double.c
+tests/test-p99-int.c
+tests/test-p99-ndim.c
+tests/test-p99-pow.c
+tests/test-p99-va-arg.c
+
+commit 2e624ff717757f922aeaffbf1eace24f96030693
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Mar 3 15:15:38 2011 +0100
+
+    make OpenMP optional for the matrix example
+
+tests/test-p99-pow.c
+
+commit ead3222d80f7a8293f099f3215728348a8d286cd
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Thu Mar 3 14:19:56 2011 +0100
+
+    continue the documentation of the matrix example
+
+tests/test-p99-pow.c
+
+commit 0144fc64f641be6c287016bfcdfce177419ca3b9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Mar 2 14:27:16 2011 +0100
+
+    start to add better documented examples to the source and to doxygen
+
+Doxyfile-p99
+p99/p99_for.h
+tests/test-p99-pow.c
+
+commit d5ae25eb75428871c6c8662680345581a28d12c0
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Mar 2 14:24:26 2011 +0100
+
+    musl predefines longjmp as a macro
+
+p99/p99_c99_default.h
+
+commit e90168d0f01553fc9cdff56e2633e6f3a917099b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Mar 2 14:22:57 2011 +0100
+
+    detect missing headers complex.h and tgmath.h automatically
+
+lib/Makefile
+p99/p99_c99.h
+scripts/Makefile-complex
+scripts/Makefile-tgmath
+tests/Makefile
+
+commit e3aa1e9a56d4d7af0e3ca4696ee2218289ac1e58
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Feb 27 11:50:38 2011 +0100
+
+    Expose a macro that allows to have default arguments also for macros
+
+p99/p99_defarg.h
+
+commit 054ca8cb747539416fe8bbe143106b40eaa9863b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Feb 23 17:22:35 2011 +0100
+
+    P99_LIKELY confuses OpenMP
+
+p99/p99_for.h
+
+commit e41d469fbdd8486170e92e8fb27fd1245bef40a1
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Feb 15 23:37:41 2011 +0100
+
+    add the dots to the PCC version
+
+p99/p99_compiler.h
+
+commit 74f36f13290aeb706a26b1c3b364832c3fe612af
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Feb 14 23:53:25 2011 +0100
+
+    add pcc to the compilers that are not supported
+    
+    in fact that compiler just explodes with P99
+
+p99/p99.h
+p99/p99_args.h
+p99/p99_block.h
+p99/p99_c99.h
+p99/p99_c99_default.h
+p99/p99_choice.h
+p99/p99_classification.h
+p99/p99_compiler.h
+p99/p99_defarg.h
+p99/p99_double.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_generated.h
+p99/p99_id.h
+p99/p99_if.h
+p99/p99_int.h
+p99/p99_list.h
+p99/p99_logical.h
+p99/p99_map.h
+p99/p99_new.h
+p99/p99_paste.h
+p99/p99_posix_default.h
+p99/p99_str.h
+p99/p99_swap.h
+p99/p99_type.h
+scripts/p99_generate.pl
+
+commit f94fc70286dc7f201e9cddedd9974c37018cc7b4
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Feb 13 23:03:02 2011 +0100
+
+    add documentation of macro parameters
+    
+    by that we can now better check automatically if there are macro
+    arguments that get evaluated multiple times although they shouldn't
+    
+    in many cases this will result in a better documentation of the
+    properties in doxygen
+
+Doxyfile-p99
+doxy/p99-doxygen
+p99/p99_block.h
+p99/p99_compiler.h
+p99/p99_defarg.h
+p99/p99_double.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_int.h
+p99/p99_list.h
+p99/p99_map.h
+p99/p99_paste.h
+p99/p99_str.h
+p99/p99_type.h
+
+commit e8b05035867a85135a7a4811e0ea53e54353fddd
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Feb 11 12:06:28 2011 +0100
+
+    massage the array argument macros such that we can handle const base types
+
+p99/p99_for.h
+tests/test-p99-pow.c
+
+commit 16af803aa11fdb2769f30305638adaf6e8b6b3b8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Feb 11 11:48:12 2011 +0100
+
+    correct some typo in documentation
+
+p99/p99_args.h
+
+commit a86df3448d0a236d524e0ec48eb1a5ff6e81b6e7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Feb 9 22:46:54 2011 +0100
+
+    improve the documentation of P99_XCASE as suggested by Joel
+
+p99/p99_block.h
+
+commit f714bb9aae29f37e76ab9f5310b3e00815bd09d8
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Feb 1 16:54:42 2011 +0100
+
+    add a macro that declares a scope bound static variable and returns a pointer to it
+    
+    this is a bit hacky because C99 doesn't allow static for variables
+
+p99/p99_block.h
+
+commit b3768f20b52881d5fb17c2866aae45a5048a497b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 29 12:21:41 2011 +0100
+
+    make the block macros robust for arguments that contain commas
+    
+    If a final argument is supposed to receive commas, we just use
+    ``...'' instead of a named argument.
+    
+    If another argument may receive commas we have to protect it with
+    P00_ROBUST. By that the commas in the argument are first skipped when the
+    preprocessor seeks the individual arguments because they are protected by
+    ``( )''. Then, when the individual arguments are expanded the syntactic
+    sugar of ``P00_ROBUST( )'' simply disappears and the argument with its
+    commas is passed through.
+
+p99/p99_block.h
+p99/p99_id.h
+p99/p99_int.h
+p99/p99_map.h
+p99/p99_new.h
+
+commit 80f216759209240ef10a1d1f0ad457f6a398e160
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 29 12:13:57 2011 +0100
+
+    documentation
+
+p99/p99_defarg.h
+
+commit 421c3413600002a4fb776f1f1f6f00a1f19ae734
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 29 12:13:16 2011 +0100
+
+    avoid a warning of clang when he sees a switch concerning bool
+
+p99/p99_enum.h
+
+commit ba1df0b3291db637915b77ae0defa0b3f7f0d33d
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 26 16:46:53 2011 +0100
+
+    add a check that p99_ALEN is really applied to an array type
+    
+    not perfect, but better than nothing
+
+p99/p99_for.h
+tests/test-p99-pow.c
+
+commit d3f43b369a6ed51603f27658ba01a4bef35ee544
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 21 15:37:01 2011 +0100
+
+    tidy up a bit
+
+p99/p99_compiler.h
+p99/p99_enum.h
+p99/p99_for.h
+tests/test-p99-cases.c
+
+commit c340a1b09ffe57ffae56a8fe00e35397c4b20eb2
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 21 15:35:13 2011 +0100
+
+    automatize the compiler detection as much as possible
+
+p99/p99_compiler.h
+p99/p99_generated.h
+scripts/p99_generate.pl
+
+commit 37f232251c034ad157b198ef8da8e91e88652a0f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 21 11:14:21 2011 +0100
+
+    add include guards to p99_generated.h
+
+p99/p99_generated.h
+scripts/p99_generate.pl
+
+commit 529c43ef4384b3760a5fe8311c8dcc24bebf1b8f
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 19 17:15:48 2011 +0100
+
+    implement case ranges
+
+p99/p99_for.h
+tests/Makefile
+tests/test-p99-cases.c
+
+commit e9f0f6fbc2ed0c5260d2681863b5fed9af8d16c3
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Jan 19 17:15:25 2011 +0100
+
+    separate the macro to implement getname for enumeration-alike types
+
+doxy/p99-doxygen
+p99/p99_enum.h
+
+commit 41b64e50dac89447ca0459dc94193e5f1885e58b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Jan 17 14:58:10 2011 +0100
+
+    remove some obsolete macros
+
+tests/test-p99-double.c
+
+commit d157c8a10c4618615b9ce81d5fd7c089c842ce3a
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 16 12:16:35 2011 +0100
+
+    whitespace issues
+
+p99/p99_double.h
+p99/p99_generated.h
+p99/p99_int.h
+p99/p99_list.h
+p99/p99_logical.h
+p99/p99_new.h
+scripts/p99_generate.pl
+
+commit 0cc9d03e9683dc6fb693ab8657a726605c295ca5
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 16 11:42:33 2011 +0100
+
+    API change: don't mention the _DEC_ explicitly in the arithmetic and comparison macros
+    
+    We are only decimal comparison anyhow, now, hex is phased out for several
+    month.
+
+p99/p99.h
+p99/p99_defarg.h
+p99/p99_double.h
+p99/p99_for.h
+p99/p99_generated.h
+p99/p99_if.h
+p99/p99_int.h
+p99/p99_list.h
+p99/p99_logical.h
+p99/p99_map.h
+p99/p99_new.h
+p99/p99_type.h
+scripts/p99_generate.pl
+tests/test-p99-double.c
+
+commit 5c8a437642cb484c0bb02dd94e972bf1429b81c9
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 16 11:19:50 2011 +0100
+
+    delete two redundant equality macros
+
+p99/p99_if.h
+
+commit dc2aff75e009f3243e1a4dceaf213cf6eed10272
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 16 11:18:50 2011 +0100
+
+    minor documentation bits
+
+Doxyfile-p99
+p99/p99.h
+p99/p99_for.h
+
+commit 81fa49140a054e3ac21a096f87dec82e8106e2ae
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 16 01:05:23 2011 +0100
+
+    documentation update
+
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_generated.h
+p99/p99_type.h
+scripts/p99_generate.pl
+
+commit 6fb45323fcc9517504f9baba9e6e18848e32a19c
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 16 00:42:21 2011 +0100
+
+    finish move of enum to P99
+    
+    + some more copyright updates
+
+lib/Makefile
+p99/p99.h
+p99/p99_c99_default.h
+p99/p99_classification.h
+p99/p99_defarg.h
+p99/p99_enum.h
+p99/p99_for.h
+p99/p99_map.h
+
+commit 2d84295bdef6f4b7340b405a9f411a6d901be490
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Jan 16 00:26:03 2011 +0100
+
+
+
+commit 58c3689bb2676a9f8721e9bbf597eb97999f7ba2
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 15 23:57:16 2011 +0100
+
+    copyright and whitespace
+
+tests/test-p99-pow.c
+
+commit 53c3c6f1eedf9ed896dabc3a50ef6f9efa378632
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 15 23:55:03 2011 +0100
+
+    some adjustments necessary for clang
+
+p99/p99_defarg.h
+
+commit f9e5a5a98094bbead83d544b15981fac3d35c03e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 15 23:54:01 2011 +0100
+
+    re-implement the getname function for enums by means of P99_FOR
+
+
+commit 5dde959d0bc034d17cdf36c7e8bd4320237a895b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 15 23:52:11 2011 +0100
+
+    change the VLA exemple to use different function names than macro names
+
+tests/Makefile
+tests/test-p99-pow.c
+
+commit 5ab4ce2bf3983968d80cfb41a4358360f5865974
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Jan 15 23:51:14 2011 +0100
+
+    change the pointer to VLA to [const static 1]
+
+p99/p99_for.h
+
+commit 04c66f4afe1bab94ea58a913619af46281f7f480
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 7 17:29:55 2011 +0100
+
+    add a test case
+
+tests/Makefile
+tests/test-p99-pow.c
+
+commit be9e7a98667b6b75cf6fa0465c7d6bee74c69ffc
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 7 17:29:29 2011 +0100
+
+    add macros for handling VLAs
+
+p99/p99_for.h
+
+commit 6bb844bf8e0566897629271d7957e34090049736
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 7 17:28:52 2011 +0100
+
+    add a macro for taking integer powers
+
+p99/p99_map.h
+
+commit 303a0a3e53604ce9fabbba04566ef9dcafed3806
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Jan 7 16:35:34 2011 +0100
+
+    add a missing include
+
+p99/p99_c99_default.h
+
+commit 67ddba6740555b2c3d80473f9512a7c686a7c01c
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Dec 25 23:15:19 2010 +0100
+
+    Add support for fixing a variable to a specific register
+
+p99/p99_compiler.h
+
+commit 6e60b6e39dfab2a3c4053fac265d0d41743a1202
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Dec 25 22:34:36 2010 +0100
+
+    we need a real macro for instantiation
+
+lib/Makefile
+lib/semaphore_nointr.c
+p99/p99_compiler.h
+p99/p99_defarg.h
+scripts/Makefile-DEFINE
+
+commit 8381535508b499514e7a764c7b937512423f6799
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sat Dec 4 21:31:00 2010 +0100
+
+    change to compile time initializations were possible
+
+p99/p99_int.h
+
+commit 66a04dea4404f44c10adb2627d467c6eadcb0c51
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Dec 1 18:08:24 2010 +0100
+
+    adapt p99_inline to gcc version 4.1
+
+p99/p99_compiler.h
+
+commit 6db3cc69a4bbd08b6066433f0d0708510f87feba
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Nov 30 15:38:27 2010 +0100
+
+    final corrections for the detection of parenthesis
+
+p99/p99_classification.h
+
+commit a3c65c40f9e0f3ab9024bf3d8ba4eb74d66108bd
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Nov 30 15:25:29 2010 +0100
+
+    detect weirdness on OS X
+
+lib/Makefile
+p99/p99_compiler.h
+scripts/Makefile-__thread
+tests/Makefile
+tests/test-p99-classification.c
+
+commit f915759d2f91e6dccbf22584223937445daa193e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Nov 30 15:10:45 2010 +0100
+
+    add detection of superflouous parenthesis around expression
+
+p99/p99_classification.h
+tests/test-p99-classification.c
+
+commit 7d6f5bf97acfa5832ae31430d36ced90a51b4c31
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Nov 30 14:07:48 2010 +0100
+
+    a forgotten file
+
+tests/test-p99-inline-empty.c
+
+commit 683bebfae7c5136a3b4035b773230d1fd95fcc99
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Tue Nov 30 11:56:45 2010 +0100
+
+    minor modification of the top Makefile
+
+Makefile
+
+commit cd2d858b328442a45c14a88e29a71ff3aab5cb1b
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Nov 29 23:51:58 2010 +0100
+
+    add per compiler macros for targeted pragmas
+
+p99/p99_block.h
+p99/p99_c99.h
+p99/p99_compiler.h
+tests/test-p99-inline.c
+tests/test-p99-int.c
+
+commit 07f75727e77acf56f105c04c5c20343fc7f135d0
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Nov 29 23:50:21 2010 +0100
+
+    add a ChangeLog to the distribution
+
+Makefile
+
+commit 5a84ac2d5ab59ab05b7c22d571f9adbe74fc0935
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Nov 28 19:30:40 2010 +0100
+
+    enable icc with option -no-gcc
+
+p99/p99_c99.h
+p99/p99_compiler.h
+
+commit 21e86cfd500fb5261357b00f4be582c1c22451bb
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Sun Nov 28 17:30:26 2010 +0100
+
+    simplify the inlining macros
+
+p99/p99_compiler.h
+p99/p99_defarg.h
+p99/p99_int.h
+tests/test-p99-inline.c
+tests/test-p99-inline.h
+
+commit 8f565a9a62b9170a5e7a9b7c494da1d2940027f6
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Fri Nov 26 16:09:48 2010 +0100
+
+    come to a better analysis of the inline interface of the compiler
+
+p99/p99_compiler.h
+p99/p99_defarg.h
+tests/Makefile
+tests/test-p99-inline.c
+tests/test-p99-inline.h
+tests/test-p99-va-arg.c
+
+commit 7f7cc786a8614477710bb23ba6fea5585adc2a62
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Wed Nov 24 18:46:38 2010 +0100
+
+    starting a port to OS X
+
+p99/p99_compiler.h
+tests/Makefile
+tests/test-p99-int.c
+
+commit 4df06915d50c79fb498c03504ac9b18b4fbe9af7
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Nov 22 23:45:54 2010 +0100
+
+    add some locale support to the test
+
+tests/test-p99-int.c
+
+commit e5b54147af0cd2857914265e1204bc4ec3171c2e
+Author: Jens Gustedt <Jens.Gustedt@loria.fr>
+Date:   Mon Nov 22 23:44:26 2010 +0100
+
+    bugfix, using the wrong stringify in p99_compiler.h
+
+p99/p99_compiler.h

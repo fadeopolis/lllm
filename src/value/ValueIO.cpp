@@ -19,7 +19,13 @@ std::ostream& lllm::operator<<( std::ostream& os, Type t ) {
 	}
 }
 std::ostream& lllm::operator<<( std::ostream& os, ValuePtr v ) {
-//	std::cerr << "{PRINTING " << (void*) v << "}";
+	if ( !v ) return os << "()";
+
+	if ( long(typeOf(v)) > (long(Type::Lambda) + 3) ) {
+		os << "{?" << (long)typeOf( v ) << "?}";;
+//		std::cerr << "{PRINTING " << (long)typeOf( v ) << "}";
+		return os;
+	}
 
 	struct Visitor final {
 		void visit( NilPtr expr, std::ostream& os ) const {
@@ -54,8 +60,10 @@ std::ostream& lllm::operator<<( std::ostream& os, ValuePtr v ) {
 		}
 		void visit( SymbolPtr expr, std::ostream& os ) const {
 			DBG( Symbol );
-			os << expr->value;
-//			os << (void*)(util::CStr)expr->value;
+			if ( (void*)(util::CStr)expr->value )
+				os << expr->value;
+			else 
+				os << "<EMPTY SYMBOL>";
 		}
 		void visit( RefPtr expr, std::ostream& os ) const {
 			DBG( Ref );
@@ -63,7 +71,11 @@ std::ostream& lllm::operator<<( std::ostream& os, ValuePtr v ) {
 		}
 		void visit( LambdaPtr expr, std::ostream& os ) const {
 			DBG( Lambda );
-			os << "<" << expr->data->ast << ">";
+	
+			if ( expr->code ) 
+				os << "<jitted " << expr->data->ast << ">";
+			else
+				os << "<" << expr->data->ast << ">";
 		}
 		void visit_( ListPtr expr, std::ostream& os ) const {
 			if ( expr ) {

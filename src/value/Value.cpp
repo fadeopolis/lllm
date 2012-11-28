@@ -6,6 +6,9 @@
 #include <cstring>
 #include <cstdlib>
 
+#include <iostream>
+#include "lllm/value/ValueIO.hpp"
+
 using namespace lllm;
 using namespace lllm::value;
 using namespace lllm::util;
@@ -39,7 +42,6 @@ bool lllm::operator!=( const Value& a, const Value& b ) {
 }
 bool value::equal( ValuePtr a, ValuePtr b ) {
 //	using namespace std;
-//	std::cout << a << "=?=" << b << std::endl;
 
 	struct V1 final {
 		bool visit( ValuePtr  a, ValuePtr b ) const { return false; }
@@ -68,7 +70,11 @@ bool value::equal( ValuePtr a, ValuePtr b ) {
 		bool visit( LambdaPtr a, ValuePtr b ) const { return value::visit<bool>( b, V1(), a ); }
 	};
 
-	return visit<bool>( a, V2(), b );
+	bool eq = visit<bool>( a, V2(), b );
+
+//	std::cout << a << "=?=" << b << " = " << (eq?"true":"false") << std::endl;
+
+	return eq;
 }
 
 bool Value::isList( ValuePtr val ) {
@@ -108,10 +114,35 @@ Type value::typeOf( ValuePtr v ) {
 
 size_t Lambda::arity() const { return size_t(type) - size_t(Type::Lambda); }
 
-NilPtr    value::nil = nullptr;
+namespace lllm { namespace value {
+	static IntPtr INTS[3];
+	#define NUM_INTS     (sizeof(INTS)/sizeof(IntPtr))
+	#define MIN_INT (0 - (long)((sizeof(INTS)/sizeof(IntPtr))/2))
+	#define MAX_INT (0 + (long)((sizeof(INTS)/sizeof(IntPtr))/2))
+}}
+
+unsigned long long value::cacheHits   = 0;
+unsigned long long value::cacheMisses = 0;
+
+NilPtr    value::nil   = nullptr;
+ValuePtr  value::True() { return number(1); }
+ValuePtr  value::False = nullptr;
 ConsPtr   value::cons( ValuePtr car, ListPtr cdr )           { return new Cons( car, cdr );  }
-IntPtr    value::number( int    value )                      { return new Int( value );      }
-IntPtr    value::number( long   value )                      { return new Int( value );      }
+IntPtr    value::number( int    value )                      { return number( (long)value ); }
+IntPtr    value::number( long   value )                      { 
+	if ( (MIN_INT <= value) && (value <= MAX_INT) ) {
+		IntPtr i = INTS[value + MAX_INT];
+
+		if ( !i ) { i = INTS[value + MAX_INT] = new Int( value ); }
+//		else { cacheHits++; }
+
+		return i;
+//	} else {
+//		cacheMisses++; 
+	}
+
+	return new Int( value );      
+}
 RealPtr   value::number( float  value )                      { return new Real( value );     }
 RealPtr   value::number( double value )                      { return new Real( value );     }
 CharPtr   value::character( char value )                     { return new Char( value );     }
@@ -124,11 +155,11 @@ Lambda* Lambda::alloc( ast::LambdaPtr ast ) {
 	return alloc( ast, nullptr );
 }
 Lambda* Lambda::alloc( ast::LambdaPtr ast, Lambda::FnPtr code ) {
-	Lambda::Data*  data    = ast->data;
-	size_t         arity   = ast->arity();
-	size_t         envSize = ast->envSize();
+	Lambda::DataPtr data    = ast->data;
+	size_t          arity   = ast->arity();
+	size_t          envSize = ast->envSize();
 
-	data->ast = ast;
+//	data->ast = ast;
 	if ( code ) data->code = code;
 
 	void* memory = new char[sizeof(Lambda) + envSize * sizeof(ValuePtr)];

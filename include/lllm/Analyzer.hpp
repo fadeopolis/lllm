@@ -3,15 +3,12 @@
 
 #include "lllm/ast/Ast.hpp"
 #include "lllm/sexpr/Sexpr.hpp"
-#include "lllm/util/Scope.tpp"
+#include "lllm/GlobalScope.hpp"
 
 namespace lllm {
-	typedef util::Scope<ast::VariablePtr>    AnalyzerScope;
-	typedef util::ScopePtr<ast::VariablePtr> AnalyzerScopePtr;
-
 	class Analyzer {
 		public:
-			static ast::AstPtr analyze( sexpr::SexprPtr, AnalyzerScopePtr scope );
+			static ast::AstPtr analyze( sexpr::SexprPtr, GlobalScopePtr scope );
 	};
 };
 

@@ -23,6 +23,9 @@ using namespace lllm;
 using namespace lllm::util;
 
 CStr argsString( int argc, char** argv ) {
+	argc--;
+	argv++;
+
 	size_t len = 0;
 
 	for ( int i = 0; i < argc; i++ ) len += strlen( argv[i] );
@@ -39,35 +42,43 @@ CStr argsString( int argc, char** argv ) {
 
 int main( int argc, char** argv ) {
 	std::cout << "Starting LLLM REPL" << std::endl;		
+	std::cout << ">> " << std::flush;
 
-	Reader    r = argc <= 1 ? Reader::fromStdin() : Reader::fromString( argsString( argc-1, argv+1) );
-	Analyzer  a;
-	Evaluator e;
-//	Jit       j;
+	Evaluator::setJittingThreshold( 5 );
+
+	Jit::setInliningThreshold( 10 );
 
 	GlobalScope scope;
 
+	Reader r = argc <= 1 ? Reader::fromStdin() : Reader::fromString( argsString( argc, argv ) );
+
 	while ( true ) {
+		std::cout << ">> " << std::flush;
+
 		sexpr::SexprPtr exp = r.read();
 
 		if ( exp == nullptr ) break;
 
-		std::cout << "READ:  " << exp << std::endl;
+		std::cout << "READ:  " << std::flush << exp << std::endl;
 
-		ast::AstPtr     ast = a.analyze( exp, &scope );
+		ast::AstPtr     ast = Analyzer::analyze( exp, &scope );
 
-		std::cout << "AST:   " << ast << std::endl;
+		std::cout << "AST:   " << std::flush << ast << std::endl;
 
 		if ( ast::DefinePtr def = dynamic_cast<ast::DefinePtr>( ast ) ) {
-			value::ValuePtr val = e.evaluate( def->expr, &scope );	
+			value::ValuePtr val = Evaluator::evaluate( def->expr, &scope );	
 
-			scope.add( def->location, def->name, val );
+			scope.add( def->location, def->name, ast, val );
 
 			std::cout << "DEFINED " << def->name << " TO " << val << std::endl;			
 		} else {
-			value::ValuePtr val = e.evaluate( ast, &scope );
+			value::ValuePtr val = Evaluator::evaluate( ast, &scope );
 
-			std::cout << "VALUE: " << val << " :: " << value::typeOf( val ) << std::endl;
+			if ( val == Builtins::CLEAR_MARK ) {
+				std::cout << "\033[2J\033[1;1H" << "LLLM REPL\n" << std::flush;
+			} else {
+				std::cout << "VALUE: " << val << " :: " << value::typeOf( val ) << std::endl;
+			}
 		}
 	}
 

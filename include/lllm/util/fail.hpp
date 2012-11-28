@@ -1,6 +1,8 @@
 #ifndef __FAIL_HPP__
 #define __FAIL_HPP__ 1
 
+struct __float128;
+
 #include <sstream>
 
 namespace lllm {

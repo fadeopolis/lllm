@@ -1,0 +1,56 @@
+#ifndef __SEXPR_HPP__
+#define __SEXPR_HPP__ 1
+
+#include "lllm/lllm.hpp"
+#include "lllm/SourceLocation.hpp"
+#include "lllm/strings.hpp"
+
+#include <vector>
+
+namespace lllm {
+	namespace sexpr {
+		class Sexpr {
+			private:
+				enum Type {
+					#define LLLM_VISITOR( TYPE, VALUE ) TYPE, 
+					#include "lllm/Sexpr_concrete.inc"
+				};
+			public:
+				inline constexpr SExpr( Type type, const SourceLocation& loc ) :
+					location( loc ),
+					type( type ) {}
+	
+				const SourceLocation location;
+			private:
+				const Type type;
+		};
+
+		#define LLLM_VISITOR( TYPE, VALUE )           \
+			class TYPE : public Sexpr {         \
+				public:	                              \
+					TYPE( const VALUE& value ); \
+	                                                  \
+					const VALUE value;                \
+		};
+	#include "lllm/SExpr_concrete.inc"
+
+	namespace reader {
+		extern SExprPtr      nil;
+		extern IntExprPtr    number( int );
+		extern IntExprPtr    number( long );
+		extern RealExprPtr   number( float );
+		extern RealExprPtr   number( double );
+		extern CharExprPtr   character( char );
+		extern StringExprPtr string( CStr );
+		extern SymbolExprPtr symbol( CStr );
+		extern ListExprPtr   list();
+		extern ListExprPtr   cons( SExprPtr, ListExprPtr );
+
+		extern bool equal( SExprPtr, SExprPtr );
+
+		extern size_t length( ListExprPtr );
+	};
+};
+
+#endif /* __SEXPR_HPP__ */
+

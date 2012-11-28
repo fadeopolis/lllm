@@ -26,9 +26,6 @@ int main() {
 
 	#define TEST( NAME, REL, INPUT, EXPECTED )  ({									\
 		auto name     = (NAME);														\
-/*																					\
-		std::cout << ">>>\tRUNNING TEST " << name << std::endl;						\
-*/																					\
 		auto str      = (INPUT);													\
 		auto actual   = Evaluator::evaluate(										\
 							Analyzer::analyze(										\
@@ -43,7 +40,7 @@ int main() {
 			testsPassed++;															\
 		} else {																	\
 			std::cout << "Test: " << name << " failed: ";							\
-			std::cout << "read(" << str << ") == '" << actual << "'";				\
+			std::cout << str << " == '" << actual << "'";							\
 			std::cout << ", should be " #REL " '" << expected << "'" << std::endl;	\
 		}																			\
 		testsRun++;																	\
@@ -64,6 +61,10 @@ int main() {
 	TEST( "const fn",      ==, "((lambda a () 5))",  number( 5 ) );
 	TEST( "const lambda",  ==, "(((lambda const (x) (lambda (y) x)) 'x) 'y)",  symbol("x") );
 	TEST( "recursion",     ==, "((lambda sum (a b) (if (= a 0) b (sum (- a 1) (+ 1 b)))) 5 5)", number( 10 ) );
+	TEST( "fib",           ==, "((lambda fib (n) (if (< n 2) n (+ (fib (- n 2)) (fib (- n 1))))) 6)", number(8) );
+	TEST( "tail_fib",      ==, "((lambda tail_fib (n result next) (if (= n 0) result (tail_fib (- n 1) next (+ result next)))) 8 0 1)", number(21) );
+
+	TEST("xxx", ==, "((lambda sum (a b) (if (<= a 0) b (let (a (- a 1)) (b (+ 1 b)) (if (<= a 0) b (sum (- a 1) (+ 1 b)))))) 5 6)", number(11) );
 
 	std::cout << ">>> EVALUATOR PASSED " << testsPassed << " TESTS OUT OF " << testsRun << std::endl;
 

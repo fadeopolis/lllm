@@ -4,9 +4,9 @@ add_subdirectory( sexpr )
 add_subdirectory( ast   )
 add_subdirectory( value )
 
-add_library( lllm lllm.cpp Reader.cpp Analyzer.cpp Evaluator.cpp Jit.cpp Builtins.cpp GlobalScope.cpp )
+add_library( lllm lllm.cpp Reader.cpp Analyzer.cpp Evaluator.cpp EscapeAnalyzer.cpp Jit.cpp Builtins.cpp GlobalScope.cpp )
 add_library( jit  STATIC IMPORTED )
-set_property( TARGET jit PROPERTY IMPORTED_LOCATION /home/fader/Desktop/lllm/lib/libjit.a ) 
+set_property( TARGET jit PROPERTY IMPORTED_LOCATION /home/fader/Desktop/libjit.a ) 
 
 target_link_libraries( lllm sexpr ast value gc jit
  ## LLVM requires a LOT of libs

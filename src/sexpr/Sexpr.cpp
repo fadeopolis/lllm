@@ -1,7 +1,9 @@
 
 #include "lllm/sexpr/Sexpr.hpp"
+#include "lllm/util/fail.hpp"
 
 #include <cstring>
+#include <iostream>
 
 using namespace lllm;
 using namespace lllm::sexpr;
@@ -29,7 +31,12 @@ size_t        sexpr::length( ListPtr l )         { return l->value.size();  }
 SexprIterator sexpr::begin( ListPtr l )          { return l->value.begin(); }
 SexprIterator sexpr::end( ListPtr l)             { return l->value.end();   }
 SexprPtr      sexpr::at( ListPtr l, size_t idx ) { return l->value[idx];    }
+SexprPtr      sexpr::last( ListPtr l ) {
+	if ( l->value.empty() ) 
+		LLLM_FAIL( "LIST IS EMPTY" );
 
+	return l->value.back();
+}
 
 bool lllm::operator!=( const sexpr::Sexpr& a, const sexpr::Sexpr& b ) {
 	return !(a == b);

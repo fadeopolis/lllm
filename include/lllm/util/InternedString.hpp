@@ -21,7 +21,7 @@ namespace lllm {
 					return *this;
 				}
 
-				inline constexpr bool operator<( const InternedString& str ) {
+				inline bool operator<( const InternedString& str ) {
 					return std::strcmp( string, str.string ) < 0;
 				}
 
@@ -31,9 +31,9 @@ namespace lllm {
 		};
 	};	
 
-	constexpr bool operator==( const util::InternedString& a, const util::InternedString& b ) { return ((util::CStr)a) == ((util::CStr)b); }
-	constexpr bool operator==( util::CStr                  a, const util::InternedString& b ) { return std::strcmp( a, b ) == 0; }
-	constexpr bool operator==( const util::InternedString& a, util::CStr                  b ) { return std::strcmp( a, b ) == 0; }
+	inline bool operator==( const util::InternedString& a, const util::InternedString& b ) { return ((util::CStr)a) == ((util::CStr)b); }
+	inline bool operator==( util::CStr                  a, const util::InternedString& b ) { return std::strcmp( a, b ) == 0; }
+	inline bool operator==( const util::InternedString& a, util::CStr                  b ) { return std::strcmp( a, b ) == 0; }
 };
 
 #endif /* __STRINGS_HPP__ */

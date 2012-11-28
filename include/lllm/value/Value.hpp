@@ -8,6 +8,8 @@
 
 namespace lllm {
 	namespace value {
+		extern unsigned long long cacheHits, cacheMisses;
+
 		enum class Type : size_t {
 			#define LLLM_VISITOR( TYPE ) TYPE, 
 			#include "lllm/value/Value_concrete.inc"
@@ -96,7 +98,7 @@ namespace lllm {
 			public:
 				Symbol( const util::InternedString& );
 
-				const const util::InternedString& value;
+				const util::InternedString& value;
 		};
 		class Ref : public Value {
 			public:
@@ -119,6 +121,7 @@ namespace lllm {
 					FnPtr          code;
 					ast::LambdaPtr ast;										
 				};
+				typedef Data* DataPtr;
 
 				static Lambda* alloc( ast::LambdaPtr ast );
 				static Lambda* alloc( ast::LambdaPtr ast, FnPtr code );
@@ -126,9 +129,9 @@ namespace lllm {
 	
 				size_t arity() const;
 
-				mutable FnPtr code;
-				Data*         data;
-				ValuePtr      env[0];
+				mutable FnPtr   code;
+				const   DataPtr data;
+				ValuePtr        env[0];
 			private:
 				Lambda( size_t arity, Data* data, FnPtr code );
 		};
@@ -136,6 +139,8 @@ namespace lllm {
 		bool equal( ValuePtr, ValuePtr );
 
 		extern NilPtr    nil;
+		extern ValuePtr  True();
+		extern ValuePtr  False;
 		extern ConsPtr   cons( ValuePtr, ListPtr );
 		extern IntPtr    number( int    );
 		extern IntPtr    number( long   );

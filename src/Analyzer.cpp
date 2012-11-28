@@ -7,188 +7,59 @@
 
 #include <cassert>
 #include <cstring>
+#include <map>
 #include <iostream>
 
 using namespace lllm;
 using namespace lllm::ast;
 using namespace lllm::util;
 
-class LocalScope : public AnalyzerScope {
-	public:
-		typedef std::pair<ast::VariablePtr,ast::AstPtr> Binding;
-		typedef std::vector<Binding>                    Bindings;
+typedef util::ScopePtr<ast::VariablePtr> AnalyzerScopePtr;
 
-		LocalScope( AnalyzerScopePtr parent );
+class LocalScope : public util::Scope<ast::VariablePtr> {
+	public:
+		LocalScope( util::ScopePtr<ast::VariablePtr> parent );
 
 		bool lookup( const util::InternedString& name, ast::VariablePtr* dst ) override final;
 		bool contains( const util::InternedString& name ) override final;
 
 		void addLocal( sexpr::SymbolPtr sym, ast::AstPtr ast );
 
-		operator ast::Let::Bindings() const;
+		bool containsLocal( const util::InternedString& name );
+
+		ast::LetStar::Bindings bindings() const;
 	private:
-		const AnalyzerScopePtr parent;
-		Bindings               vars;
+		const util::ScopePtr<ast::VariablePtr>          parent;
+		ast::LetStar::Bindings                          asts;
+		std::map<util::InternedString,ast::VariablePtr> vars;
 };
-class LambdaScope : public AnalyzerScope {
-	public:
-		typedef ast::Lambda::Binding  Binding;
-		typedef ast::Lambda::Bindings Bindings;
+struct LambdaScope : public util::Scope<ast::VariablePtr> {
+	LambdaScope( util::ScopePtr<ast::VariablePtr> parent );
 
-		LambdaScope( AnalyzerScopePtr parent );
+	bool lookup( const util::InternedString& name, ast::VariablePtr* dst ) override final;
+	bool contains( const util::InternedString& name ) override final;
+	
+	void setName( sexpr::SymbolPtr );
+	
+	void addParam( sexpr::SymbolPtr sym );
 
-		bool lookup( const util::InternedString& name, ast::VariablePtr* dst ) override final;
-		bool contains( const util::InternedString& name ) override final;
-					
-		void setName( sexpr::SymbolPtr name );
-		void addParameter( sexpr::SymbolPtr sym );
+	bool containsParam( const util::InternedString& name );
 
-		util::InternedString         name() const;
-		const ast::Lambda::Bindings& parameters() const;
-		const ast::Lambda::Bindings& captured()   const; 
-	private:
-		const AnalyzerScopePtr parent;
-		ast::VariablePtr       lambda;
-		Bindings               params;
-		Bindings               capture;
+	util::InternedString    name() const;
+	const Lambda::Bindings& parameters() const;
+	const Lambda::Bindings& captured()   const;
+private:
+	const util::ScopePtr<ast::VariablePtr> parent;
+	VariablePtr                            self;
+	ast::Lambda::Bindings                  params;
+	ast::Lambda::Bindings                  capture;
 };
-
-LocalScope::LocalScope( AnalyzerScopePtr parent ) :
-  parent( parent ) {}
-
-bool LocalScope::lookup( const util::InternedString& name, ast::VariablePtr* dst ) {
-	for ( auto it = vars.begin(), end = vars.end(); it != end; ++it ) {
-		const Binding& b = *it;
-		if ( b.first->name == name ) {
-			*dst = b.first;
-			return true;
-		}
-	}
-		
-	return parent->lookup( name, dst );
-}
-bool LocalScope::contains( const util::InternedString& name ) {
-	for ( auto it = vars.begin(), end = vars.end(); it != end; ++it ) {
-		const Binding& b = *it;
-		if ( b.first->name == name ) {
-			return true;
-		}
-	}
-		
-	return parent->contains( name );
-}
-
-void LocalScope::addLocal( sexpr::SymbolPtr sym, AstPtr ast ) {
-	vars.push_back(
-		Binding(
-			new Variable( sym->location, sym->value, ast->possibleTypes() ),
-			ast
-		)
-	);
-}
-
-LocalScope::operator Let::Bindings() const {
-	Let::Bindings bs;
-
-	for ( auto it = vars.begin(), end = vars.end(); it != end; ++it ) {
-		const Binding& b = *it;
-
-		bs.push_back( Let::Binding( b.first->name, b.second ) );
-	}
-
-	return bs;
-}
-
-LambdaScope::LambdaScope( AnalyzerScopePtr parent ) :
-  parent( parent ), lambda( nullptr ) {}
-
-bool LambdaScope::lookup( const util::InternedString& name, ast::VariablePtr* dst ) {
-	// check parameters
-	for ( auto it = params.begin(), end = params.end(); it != end; ++it ) {
-		const VariablePtr var = *it;
-		if ( var->name == name ) {
-			*dst = var;
-			return true;
-		}
-	}
-	// check for recursion
-	if ( lambda && lambda->name == name ) {
-		*dst = lambda;
-		return true;
-	}
-	// check captured variables
-	for ( auto it = capture.begin(), end = capture.end(); it != end; ++it ) {
-		const VariablePtr var = *it;
-		if ( var->name == name ) {
-			*dst = var;
-			return true;
-		}
-	}
-	// get var from outer scope 
-	VariablePtr var;
-
-	if ( parent->lookup( name, &var ) ) {
-		if ( var->hasGlobalStorage ) {
-			*dst = var;
-			return true;
-		}
-
-		// capture variable
-		VariablePtr cap = new Variable( var->location, var->name, var->possibleTypes() );
-		var->getsCaptured = true;
-
-		capture.push_back( cap );
-				
-		*dst = cap;
-		return true;
-	} else {
-		return var;
-	}
-}
-bool LambdaScope::contains( const util::InternedString& name ) {
-// check parameters
-	for ( auto it = params.begin(), end = params.end(); it != end; ++it ) {
-		const VariablePtr var = *it;
-		if ( var->name == name ) {
-			return true;
-		}
-	}
-	// check for recursion
-	if ( lambda && lambda->name == name ) {
-		return true;
-	}
-	// check captured variables
-	for ( auto it = capture.begin(), end = capture.end(); it != end; ++it ) {
-		const VariablePtr var = *it;
-		if ( var->name == name ) {
-			return true;
-		}
-	}
-	// get var from outer scope 
-	return parent->contains( name );
-}
-
-void LambdaScope::setName( sexpr::SymbolPtr name ) {
-	this->lambda = new Variable( name->location, name->value, TypeSet::all() );
-}
-void LambdaScope::addParameter( sexpr::SymbolPtr sym ) {
-	params.push_back( new Variable( sym->location, sym->value, TypeSet::all() ) );
-}
-
-util::InternedString    LambdaScope::name() const {
-	return lambda ? lambda->name : "";
-}
-const Lambda::Bindings& LambdaScope::parameters() const {
-	return params;
-}
-const Lambda::Bindings& LambdaScope::captured()   const {
-	return capture;
-}
 
 static AstPtr analyzeExpr( sexpr::SexprPtr expr, AnalyzerScopePtr ctx );
 static AstPtr analyzeQuote( sexpr::ListPtr expr );
 static AstPtr analyzeIf( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
 static AstPtr analyzeLet( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
+static AstPtr analyzeLetStar( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
 static AstPtr analyzeDo( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
 static AstPtr analyzeLambda( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
 static AstPtr analyzeDefine( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
@@ -196,7 +67,7 @@ static AstPtr analyzeApplication( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
 
 static inline bool isLambda( sexpr::SexprPtr form );
 
-AstPtr Analyzer::analyze( sexpr::SexprPtr expr, AnalyzerScopePtr scope ) {
+AstPtr Analyzer::analyze( sexpr::SexprPtr expr, GlobalScopePtr scope ) {
 	// handle define form specially
 	if ( sexpr::ListPtr form = expr->asList() ) {
 		if ( sexpr::length( form ) > 0 ) {
@@ -241,6 +112,7 @@ AstPtr analyzeExpr( sexpr::SexprPtr expr, AnalyzerScopePtr ctx ) {
 				if ( "quote"  == sym->value ) return analyzeQuote( expr );
 				if ( "if"     == sym->value ) return analyzeIf( expr, ctx );
 				if ( "let"    == sym->value ) return analyzeLet( expr, ctx );
+				if ( "let*"   == sym->value ) return analyzeLetStar( expr, ctx );
 				if ( "do"     == sym->value ) return analyzeDo( expr, ctx );
 				if ( "lambda" == sym->value ) return analyzeLambda( expr, ctx );
 				if ( "define" == sym->value ) {
@@ -306,6 +178,8 @@ AstPtr analyzeIf( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 	);
 }
 static AstPtr analyzeLet( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
+	std::cout << "LET " << expr << std::endl;
+
 	using namespace value;
 
 	assert( sexpr::at( expr, 0 )->asSymbol() );
@@ -313,41 +187,73 @@ static AstPtr analyzeLet( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 
 	LocalScope locals( ctx );
 
-	if ( sexpr::length( expr ) != 3 ) 
-		LLLM_FAIL( expr->location << ": A let must be of the form (let ((<name> <value>)...) <sexpr>) not " << expr );
+	if ( sexpr::length( expr ) < 3 ) 
+		LLLM_FAIL( expr->location << ": A let must be of the form (let (<name> <value>)... <sexpr>) not " << expr );
 
-	if ( sexpr::ListPtr list = sexpr::at( expr, 1 )->asList() ) {
-		if ( sexpr::length( list ) < 1 ) 
-			LLLM_FAIL( list->location << ": A let form must contain at least one binding" );
+	const size_t numBindings = sexpr::length( expr ) - 2;	
 
-		for ( auto it = sexpr::begin( list ), end = sexpr::end( list ); it != end; ++it ) {
-			if ( sexpr::ListPtr binding = (*it)->asList() ) {
-				if ( sexpr::length( binding ) != 2 ) 
-					LLLM_FAIL( binding->location << ": A binding of a let must be of the form (<name> <value>) not " << binding );
-
-				if ( sexpr::SymbolPtr sym = sexpr::at( binding, 0 )->asSymbol() ) {
-					if ( locals.contains( sym->value ) ) {
-						LLLM_FAIL( sym->location << " : local variable " << sym << " declared twice" );
-					}
-
-					AstPtr ast = analyzeExpr( sexpr::at( binding, 1 ), &locals );
-
-					locals.addLocal( sym, ast );
-				} else {
-					LLLM_FAIL( (*it)->location << ": The of a let must be of the form (<name> <value>) not " << (*it) );
+	for ( size_t i = 0; i < numBindings; i++ ) {
+		if ( sexpr::ListPtr binding = sexpr::at( expr, i + 1 )->asList() ) {
+			if ( sexpr::length( binding ) != 2 ) 
+				LLLM_FAIL( binding->location << ": A binding of a let must be of the form (<name> <value>) not " << binding );
+			
+			if ( sexpr::SymbolPtr sym = sexpr::at( binding, 0 )->asSymbol() ) {
+				if ( locals.containsLocal( sym->value ) ) {
+					LLLM_FAIL( sym->location << " : local variable " << sym << " declared twice" );
 				}
+
+				AstPtr ast = analyzeExpr( sexpr::at( binding, 1 ), ctx );
+
+				locals.addLocal( sym, ast );
 			} else {
-				LLLM_FAIL( (*it)->location << ": A binding of a let must be of the form (<name> <value>) not " << (*it) );
+				LLLM_FAIL( binding->location << ": A binding a let must be of the form (<name> <value>) not " << binding );
 			}
+		} else {
+			LLLM_FAIL( binding->location << ": A binding a let must be of the form (<name> <value>) not " << binding );
 		}
-	} else {
-		sexpr::SexprPtr e = sexpr::at( expr, 1 );
-		LLLM_FAIL( e->location << ": The second argument of a let must be of the form ((<name> <value>)...) not " << e );
 	}
 
-	AstPtr body = analyzeExpr( sexpr::at( expr, 2 ), &locals );
+	AstPtr body = analyzeExpr( sexpr::last( expr ), &locals );
 
-	return new Let( expr->location, locals, body );
+	return new Let( expr->location, locals.bindings(), body );
+}
+static AstPtr analyzeLetStar( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
+	using namespace value;
+
+	assert( sexpr::at( expr, 0 )->asSymbol() );
+	assert( sexpr::at( expr, 0 )->asSymbol()->value == "let*" );
+
+	LocalScope locals( ctx );
+
+	if ( sexpr::length( expr ) < 3 ) 
+		LLLM_FAIL( expr->location << ": A let* must be of the form (let* (<name> <value>)... <sexpr>) not " << expr );
+
+	const size_t numBindings = sexpr::length( expr ) - 2;	
+
+	for ( size_t i = 0; i < numBindings; i++ ) {
+		if ( sexpr::ListPtr binding = sexpr::at( expr, i + 1 )->asList() ) {
+			if ( sexpr::length( binding ) != 2 ) 
+				LLLM_FAIL( binding->location << ": A binding of a let* must be of the form (<name> <value>) not!! " << sexpr::length( binding ) << " " << binding );
+			
+			if ( sexpr::SymbolPtr sym = sexpr::at( binding, 0 )->asSymbol() ) {
+				if ( locals.containsLocal( sym->value ) ) {
+					LLLM_FAIL( sym->location << " : local variable " << sym << " declared twice" );
+				}
+
+				AstPtr ast = analyzeExpr( sexpr::at( binding, 1 ), &locals );
+
+				locals.addLocal( sym, ast );
+			} else {
+				LLLM_FAIL( binding->location << ": A binding a let* must be of the form (<name> <value>) not " << binding );
+			}
+		} else {
+			LLLM_FAIL( binding->location << ": A binding a let* must be of the form (<name> <value>) not " << binding );
+		}
+	}
+
+	AstPtr body = analyzeExpr( sexpr::last( expr ), &locals );
+
+	return new LetStar( expr->location, locals.bindings(), body );
 }
 static AstPtr analyzeDo( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 	if ( sexpr::length( expr ) < 2 ) 
@@ -389,11 +295,11 @@ static AstPtr analyzeLambda( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 	if ( sexpr::ListPtr params = sexpr::at( expr, idx++ )->asList() ) {
 		for ( auto it = sexpr::begin( params ), end = sexpr::end( params ); it != end; ++it ) {
 			if ( sexpr::SymbolPtr param = (*it)->asSymbol() ) {
-				if ( lambda.contains( param->value ) ) {
+				if ( lambda.containsParam( param->value ) ) {
 					LLLM_FAIL( param->location << " : parameter " << param << " declared twice" );
 				}
 
-				lambda.addParameter( param );
+				lambda.addParam( param );
 			} else {
 				LLLM_FAIL( (*it)->location << ": Parameters of a lambda must all be symbols, not " << (*it) );
 			}
@@ -405,7 +311,7 @@ static AstPtr analyzeLambda( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 	// get variables captured from outer scopes in body
 	AstPtr body = analyzeExpr( sexpr::at( expr, idx ), &lambda );
 
-	return new Lambda( expr->location, nullptr, lambda.name(), lambda.parameters(), lambda.captured(), body );
+	return new Lambda( expr->location, lambda.name(), lambda.parameters(), lambda.captured(), body );
 }
 static AstPtr analyzeApplication( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 	assert( sexpr::length( expr ) );
@@ -443,5 +349,128 @@ AstPtr analyzeDefine( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 	} else {
 		LLLM_FAIL( expr->location << ": A define must be of the form (define <name> <value>) not " << expr );
 	}
+}
+
+LocalScope::LocalScope( util::ScopePtr<ast::VariablePtr> parent )   : parent( parent ) {}
+LambdaScope::LambdaScope( util::ScopePtr<ast::VariablePtr> parent ) : parent( parent ), self( nullptr ) {}
+
+bool LocalScope::lookup( const util::InternedString& name, ast::VariablePtr* dst ) {
+	auto lb = vars.lower_bound( name );
+
+	if ( lb != vars.end() && lb->first == name ) {
+		*dst = lb->second;
+		return true;
+	} else {
+		return parent->lookup( name, dst );
+	}
+}
+bool LocalScope::contains( const util::InternedString& name ) {
+	return (vars.count( name ) > 0) || parent->contains( name );
+}
+bool LocalScope::containsLocal( const util::InternedString& name ) {
+	return (vars.count( name ) > 0);
+}
+
+void LocalScope::addLocal( sexpr::SymbolPtr sym, AstPtr ast ) {
+	const util::InternedString& name = sym->value;
+
+	asts.push_back( std::make_pair( name, ast ) );
+	vars[name] = Variable::makeLocal( sym->location, name, ast );
+}
+
+Let::Bindings LocalScope::bindings() const {
+	return asts;
+}
+
+bool LambdaScope::lookup( const util::InternedString& name, ast::VariablePtr* dst ) {
+//	std::cout << "Lambda::lookup(" << name << ")" << std::endl;
+
+	// check parameters
+	for ( auto it = params.begin(), end = params.end(); it != end; ++it ) {
+		const VariablePtr var = *it;
+		if ( var->name == name ) {
+			*dst = var;
+			return true;
+		}
+	}
+	// check for recursion
+	if ( self && self->name == name ) {
+		*dst = self;
+		return true;
+	}
+	// check captured variables
+	for ( auto it = capture.begin(), end = capture.end(); it != end; ++it ) {
+		const VariablePtr var = *it;
+		if ( var->name == name ) {
+			*dst = var;
+			return true;
+		}
+	}
+	// get var from outer scope 
+	VariablePtr var;
+
+	if ( parent->lookup( name, &var ) ) {
+		if ( var->hasGlobalStorage ) {
+			*dst = var;
+			return true;
+		}
+
+		// capture variable
+		VariablePtr cap = Variable::makeCaptured( var->location, var->name, var->ast );
+		var->getsCaptured = true;
+
+		capture.push_back( cap );
+				
+		*dst = cap;
+		return true;
+	} else {
+		return var;
+	}
+}
+bool LambdaScope::contains( const util::InternedString& name ) {
+	// check parameters
+	if ( containsParam( name ) ) return true;	
+
+	// check for recursion
+	if ( self && self->name == name ) {
+		return true;
+	}
+	// check captured variables
+	for ( auto it = capture.begin(), end = capture.end(); it != end; ++it ) {
+		const VariablePtr var = *it;
+		if ( var->name == name ) {
+			return true;
+		}
+	}
+	// get var from outer scope 
+	return parent->contains( name );
+}
+bool LambdaScope::containsParam( const util::InternedString& name ) {
+	// check parameters
+	for ( auto it = params.begin(), end = params.end(); it != end; ++it ) {
+		const VariablePtr var = *it;
+		if ( var->name == name ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void LambdaScope::setName( sexpr::SymbolPtr name ) {
+	this->self = Variable::makeParameter( name->location, name->value );
+}
+void LambdaScope::addParam( sexpr::SymbolPtr sym ) {
+	params.push_back( Variable::makeParameter( sym->location, sym->value ) );
+}
+
+util::InternedString    LambdaScope::name() const {
+	return self ? self->name : "";
+}
+const Lambda::Bindings& LambdaScope::parameters() const {
+	return params;
+}
+const Lambda::Bindings& LambdaScope::captured()   const {
+	return capture;
 }
 

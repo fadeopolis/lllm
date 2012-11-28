@@ -7,6 +7,7 @@
 #include "lllm/util/util_io.hpp"
 
 #include <cassert>
+#include <iostream>
 
 #if LLLM_DBG_LVL > 4
 #	include <iostream>
@@ -24,18 +25,6 @@ size_t Evaluator::jittingThreshold = 1000;
 void Evaluator::setJittingThreshold( size_t threshold ) {
 	jittingThreshold = threshold;
 }
-
-class EvalScope : public util::Scope<value::ValuePtr> {
-	public:
-		EvalScope( const util::InternedString& name, value::ValuePtr val, util::ScopePtr<value::ValuePtr> parent = nullptr );
-
-		bool lookup( const util::InternedString& name, value::ValuePtr* dst ) override final;
-		bool contains( const util::InternedString& name ) override final;
-	private:
-		const util::ScopePtr<value::ValuePtr> parent;
-		util::InternedString                  name;
-		value::ValuePtr                       val;
-};
 
 EvalScope::EvalScope( const util::InternedString& name, value::ValuePtr val, ScopePtr<value::ValuePtr> parent ) :
   parent( parent ),
@@ -78,8 +67,6 @@ static std::ostream& operator<<( std::ostream& os, const std::vector<T>& v ) {
 }
 
 ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::ValuePtr> env ) {
-//std::cout << "EVAL" << std::endl;
-//std::cout << ast << std::endl;
 	struct Visitor {
 		// ***** ATOMS
 		ValuePtr visit( ast::NilPtr         ast, util::ScopePtr<value::ValuePtr> env ) const {
@@ -102,7 +89,7 @@ ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::Value
 			if ( env->lookup( ast->name, &val ) ) {
 				return val;
 			} else {
-				LLLM_FAIL( ast->location << ": Unknown variable " << ast->name );
+				LLLM_FAIL( ast->location << ": Unknown variable '" << ast->name << "'" );
 			}
 		}	
 		// ***** SPECIAL FORMS
@@ -124,6 +111,17 @@ ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::Value
 			return val;
 		}
 		ValuePtr visit( ast::LetPtr         ast, util::ScopePtr<value::ValuePtr> env ) const {
+			auto newEnv = env;			
+
+			for ( auto it = ast->bindings.begin(), end = ast->bindings.end(); it != end; ++it ) {
+				const ast::Let::Binding& b = *it;
+				ValuePtr val = evaluate( b.second, env );
+
+				newEnv = new EvalScope( b.first, val, newEnv );
+			}
+			return evaluate( ast->body, newEnv );
+		}
+		ValuePtr visit( ast::LetStarPtr     ast, util::ScopePtr<value::ValuePtr> env ) const {
 			for ( auto it = ast->bindings.begin(), end = ast->bindings.end(); it != end; ++it ) {
 				const ast::Let::Binding& b = *it;
 				ValuePtr val = evaluate( b.second, env );
@@ -131,12 +129,12 @@ ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::Value
 				env = new EvalScope( b.first, val, env );
 			}
 			return evaluate( ast->body, env );
-		}	
+		}
 		ValuePtr visit( ast::LambdaPtr      ast, util::ScopePtr<value::ValuePtr> env ) const {
 			Lambda* clojure = Lambda::alloc( ast );
 
 			size_t i = 0;
-			for ( auto it = ast->capturedVariables.begin(), end = ast->capturedVariables.end(); it != end; ++it, ++i ) {
+			for ( auto it = ast->capture_begin(), end = ast->capture_end(); it != end; ++it, ++i ) {
 				ValuePtr val;
 				if ( env->lookup( (*it)->name, &val ) ) {
 					clojure->env[i] = val;
@@ -201,16 +199,23 @@ ValuePtr Evaluator::applyFun( LambdaPtr fn, size_t arity, Lambda::FnPtr code, co
 //	std::cout << std::endl;
 
 	switch ( arity ) {
-		case 0:  return code( fn );
 	#define V    ValuePtr
 	#define L    LambdaPtr
 	#define A(I) args[I]
-		case  1:  return ((V(*)(L,V))          code)( fn, A(0) );
-		case  2:  return ((V(*)(L,V,V))        code)( fn, A(0), A(1) );
-		case  3:  return ((V(*)(L,V,V,V))      code)( fn, A(0), A(1), A(2) );
-		case  4:  return ((V(*)(L,V,V,V,V))    code)( fn, A(0), A(1), A(2), A(3) );
-		case  5:  return ((V(*)(L,V,V,V,V,V))  code)( fn, A(0), A(1), A(2), A(3), A(4) );
-		case  6:  return ((V(*)(L,V,V,V,V,V,V))code)( fn, A(0), A(1), A(2), A(3), A(4), A(5) );
+		case  0:  return ((V(*)(L))                          code)( fn );
+		case  1:  return ((V(*)(L,V))                        code)( fn, A(0) );
+		case  2:  return ((V(*)(L,V,V))                      code)( fn, A(0), A(1) );
+		case  3:  return ((V(*)(L,V,V,V))                    code)( fn, A(0), A(1), A(2) );
+		case  4:  return ((V(*)(L,V,V,V,V))                  code)( fn, A(0), A(1), A(2), A(3) );
+		case  5:  return ((V(*)(L,V,V,V,V,V))                code)( fn, A(0), A(1), A(2), A(3), A(4) );
+		case  6:  return ((V(*)(L,V,V,V,V,V,V))              code)( fn, A(0), A(1), A(2), A(3), A(4), A(5) );
+		case  7:  return ((V(*)(L,V,V,V,V,V,V,V))            code)( fn, A(0), A(1), A(2), A(3), A(4), A(5), A(6) );
+		case  8:  return ((V(*)(L,V,V,V,V,V,V,V,V))          code)( fn, A(0), A(1), A(2), A(3), A(4), A(5), A(6), A(7) );
+		case  9:  return ((V(*)(L,V,V,V,V,V,V,V,V,V))        code)( fn, A(0), A(1), A(2), A(3), A(4), A(5), A(6), A(7), A(8) );
+		case 10:  return ((V(*)(L,V,V,V,V,V,V,V,V,V,V))      code)( fn, A(0), A(1), A(2), A(3), A(4), A(5), A(6), A(7), A(8), A(9) );
+		case 11:  return ((V(*)(L,V,V,V,V,V,V,V,V,V,V,V))    code)( fn, A(0), A(1), A(2), A(3), A(4), A(5), A(6), A(7), A(8), A(9), A(10) );
+		case 12:  return ((V(*)(L,V,V,V,V,V,V,V,V,V,V,V,V))  code)( fn, A(0), A(1), A(2), A(3), A(4), A(5), A(6), A(7), A(8), A(9), A(10), A(11) );
+		case 13:  return ((V(*)(L,V,V,V,V,V,V,V,V,V,V,V,V,V))code)( fn, A(0), A(1), A(2), A(3), A(4), A(5), A(6), A(7), A(8), A(9), A(10), A(11), A(12) );
 	#undef V
 	#undef L
 	#undef A
@@ -221,6 +226,12 @@ ValuePtr Evaluator::applyFun( LambdaPtr fn, size_t arity, Lambda::FnPtr code, co
 ValuePtr Evaluator::applyAST( LambdaPtr fn, util::ScopePtr<value::ValuePtr> env, const std::vector<ValuePtr>& args ) {
 	Lambda::Data*  data = fn->data;
 	ast::LambdaPtr ast  = data->ast;
+
+//	std::cout << "APPLYING AST " << ast << " TO ";
+//	for ( auto it = args.begin(), end = args.end(); it != end; ++it ) {
+//		std::cout << *it << " ";
+//	}
+//	std::cout << std::endl;
 
 	data->callCnt++;
 
@@ -237,31 +248,21 @@ ValuePtr Evaluator::applyAST( LambdaPtr fn, util::ScopePtr<value::ValuePtr> env,
 	size_t i;
 
 	// add captured variables from clojure to env
-	const std::vector<ast::VariablePtr>& capturedVars = ast->capturedVariables;
-
 	i = 0;
-	for ( auto it = capturedVars.begin(), end = capturedVars.end(); it != end; ++it, ++i ) {
+	for ( auto it = ast->capture_begin(), end = ast->capture_end(); it != end; ++it, ++i ) {
 		env = new EvalScope( (*it)->name, fn->env[i], env );
 	}
 
 	// add self to env (for recursion)
-	if ( ast->name ) {
+	if ( ast->name && std::strcmp( "", ast->name ) != 0 ) {
 		env = new EvalScope( ast->name, fn, env );
 	}
 
 	// add args to env
-	const std::vector<ast::VariablePtr>& parameters = ast->parameters;
-
 	i = 0;
-	for ( auto it = parameters.begin(), end = parameters.end(); it != end; ++it, ++i ) {
+	for ( auto it = ast->params_begin(), end = ast->params_end(); it != end; ++it, ++i ) {
 		env = new EvalScope( (*it)->name, args[i], env );
 	}		
-
-//	std::cout << "APPLYING AST " << fn->data->ast << " TO ";
-//	for ( auto it = args.begin(), end = args.end(); it != end; ++it ) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
 
 	// eval body
 	return evaluate( ast->body, env );

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cat demo - | ../build/src/repl 
+

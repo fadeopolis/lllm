@@ -31,6 +31,7 @@ namespace lllm {
 			sexpr::StringPtr readString();
 			sexpr::SymbolPtr readSymbol();
 
+			void skipComment();
 			void skipWhitespace();
 			void consume( char expected );
 

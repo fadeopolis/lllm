@@ -222,6 +222,8 @@ jit_value_t jit_insn_convert
 	(jit_function_t func, jit_value_t value,
 	 jit_type_t type, int overflow_check) JIT_NOTHROW;
 
+jit_value_t jit_insn_tail_call( jit_function_t func, const char *name, jit_value_t *args, unsigned int num_args, jit_label_t* entry_point );
+
 jit_value_t jit_insn_call
 	(jit_function_t func, const char *name,
 	 jit_function_t jit_func, jit_type_t signature,

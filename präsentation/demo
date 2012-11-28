@@ -1,0 +1,98 @@
+
+; identity function
+(define id       (lambda id    (x)   x) )
+
+; stupid way to add two numbers
+(define sum      (lambda do-sum   (a b) (if (<= a 0) b (do-sum (- a 1) (+ 1 b)))) )
+
+; partial application
+(define bind  (lambda (f a) (lambda ()    (f a))))
+(define bind2 (lambda (f a) (lambda (b)   (f a b))))
+(define bind3 (lambda (f a) (lambda (b c) (f a b c))))
+
+; constant function
+(define const (lambda const (x) (lambda const-fn (y) x)))
+
+; fibonacci
+(define fib (lambda fib (n) 
+	(if (< n 2) 
+		n 
+		(+ (fib (- n 2)) (fib (- n 1))))))
+
+; tail recursive fibonacci
+;(define bare-tail-fib (lambda bare-tail-fib (n result next) (if (= n 0) result (bare-tail-fib (- n 1) next (+ result next)))))
+
+(define tail-fib (lambda fib-caller (n) 
+	(let (bare-tail-fib (lambda bare-tail-fib (n result next) 
+							(if (= n 0) 
+								result 
+								(bare-tail-fib (- n 1) next (+ result next)))))
+		(bare-tail-fib n 0 1))))
+
+; simple recursive function
+(define rec (lambda rec (a) (if (> a 0) (rec (- a 1)) 5.5)) )
+
+; multiplication
+(define mul (lambda (a b) (* a b)) )
+
+; apply closure
+(define apply0 (lambda (fn) (fn)) )
+(define apply2 (lambda (fn a b) (fn a b)) )
+
+; factorial
+(define ! (lambda ! (n) (if (<= n 0) 1 (* n (! (- n 1))))) )
+
+; map over lists
+(define map (lambda map (f l)
+	(if l 
+		(cons (f (car l)) (map f (cdr l)))
+		nil)))
+
+(define take (lambda do-take (n l)
+	(if (& l (> n 0))
+		(cons (car l) (do-take (- n 1) (cdr l)))
+		())))
+
+; demo data
+(define nums '(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30))
+(define tf  (bind tail-fib 10))
+
+clear
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

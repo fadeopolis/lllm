@@ -1,0 +1,364 @@
+\documentclass{beamer}
+
+% configure for german language
+\usepackage[ngerman]{babel}   % allow german special characters
+
+% for pictures
+\usepackage{graphicx}
+
+% for code-snippets
+\usepackage{listingsutf8}
+\usepackage{color}
+
+% set theme and color scheme
+\usetheme{Dresden}
+%\usetheme{CambridgeUS}
+%\usecolortheme{beaver}
+
+% special character set
+\usepackage{pifont}
+
+% document data
+\title{Dynamc compilation}
+\author{Fabian Gruber}
+
+%gets rid of bottom navigation bars
+\setbeamertemplate{footline}[page number]{}
+
+%gets rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\begin{document}
+%%%%%%% TITLE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%% name and author paper
+	\frame{\titlepage}
+
+%%%%%%% GOALS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\section{Introduction}
+
+	\begin{frame}
+		\frametitle{Goals}
+
+		\begin{itemize}
+			\itemsep12pt
+
+			\item Write a JIT for a very simple Lisp like language
+			\item There already is an interpreter for that language
+			\item The JIT and the interpreter should interoperate
+		\end{itemize}
+	\end{frame}
+
+%%%%%%% LANGUAGE INTRO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\section{Language}
+
+	\begin{frame}
+		\begin{center}
+			\Large{The language}
+		\end{center}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Reader syntax}
+
+		\begin{tabular}{lcl}
+			integers               & & 1, 5, 23, $1\_000\_000$                                                               \\[9pt]
+			floating point numbers & & 1.5, 3.14, 5., .7                                                                     \\[9pt]
+			symbols                & & true, false, $+$, $*$                                                                 \\[9pt]
+			strings                & & "hello world"                                                                         \\[9pt]
+			characters             & & $\backslash a$, $\backslash b$, $\backslash c$, $\backslash tab$ $\backslash newline$ \\[9pt]
+			lists                  & & (), (1 2 3), (1 (2 3) 4)                                                              \\[9pt]
+			quotation              & & '5, '"foo", 'symbol, '(a b c)                                                         \\[9pt]
+		\end{tabular}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Special forms}
+
+		\begin{tabular}{lcl}
+			function application  & & (+ 5 6)                        \\[9pt]
+			quotation             & & (quote (1 2 3)), (quote 5)     \\[9pt]
+			if-then-else          & & (if true 5 7)                  \\[9pt]
+			expression sequence   & & (do (println "hi") 5)          \\[9pt]
+			variable binding      & & (let  (a 5) (b 6)      (+ a b) \\[9pt]
+			                      & & (let* (a 5) (b (+ a 1) (+ a b) \\[9pt]
+			lambda expression     & & (lambda (a b c) (* a (+ b c))) \\[9pt]
+			global variable       & & (define pi 3.14)               \\[9pt]
+		\end{tabular}
+
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Refs}
+
+		\begin{itemize}
+			\itemsep12pt
+
+			\item All data types are immutable
+			\item Except refs
+			\item (define foo (ref))
+			\item (set foo 42)
+			\item (get foo) $\rightarrow$ 42
+		\end{itemize}
+	\end{frame}
+
+%%%%%%% THE COMPONENTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\section{Overview}
+
+%	\begin{frame}
+%		\begin{center}
+%			\Large{Main components}
+%		\end{center}
+%	\end{frame}
+
+	\begin{frame}
+		\frametitle{Main components}
+
+		\begin{itemize}
+			\itemsep12pt
+
+			\item \textbf{Reader}
+			\item \textbf{Analyzer}
+			\item \textbf{Interpreter/JIT}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Reader}
+
+		\begin{itemize}
+			\itemsep12pt
+		
+			\item Parses strings/files into S-expressions
+			\item Simple hand written recursive descent parser
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Analyzer}
+
+		\begin{itemize}
+			\itemsep12pt
+		
+			\item 'Parses' S-expressions into AST
+			\item Performs some simple checks on the source
+			\item Also gathers some type information
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Interpreter/JIT}
+
+		\begin{itemize}
+			\itemsep12pt
+		
+			\item Meta circular interpreter evaluates expressions into values
+			\item When functions are called often enough the JIT is invoked
+			\item The JIT performs some more analysis and optimization
+		\end{itemize}
+	\end{frame}
+
+%%%%%%% VALUE LAYOUT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\section{Memory layout}
+
+%	\begin{frame}
+%		\begin{center}
+%			\Large{Main components}
+%		\end{center}
+%	\end{frame}
+
+	\begin{frame}
+		\frametitle{Values}
+
+		\begin{itemize}
+			\itemsep12pt
+		
+			\item All values are allocated on the heap
+			\item Every value starts with a 8 byte tag.
+			\item The tag identifies a values type and a functions arity
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Functions}
+
+		For every function there is an object containing
+		\begin{itemize}
+			\itemsep12pt
+		
+			\item a pointer to the executable code,
+			\item a pointer to the functions AST,
+			\item a counter for how often the function has been called
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Closures}
+
+		Functions can be nested, thus we need to support closures.
+
+		Closure objects contains:
+		\begin{itemize}
+			\itemsep12pt
+		
+			\item A type/arity tag (like any other object)
+			\item A pointer to the executable code
+			\item A pointer to the shared function object
+			\item An array of the values the closure captures
+		\end{itemize}
+	\end{frame}
+
+%%%%%%% THE JIT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\section{The JIT}
+
+	\begin{frame}
+		\frametitle{Features of the JIT}
+	
+		\begin{itemize}
+			\itemsep12pt
+		
+			\item Tail call removal for self calls
+			\item Inlining of small functions
+			\item Remove null \& type check before function calls in simple cases
+		\end{itemize}
+	\end{frame}
+
+%%%%%%% DEMO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\section{Demo}
+
+	\begin{frame}
+		\Large
+		\begin{center}
+			A short Demo
+		\end{center}
+	\end{frame}
+
+%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\section{Summary}
+
+	\begin{frame}
+		\Large
+		\begin{center}
+			Summary
+		\end{center}
+	\end{frame}
+
+	\begin{frame}
+		\begin{center}
+			\begin{itemize}[<+->]
+				\item[] Have I met all my goals?
+				\item[] Not everything worked out as planned
+
+				\begin{itemize}[<+->]
+					\itemsep12pt
+	
+					\item Write a JIT for a very simple Lisp like language
+						\begin{itemize}[<+->]
+							\item[] Ok
+						\end{itemize}					
+					\item There already is an interpreter for that language 
+						\begin{itemize}[<+->]
+							\item[] Didn't gather enough information, it had to be rewritten
+						\end{itemize}
+					\item The JIT and the interpreter should interoperate   
+						\begin{itemize}[<+->]
+							\item[] The JIT can only call compiled functions 
+							\item[] $\Rightarrow$ functions are compiled on demand
+						\end{itemize}
+				\end{itemize}
+			\end{itemize}
+		\end{center}
+	\end{frame}
+
+	\begin{frame}
+		\begin{center}
+			Other problems \\
+
+			\vspace*{18pt}
+
+			\begin{itemize}[<+->]
+%				\itemsep12pt
+
+				\item I Planned to use LLVM as my code generator
+					\begin{itemize}[<+->]
+						\item[] Too heavy weight for this small project
+					\end{itemize}
+				\item[]
+				\item Now I use libjit
+					\begin{itemize}[<+->]
+						\item[] libjit's tail call optimizer is broken
+						\item[] It seems that lijit is no longer being developed
+						\item[] Had to repair it
+					\end{itemize}
+				\item[]
+%				\item I planned to do a points to analysis and allocate values on the stack
+%					\begin{itemize}[<+->]
+%						\item[] Ran out of time
+%					\end{itemize}
+			\end{itemize}
+		\end{center}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Trivia}
+
+		\begin{center}
+			\vspace*{18pt}
+
+			\begin{itemize}
+				\itemsep12pt
+
+				\item ~5000 lines of C++ code
+				\item Requires a C++11 compiler
+				\item ~50 lines of C code for libjit patch
+				\item Only external dependency is libjt
+			\end{itemize}
+		\end{center}
+	\end{frame}
+
+
+%%%%%%% WRAP IT UP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\section{}
+
+	\begin{frame}
+		\begin{center}
+			\Large{Thank you for your attention}
+		\end{center}
+	\end{frame}
+
+	\begin{frame}
+		\begin{center}
+			\Large{Questions?}
+		\end{center}
+	\end{frame}
+
+%	\section{Referenzen}
+%
+%	\begin{frame}		
+%		Dawson R. Engler, \\
+%		\textbf{VCODE}: a retargetable, extensible, very fast dynamic code generation system. \\
+%		 In Proceedings of the ACM SIGPLAN 1996 conference on Programming language design and implementation,
+%		 pages 160-170, 1996.
+%
+%		\vspace*{12pt}
+%
+%		Chris Lattner and Vikram Adve, \\
+%		\textbf{LLVM}: A Compilation Framework for Lifelong Program Analysis \& Transformation. \\
+%		In Proceedings of the international symposium on Code generation and optimization: feedback-directed and runtime optimization,
+%		pages 75-86, 2004.
+%
+%		\vspace*{12pt}
+%
+%		The LLVM project \\
+%		\url{http://www.llvm.org}
+%	\end{frame}
+	
+\end{document}
+

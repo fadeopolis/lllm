@@ -10,7 +10,9 @@ namespace lllm {
 		class Scope {
 			public:
 				virtual bool contains( const util::InternedString& name ) = 0;
-				virtual bool lookup( const util::InternedString& name, T* dst ) = 0;			
+				virtual bool lookup( const util::InternedString& name, T* dst ) = 0;
+
+				virtual void dump() {}
 		};
 	};
 };

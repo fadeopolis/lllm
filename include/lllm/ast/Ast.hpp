@@ -7,6 +7,7 @@
 #include "lllm/util/InternedString.hpp"
 #include "lllm/util/SourceLocation.hpp"
 #include "lllm/util/TypeSet.hpp"
+#include "lllm/util/EscapeStatus.hpp"
 
 #include <vector>
 
@@ -32,6 +33,7 @@ namespace lllm {
 				Ast( Type type, const util::SourceLocation& loc );
 			public:
 				virtual util::TypeSet possibleTypes() const = 0;
+				virtual size_t        depth()         const = 0;
 	
 				template<typename T>
 				T* as();
@@ -54,13 +56,27 @@ namespace lllm {
 		};
 
 		//***** ATOMS                ****************************************************************//
-		class Nil final : public Ast {
+		class Atom : public Ast {
+			public:
+				util::EscapeStatus escape;
+			private:
+				Atom( Type type, const util::SourceLocation& );
+
+				size_t        depth()         const override final;
+
+			friend class Nil;
+			friend class Int;
+			friend class Real;
+			friend class Char;
+			friend class String;
+		};
+		class Nil final : public Atom {
 			public:
 				Nil( const util::SourceLocation& );
 	
 				util::TypeSet possibleTypes() const override final;
 		};
-		class Int final : public Ast {
+		class Int final : public Atom {
 			public:
 				Int( const util::SourceLocation&, long );
 
@@ -68,7 +84,7 @@ namespace lllm {
 	
 				const long value;
 		};
-		class Real final : public Ast {
+		class Real final : public Atom {
 			public:
 				Real( const util::SourceLocation&, double );
 	
@@ -76,7 +92,7 @@ namespace lllm {
 	
 				const double value;
 		};
-		class Char final : public Ast {
+		class Char final : public Atom {
 			public:
 				Char( const util::SourceLocation&, char );
 	
@@ -84,87 +100,44 @@ namespace lllm {
 
 				const char value;
 		};
-		class String final : public Ast {
+		class String final : public Atom {
 			public:
 				String( const util::SourceLocation&, util::CStr );
 	
 				util::TypeSet possibleTypes() const override final;
-	
+
 				const util::CStr value;
 		};
 
 		//***** VARIABLES            ****************************************************************//
 		class Variable : public Ast {
 			public:
-				Variable( const util::SourceLocation&, const util::InternedString&, const util::TypeSet& types, bool global = false );
+				static VariablePtr makeGlobal( const util::SourceLocation&, const util::InternedString&, const AstPtr ast );
+				static VariablePtr makeLocal( const util::SourceLocation&, const util::InternedString&, const AstPtr ast );
+				static VariablePtr makeParameter( const util::SourceLocation&, const util::InternedString& );
+				static VariablePtr makeCaptured( const util::SourceLocation&, const util::InternedString&, const AstPtr ast );
 
 				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
 
 				// info collected at construction time
 				const util::InternedString name;
+				const AstPtr               ast; // null for parameters!
 				const bool                 hasGlobalStorage;
 
 				// info collected later
-				bool          getsCaptured;
-				util::TypeSet types;
-
-			friend class Builtin;
-			friend class Global;
-			friend class Parameter;
-			friend class Captured;
-			friend class Local;
-		};
-/*
-		class Builtin final : public Variable {
-			public:
-				Builtin( const util::InternedString&, util::TypeSet );
-
-				util::TypeSet possibleTypes()    const override final;
-				bool          hasGlobalStorage() const override final;
+				bool         getsCaptured;
 			private:
-				const util::TypeSet _types;
+				Variable( const util::SourceLocation&, const util::InternedString&, const AstPtr ast, bool global = false );
 		};
-		class Global final : public Variable {
-			public:
-				Global( const util::SourceLocation&, const util::InternedString&, AstPtr value );
 
-				util::TypeSet possibleTypes()    const override final;
-				bool          hasGlobalStorage() const override final;
-
-				const AstPtr value;
-		};
-		class Captured final : public Variable {
-			public:
-				Captured( const util::SourceLocation&, const util::InternedString&, util::TypeSet );
-
-				util::TypeSet possibleTypes()    const override final;
-				bool          hasGlobalStorage() const override final;
-			private:
-				const util::TypeSet _types;
-		};
-		class Parameter final : public Variable {
-			public:
-				Parameter( const util::SourceLocation&, const util::InternedString& );
-
-				util::TypeSet possibleTypes()    const override final;
-				bool          hasGlobalStorage() const override final;
-		};
-		class Local final : public Variable {
-			public:
-				Local( const util::SourceLocation&, const util::InternedString&, AstPtr value );
-
-				util::TypeSet possibleTypes()    const override final;
-				bool          hasGlobalStorage() const override final;
-
-				const AstPtr value;
-		};
-*/
 		//***** SPECIAL FORMS        ****************************************************************//
 		class Quote : public Ast {
 			public:
 				Quote( const util::SourceLocation&, value::ValuePtr value );
 	
 				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
 	
 				const value::ValuePtr value;
 		};
@@ -173,16 +146,20 @@ namespace lllm {
 				If( const util::SourceLocation&, AstPtr test, AstPtr thenBranch, AstPtr elseBranch );
 	
 				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
 	
 				const AstPtr test;
 				const AstPtr thenBranch;
 				const AstPtr elseBranch;
+			private:
+				size_t _depth;
 		};
 		class Do : public Ast {
 			public:
 				Do( const util::SourceLocation&, const std::vector<AstPtr>& exprs );
 
 				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
 	
 				std::vector<AstPtr>::const_iterator begin() const;
 				std::vector<AstPtr>::const_iterator end()   const;
@@ -190,6 +167,8 @@ namespace lllm {
 				AstPtr back() const;
 
 				const std::vector<AstPtr> exprs;
+			private:
+				size_t _depth;
 		};
 		class Let : public Ast {
 			public:
@@ -199,42 +178,75 @@ namespace lllm {
 				Let( const util::SourceLocation&, const Bindings&, AstPtr );
 
 				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
 
 				Bindings::const_iterator begin() const;
 				Bindings::const_iterator end()   const;
 
 				const Bindings bindings;
 				const AstPtr   body;
+			private:
+				size_t _depth;
+		};
+		class LetStar : public Ast {
+			public:
+				typedef std::pair<util::InternedString,AstPtr> Binding;
+				typedef std::vector<Binding>                   Bindings;
+
+				LetStar( const util::SourceLocation&, const Bindings&, AstPtr );
+
+				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
+
+				Bindings::const_iterator begin() const;
+				Bindings::const_iterator end()   const;
+
+				const Bindings bindings;
+				const AstPtr   body;
+			private:
+				size_t _depth;
 		};
 		class Lambda : public Ast {
 			public:
-				typedef VariablePtr          Binding;
-				typedef std::vector<Binding> Bindings;
+				typedef VariablePtr              Binding;
+				typedef std::vector<Binding>     Bindings;
+				typedef Bindings::const_iterator Iterator;
 
 				Lambda( const util::SourceLocation&, 
-				        LambdaPtr parent, 
 				        const util::InternedString& name,
-				        const Bindings&, 
-				        const Bindings&, 
-				        AstPtr );
+						const Bindings& params,
+						const Bindings& capture,
+				        AstPtr body );
 
 				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
 
 				size_t arity()   const;
 				size_t envSize() const;
 
-				const LambdaPtr            parent;
-				const util::InternedString name;
-				value::Lambda::Data* const data;
-				const Bindings             parameters;
-				const Bindings             capturedVariables;
-				const AstPtr               body;
+				Iterator params_begin() const;
+				Iterator params_end()   const;
+
+				Iterator capture_begin() const;
+				Iterator capture_end()   const;
+
+				util::EscapeStatus paramEscape( Iterator param );
+				void               paramEscape( Iterator param, util::EscapeStatus );
+
+				const util::InternedString   name;
+				const AstPtr                 body;
+				const Bindings               params;
+				const Bindings               capture;
+				const value::Lambda::DataPtr data;
+			private:
+				std::vector<util::EscapeStatus> escapes;
 		};
 		class Define : public Ast {
 			public:
 				Define( const util::SourceLocation&, const util::InternedString& name, AstPtr ast );
 	
 				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
 	
 				const util::InternedString name;
 				const AstPtr               expr;
@@ -248,6 +260,7 @@ namespace lllm {
 				Application( const util::SourceLocation&, AstPtr fun, const std::vector<AstPtr>& args );
 	
 				util::TypeSet possibleTypes() const override final;
+				size_t        depth()         const override final;
 	
 				const AstPtr              fun;
 				const std::vector<AstPtr> args;
@@ -255,6 +268,8 @@ namespace lllm {
 				iterator begin() const;
 				iterator end()   const;
 				size_t   arity() const;
+			private:
+				size_t _depth;
 		};
 
 		//***** VISITORS             ****************************************************************//

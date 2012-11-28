@@ -70,6 +70,7 @@ namespace lllm {
 		extern SexprIterator begin( ListPtr );			
 		extern SexprIterator end( ListPtr );
 		extern SexprPtr      at( ListPtr, size_t idx );
+		extern SexprPtr      last( ListPtr );
 
 		extern bool equal( SexprPtr, SexprPtr );
 

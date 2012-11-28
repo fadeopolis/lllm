@@ -1,0 +1,11 @@
+
+(define id       (lambda id    (x)   x) )
+(define sum      (lambda sum   (a b) (if (<= a 0) b (sum (- a 1) (+ 1 b)))) )
+(define const    (lambda const (x)   (lambda (y) x)) )
+(define fib      (lambda fib (n) (if (< n 2) n (+ (fib (- n 2)) (fib (- n 1))))) )
+(define tail_fib (lambda tail_fib (n result next) (if (= n 0) result (tail_fib (- n 1) next (+ result next)))) )
+(define rec      (lambda rec (a) (if (> a 0) (rec (- a 1)) 5.5)) )
+(define mul      (lambda A (a b) (* a b)) )
+(define apply2   (lambda B (fn a b) (fn a b)) )
+(define !        (lambda ! (n) (if (<= n 0) 1 (* n (! (- n 1))))) )
+

@@ -23,6 +23,6 @@ add_definitions( -Wall )
 #link_directories( /usr/lib/llvm-3.0/lib )
 
 link_directories( lib )
-include_directories( include lib )
+include_directories( include lib lib/p99 )
 add_subdirectory( src )
 

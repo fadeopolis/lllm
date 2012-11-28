@@ -1,0 +1,9 @@
+\beamer@endinputifotherversion {3.10pt}
+\select@language {ngerman}
+\beamer@sectionintoc {1}{Introduction}{2}{0}{1}
+\beamer@sectionintoc {2}{Language}{3}{0}{2}
+\beamer@sectionintoc {3}{Overview}{7}{0}{3}
+\beamer@sectionintoc {4}{Memory layout}{11}{0}{4}
+\beamer@sectionintoc {5}{The JIT}{14}{0}{5}
+\beamer@sectionintoc {6}{Demo}{15}{0}{6}
+\beamer@sectionintoc {7}{Summary}{16}{0}{7}

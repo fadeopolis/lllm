@@ -1,11 +1,14 @@
 #ifndef __LLLM_HPP__
 #define __LLLM_HPP__ 1
 
+struct __float128;
+
 #include <gc/gc_cpp.h>
 
 #define LLLM_DBG_LVL 0
 
 namespace lllm {
+	static constexpr long MAX_ARITY = 13;
 
 	class   Obj;
 	typedef Obj*       ObjPtr;
@@ -59,6 +62,9 @@ namespace lllm {
 	// ** emits machine code for funtions
 	class   Emitter;
 	typedef Emitter* EmitterPtr;
+
+	class   GlobalScope;
+	typedef GlobalScope* GlobalScopePtr;
 
 	//***** UTILITIES *********************************************************
 
