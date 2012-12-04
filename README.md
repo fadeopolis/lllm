@@ -1,15 +1,10 @@
 lllm
 ====
 
-The Low Level Lisp Machine - A tiny lisp machine with a LLVM JIT
+The Low Level Lisp Machine - A tiny lisp machine with a JIT
 
 TODO
 =====
-* Finish JIT
-** let
-** fun application
-** lambda construction
-** recursion
 * Escape Analysis
 ** When does a value escape?
 *** If it is stored in a ref
