@@ -1,2 +1,0 @@
-/usr/bin/ar cr libeval.a  CMakeFiles/eval.dir/eval.cpp.o CMakeFiles/eval.dir/Env.cpp.o
-/usr/bin/ranlib libeval.a
