@@ -1,4 +1,12 @@
 
+set(CMAKE_CXX_COMPILER        clang++)
+# set(CMAKE_CXX_LINK_EXECUTABLE clang)
+set(CMAKE_SHARED_LINKER_FLAGS "-g -rdynamic")
+
+add_definitions( -std=gnu++11 )
+add_definitions( -g )
+add_definitions( -Wall )
+
 add_subdirectory( util  )
 add_subdirectory( sexpr )
 add_subdirectory( ast   )
@@ -6,26 +14,24 @@ add_subdirectory( value )
 
 add_library( lllm lllm.cpp Reader.cpp Analyzer.cpp Evaluator.cpp EscapeAnalyzer.cpp Jit.cpp Builtins.cpp GlobalScope.cpp )
 add_library( jit  STATIC IMPORTED )
-set_property( TARGET jit PROPERTY IMPORTED_LOCATION /home/fader/Desktop/libjit.a ) 
+set_property( TARGET jit PROPERTY IMPORTED_LOCATION /home/fader/Desktop/libjit.a )
 
-target_link_libraries( lllm sexpr ast value gc jit
- ## LLVM requires a LOT of libs
-#	LLVMX86Disassembler LLVMX86AsmParser LLVMX86AsmPrinter LLVMX86CodeGen LLVMX86Desc LLVMX86Utils LLVMX86Info
-#	LLVMSelectionDAG LLVMAsmPrinter LLVMMCParser LLVMJIT LLVMExecutionEngine LLVMCodeGen LLVMScalarOpts LLVMInstCombine
-#	LLVMTransformUtils LLVMipa LLVMAnalysis LLVMTarget LLVMMC LLVMCore LLVMSupport LLVMInterpreter
+target_link_libraries(lllm
+	## lllm libs
+	sexpr
+	ast
+	value
+	# system libs
+	gc-lib
+	${LIBJIT}
+	pthread
+	ffi
+	dl
+	m
+)
 
-#	LLVMXCoreCodeGen LLVMTableGen LLVMRuntimeDyld LLVMObject LLVMMCDisassembler LLVMXCoreDesc LLVMXCoreInfo
-#	LLVMPTXDesc LLVMPTXInfo LLVMPTXAsmPrinter LLVMLinker LLVMipo LLVMInterpreter LLVMInstrumentation LLVMJIT#
-#	LLVMExecutionEngine LLVMDebugInfo
-#	LLVMBitWriter LLVMX86Disassembler LLVMX86AsmParser LLVMX86CodeGen LLVMX86Desc LLVMX86AsmPrinter LLVMX86Utils
-#	LLVMX86Info LLVMAsmParser LLVMArchive LLVMBitReader LLVMSelectionDAG LLVMAsmPrinter LLVMMCParser LLVMCodeGen
-#	LLVMScalarOpts LLVMInstCombine LLVMTransformUtils LLVMipa LLVMAnalysis LLVMTarget LLVMCore LLVMMC LLVMSupport
-
-	pthread ffi dl m
- )
-
-add_executable( repl repl.cpp )
-target_link_libraries( repl lllm gc )
+add_executable(repl repl.cpp)
+target_link_libraries(repl lllm gc-lib ${LIBJIT})
 
 ## testing
 add_executable( test_1_reader   test_1_reader.cpp   )

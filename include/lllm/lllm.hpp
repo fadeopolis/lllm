@@ -3,7 +3,7 @@
 
 struct __float128;
 
-#include <gc/gc_cpp.h>
+#include <gc_cpp.h>
 
 #define LLLM_DBG_LVL 0
 
