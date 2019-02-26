@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_PREREQ(2.61)
+AC_PREREQ([2.69])
 
-AC_INIT([libjit], [0.1.3], [libjit@gnu.org])
+AC_INIT([libjit], [0.1.4], [libjit@gnu.org])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([include/jit/jit.h])
 AC_CONFIG_HEADERS([config.h])
@@ -11,11 +11,13 @@ dnl Determine the host system type.
 AC_CANONICAL_HOST
 
 dnl Initialize automake.
-AM_INIT_AUTOMAKE([-Wall dist-bzip2])
+AM_INIT_AUTOMAKE([-Wall dist-bzip2 serial-tests])
 
 dnl Set the version number for the shared libraries.
 AC_SUBST(LIBJIT_VERSION)
 LIBJIT_VERSION=0:1:0
+
+PKG_INSTALLDIR
 
 dnl Determine the architecture.
 AC_MSG_CHECKING([architecture])
@@ -33,27 +35,11 @@ case "$host" in
 esac
 AC_MSG_RESULT($JIT_ARCH)
 
-dnl Turn off the cygwin library if building for Win32.
 dnl Note: We have to include <stdlib.h> if we will be using "__int64"
 dnl because otherwise the mingw32 compiler won't define it correctly.
-AC_MSG_CHECKING([if building for some Win32 platform])
+AC_MSG_CHECKING([if building for Win32])
 AC_SUBST(JIT_INT64_INCLUDE)
 case "$host" in
-	*-*-cygwin*)
-		platform_win32=yes
-		if test "x$CC" = "x" ; then
-			CC="gcc -mno-cygwin"
-		fi
-		if test "x$CXX" = "x" ; then
-			if test "x$CC" = "xcl" ; then
-				CXX="cl"
-			else
-				CXX="g++ -mno-cygwin"
-			fi
-		fi
-		suppress_libm=yes
-		JIT_INT64_INCLUDE='#include <stdlib.h>'
-		;;
 	*-*-mingw*)
 		platform_win32=yes
 		if test "x$CC" = "xcl" ; then
@@ -111,8 +97,9 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_YACC
 AM_PROG_LEX
-AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
+
+dnl Initialize libtool.
+LT_INIT([win32-dll])
 
 dnl Set the correct flags for compiling with MSVC.  "/QIfist" is needed
 dnl on systems with both VC 6.0 and VC 7.0 installed: sometimes VC 7.0
@@ -488,10 +475,14 @@ AC_CONFIG_FILES([
   include/jit/jit-defs.h
   tools/Makefile
   jit/Makefile
+  jit/libjit.pc
   jitdynamic/Makefile
+  jitdynamic/libjitdynamic.pc
   jitplus/Makefile
+  jitplus/libjitplus.pc
   dpas/Makefile
   tutorial/Makefile
   tests/Makefile
+  tests/misc/Makefile
   doc/Makefile])
 AC_OUTPUT

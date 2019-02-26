@@ -1,0 +1,21 @@
+
+lib/libjit
+  https://git.savannah.gnu.org/git/libjit.git
+
+  commit 554c9f5c750daa6e13a6a5cd416873c81c7b8226
+  Author: Aleksey Demakov <ademakov@gmail.com>
+  Date:   Thu Oct 25 13:05:42 2018 +0300
+
+lib/bdwgc
+  https://github.com/ivmai/bdwgc.git
+
+  commit c23bad10a352cddac65736d8375ede6224e890f3
+  Author: Ivan Maidanski <ivmai@mail.ru>
+  Date:   Tue Feb 26 00:51:45 2019 +0300
+
+lib/p99
+  https://scm.gforge.inria.fr/anonscm/git/p99/p99.git
+
+  commit dfbbefb522bf30b2586c64d456ac93479b8640cd
+  Author: Jens Gustedt <Jens.Gustedt@inria.fr>
+  Date:   Tue Dec 18 14:36:32 2018 +0100

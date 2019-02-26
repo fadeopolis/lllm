@@ -39,13 +39,13 @@ namespace lllm {
 				T* as();
 
 				template<typename Return, typename Visitor, typename... Args>
-				Return visit( Visitor&, Args... );
+				Return visit( Visitor&&, Args... );
 				template<typename Return, typename Visitor, typename... Args>
-				Return visit( Visitor&, Args... ) const;
-				template<typename Return, typename Visitor, typename... Args>
-				Return visit( const Visitor&, Args... );
-				template<typename Return, typename Visitor, typename... Args>
-				Return visit( const Visitor&, Args... ) const;
+				Return visit( Visitor&&, Args... ) const;
+				// template<typename Return, typename Visitor, typename... Args>
+				// Return visit( const Visitor&, Args... );
+				// template<typename Return, typename Visitor, typename... Args>
+				// Return visit( const Visitor&, Args... ) const;
 
 				const util::SourceLocation location;
 			private:
@@ -277,7 +277,7 @@ namespace lllm {
 		T* Ast::as() { return dynamic_cast<T*>( this ); }
 
 		template<typename Return, typename Visitor, typename... Args>
-		Return Ast::visit( Visitor& v, Args... args ) {
+		Return Ast::visit( Visitor&& v, Args... args ) {
 			AST_VISIT_DBG_BEGIN;
 			switch ( type ) {
 				#define LLLM_VISITOR( TYPE ) case ast::Type::TYPE: return v.visit( dynamic_cast<TYPE##Ptr>( this ), args... );
@@ -287,27 +287,7 @@ namespace lllm {
 			AST_VISIT_DBG_END;
 		}
 		template<typename Return, typename Visitor, typename... Args>
-		Return Ast::visit( Visitor& v, Args... args ) const {
-			AST_VISIT_DBG_BEGIN;
-			switch ( type ) {
-				#define LLLM_VISITOR( TYPE ) case ast::Type::TYPE: return v.visit( dynamic_cast<Const##TYPE##Ptr>( this ), args... );
-				#include "lllm/ast/Ast_concrete.inc"
-				default: return v.visit( dynamic_cast<ConstLambdaPtr>( this ), args... );
-			}
-			AST_VISIT_DBG_END;
-		}
-		template<typename Return, typename Visitor, typename... Args>
-		Return Ast::visit( const Visitor& v, Args... args ) {
-			AST_VISIT_DBG_BEGIN;
-			switch ( type ) {
-				#define LLLM_VISITOR( TYPE ) case ast::Type::TYPE: return v.visit( dynamic_cast<TYPE##Ptr>( this ), args... );
-				#include "lllm/ast/Ast_concrete.inc"
-				default: return v.visit( dynamic_cast<LambdaPtr>( this ), args... );
-			}
-			AST_VISIT_DBG_END;
-		}
-		template<typename Return, typename Visitor, typename... Args>
-		Return Ast::visit( const Visitor& v, Args... args ) const {
+		Return Ast::visit( Visitor&& v, Args... args ) const {
 			AST_VISIT_DBG_BEGIN;
 			switch ( type ) {
 				#define LLLM_VISITOR( TYPE ) case ast::Type::TYPE: return v.visit( dynamic_cast<Const##TYPE##Ptr>( this ), args... );

@@ -2966,7 +2966,7 @@ _jit_regs_set_outgoing(jit_gencode_t gen, int reg, jit_value_t value)
 
 /*@
  * @deftypefun void _jit_regs_clear_all_outgoing (jit_gencode_t gen)
- * Free registers used fot outgoing parameters.  This is used to
+ * Free registers used for outgoing parameters.  This is used to
  * clean up after a function call.
  * @end deftypefun
 @*/
@@ -3054,7 +3054,7 @@ _jit_regs_load_value(jit_gencode_t gen, jit_value_t value, int destroy, int used
 		return reg;
 	}
 
-	switch(jit_type_normalize(value->type)->kind)
+	switch(jit_type_remove_tags(value->type)->kind)
 	{
 	case JIT_TYPE_SBYTE:
 	case JIT_TYPE_UBYTE:

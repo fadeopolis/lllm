@@ -69,11 +69,12 @@ jit_type_t jit_insn_get_signature(jit_insn_t insn) JIT_NOTHROW;
 int jit_insn_dest_is_value(jit_insn_t insn) JIT_NOTHROW;
 
 int jit_insn_label(jit_function_t func, jit_label_t *label) JIT_NOTHROW;
+int jit_insn_label_tight(jit_function_t func, jit_label_t *label) JIT_NOTHROW;
+
 int jit_insn_new_block(jit_function_t func) JIT_NOTHROW;
+
 jit_value_t jit_insn_load(jit_function_t func, jit_value_t value) JIT_NOTHROW;
 jit_value_t jit_insn_dup(jit_function_t func, jit_value_t value) JIT_NOTHROW;
-jit_value_t jit_insn_load_small
-	(jit_function_t func, jit_value_t value) JIT_NOTHROW;
 int jit_insn_store
 	(jit_function_t func, jit_value_t dest, jit_value_t value) JIT_NOTHROW;
 jit_value_t jit_insn_load_relative
@@ -94,6 +95,7 @@ int jit_insn_store_elem
 	(jit_function_t func, jit_value_t base_addr,
 	 jit_value_t index, jit_value_t value) JIT_NOTHROW;
 int jit_insn_check_null(jit_function_t func, jit_value_t value) JIT_NOTHROW;
+int jit_insn_nop(jit_function_t func) JIT_NOTHROW;
 
 jit_value_t jit_insn_add
 	(jit_function_t func, jit_value_t value1, jit_value_t value2) JIT_NOTHROW;
@@ -221,9 +223,6 @@ jit_value_t jit_insn_address_of_label
 jit_value_t jit_insn_convert
 	(jit_function_t func, jit_value_t value,
 	 jit_type_t type, int overflow_check) JIT_NOTHROW;
-
-// added by fav to work around tail call support in jit_insn_call being broken
-jit_value_t jit_insn_tail_call( jit_function_t func, const char *name, jit_value_t *args, unsigned int num_args, jit_label_t* entry_point );
 
 jit_value_t jit_insn_call
 	(jit_function_t func, const char *name,

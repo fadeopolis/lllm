@@ -533,6 +533,7 @@ jit_label jit_function::new_label()
 
 /*@
  * @deftypemethod jit_function void insn_label (jit_label& @var{label})
+ * @deftypemethodx jit_function void insn_label_tight (jit_label& @var{label})
  * @deftypemethodx jit_function void insn_new_block ()
  * @deftypemethodx jit_function jit_value insn_load (const jit_value& @var{value})
  * @deftypemethodx jit_function jit_value insn_dup (const jit_value& @var{value})
@@ -662,6 +663,14 @@ void jit_function::insn_label(jit_label& label)
 	}
 }
 
+void jit_function::insn_label_tight(jit_label& label)
+{
+	if(!jit_insn_label_tight(func, label.rawp()))
+	{
+		out_of_memory();
+	}
+}
+
 void jit_function::insn_new_block()
 {
 	if(!jit_insn_new_block(func))
@@ -678,11 +687,6 @@ jit_value jit_function::insn_load(const jit_value& value)
 jit_value jit_function::insn_dup(const jit_value& value)
 {
 	value_wrap(jit_insn_dup(func, value.raw()));
-}
-
-jit_value jit_function::insn_load_small(const jit_value& value)
-{
-	value_wrap(jit_insn_load_small(func, value.raw()));
 }
 
 void jit_function::store(const jit_value& dest, const jit_value& value)

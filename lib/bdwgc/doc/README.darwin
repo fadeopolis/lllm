@@ -21,7 +21,7 @@ cannot call GC_init() before your libraries' static initializers have
 run and perhaps called GC_malloc(), create an initialization routine
 for each library to call GC_init():
 
-#include <gc/gc.h>
+#include "gc.h"
 extern "C" void my_library_init() { GC_init(); }
 
 Compile this code into a my_library_init.o, and link it into your
@@ -133,7 +133,7 @@ work and doesn't mess up the garbage collector's functionality).
 Feb 26, 2003
 
 Jeff Sturm and Jesse Rosenstock provided a patch that adds thread support.
-GC_MACOSX_THREADS should be defined in the build and in clients.  Real
+GC_THREADS should be defined in the build and in clients.  Real
 dynamic library support is still missing, i.e. dynamic library data segments
 are still not scanned.  Code that stores pointers to the garbage collected
 heap in statically allocated variables should not reside in a dynamic

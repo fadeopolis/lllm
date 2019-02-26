@@ -101,10 +101,10 @@ typedef struct GC_ms_entry * (*GC_mark_proc)(GC_word * /* addr */,
                | (proc_index)) << GC_DS_TAG_BITS) | GC_DS_PROC)
 #define GC_DS_PER_OBJECT 3  /* The real descriptor is at the            */
                         /* byte displacement from the beginning of the  */
-                        /* object given by descr & ~DS_TAGS             */
+                        /* object given by descr & ~GC_DS_TAGS.         */
                         /* If the descriptor is negative, the real      */
                         /* descriptor is at (*<object_start>) -         */
-                        /* (descr & ~DS_TAGS) - GC_INDIR_PER_OBJ_BIAS   */
+                        /* (descr&~GC_DS_TAGS) - GC_INDIR_PER_OBJ_BIAS  */
                         /* The latter alternative can be used if each   */
                         /* object contains a type descriptor in the     */
                         /* first word.                                  */
@@ -152,12 +152,17 @@ GC_API struct GC_ms_entry * GC_CALL GC_mark_and_push(void * /* obj */,
            (GC_word)(obj) <= (GC_word)GC_greatest_plausible_heap_addr ? \
            GC_mark_and_push(obj, msp, lim, src) : (msp))
 
-GC_API size_t GC_debug_header_size;
-       /* The size of the header added to objects allocated through    */
-       /* the GC_debug routines.                                       */
-       /* Defined as a variable so that client mark procedures don't   */
-       /* need to be recompiled for collector version changes.         */
-#define GC_USR_PTR_FROM_BASE(p) ((void *)((char *)(p) + GC_debug_header_size))
+/* The size of the header added to objects allocated through the        */
+/* GC_debug routines.  Defined as a function so that client mark        */
+/* procedures do not need to be recompiled for the collector library    */
+/* version changes.                                                     */
+GC_API GC_ATTR_CONST size_t GC_CALL GC_get_debug_header_size(void);
+#define GC_USR_PTR_FROM_BASE(p) \
+                ((void *)((char *)(p) + GC_get_debug_header_size()))
+
+/* The same but defined as a variable.  Exists only for the backward    */
+/* compatibility.                                                       */
+GC_API GC_ATTR_DEPRECATED const size_t GC_debug_header_size;
 
 /* And some routines to support creation of new "kinds", e.g. with      */
 /* custom mark procedures, by language runtimes.                        */
@@ -184,7 +189,7 @@ GC_API unsigned GC_CALL GC_new_proc(GC_mark_proc);
 GC_API unsigned GC_CALL GC_new_proc_inner(GC_mark_proc);
 
 /* Allocate an object of a given kind.  By default, there are only      */
-/* a few kinds: composite (pointer-free), atomic, uncollectible, etc.   */
+/* a few kinds: composite (pointerful), atomic, uncollectible, etc.     */
 /* We claim it is possible for clever client code that understands the  */
 /* GC internals to add more, e.g. to communicate object layout          */
 /* information to the collector.  Note that in the multi-threaded       */
@@ -203,6 +208,11 @@ GC_API GC_ATTR_MALLOC GC_ATTR_ALLOC_SIZE(1) void * GC_CALL
                                 /* As above, but pointers to past the   */
                                 /* first page of the resulting object   */
                                 /* are ignored.                         */
+
+/* Generalized version of GC_malloc_[atomic_]uncollectable.     */
+GC_API GC_ATTR_MALLOC GC_ATTR_ALLOC_SIZE(1) void * GC_CALL
+                                        GC_generic_malloc_uncollectable(
+                                            size_t /* lb */, int /* knd */);
 
 /* Same as above but primary for allocating an object of the same kind  */
 /* as an existing one (kind obtained by GC_get_kind_and_size).          */
@@ -274,10 +284,13 @@ GC_API void GC_CALL GC_set_mark_bit(const void *) GC_ATTR_NONNULL(1);
 
 /* Push everything in the given range onto the mark stack.              */
 /* (GC_push_conditional pushes either all or only dirty pages depending */
-/* on the third argument.)                                              */
-GC_API void GC_CALL GC_push_all(char * /* bottom */, char * /* top */);
-GC_API void GC_CALL GC_push_conditional(char * /* bottom */, char * /* top */,
+/* on the third argument.)  GC_push_all_eager also ensures that stack   */
+/* is scanned immediately, not just scheduled for scanning.             */
+GC_API void GC_CALL GC_push_all(void * /* bottom */, void * /* top */);
+GC_API void GC_CALL GC_push_all_eager(void * /* bottom */, void * /* top */);
+GC_API void GC_CALL GC_push_conditional(void * /* bottom */, void * /* top */,
                                         int /* bool all */);
+GC_API void GC_CALL GC_push_finalizer_structures(void);
 
 /* Set and get the client push-other-roots procedure.  A client         */
 /* supplied procedure should also call the original procedure.          */
@@ -287,8 +300,23 @@ typedef void (GC_CALLBACK * GC_push_other_roots_proc)(void);
 GC_API void GC_CALL GC_set_push_other_roots(GC_push_other_roots_proc);
 GC_API GC_push_other_roots_proc GC_CALL GC_get_push_other_roots(void);
 
+/* Walk the GC heap visiting all reachable objects.  Assume the caller  */
+/* holds the allocation lock.  Object base pointer, object size and     */
+/* client custom data are passed to the callback (holding the lock).    */
+typedef void (GC_CALLBACK *GC_reachable_object_proc)(void * /* obj */,
+                                                size_t /* bytes */,
+                                                void * /* client_data */);
+GC_API void GC_CALL GC_enumerate_reachable_objects_inner(
+                                GC_reachable_object_proc,
+                                void * /* client_data */) GC_ATTR_NONNULL(1);
+
+GC_API int GC_CALL GC_is_tmp_root(void *);
+
+GC_API void GC_CALL GC_print_trace(GC_word /* gc_no */);
+GC_API void GC_CALL GC_print_trace_inner(GC_word /* gc_no */);
+
 #ifdef __cplusplus
-  } /* end of extern "C" */
+  } /* extern "C" */
 #endif
 
 #endif /* GC_MARK_H */

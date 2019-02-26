@@ -242,7 +242,7 @@ extern "C" {
 
 		Jit::compile( fn, env );
 
-		fn->code = fn->data->code;
+		assert(fn->code);
 
 		return (void*) fn->code;
 	}
@@ -441,9 +441,9 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 			if ( fun == self ) {
 				if ( tail ) {
 					// ** emit tail recursive call
-					jit_value_t v = jit_insn_tail_call( ir, name, args, arity + 1, fnEntry );
+					jit_value_t v = jit_insn_call( ir, name, ir, nullptr, args, arity + 1, JIT_CALL_TAIL );
 					assert( v && "jit_insn_tail_call() failed!" );
-					return nullptr;
+					return v;
 				} else {
 					// ** emit normal recursive call
 					return jit_insn_call( ir, name, ir, nullptr, args, arity + 1, 0 );
@@ -504,9 +504,9 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 			if ( fun == self ) {
 				if ( tail ) {
 					// ** emit tail recursive call
-					jit_value_t v = jit_insn_tail_call( ir, name, args, arity + 1, fnEntry );
+					jit_value_t v = jit_insn_call( ir, name, ir, nullptr, args, arity + 1, JIT_CALL_TAIL );
 					assert( v && "jit_insn_tail_call() failed!" );
-					return nullptr;
+					return v;
 				} else {
 					// ** emit normal recursive call
 					return jit_insn_call( ir, name, ir, nullptr, args, arity + 1, 0 );
@@ -604,23 +604,23 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 	jit_value_t retVal = ast->body->visit<jit_value_t>( v, scope, true );
 	if ( retVal ) jit_insn_return( fnIr, retVal );
 
-//	std::printf("-- ABOUT TO COMPILE %s ------------------------------------\n", (util::CStr)ast->name );
-//	jit_dump_function( stderr, fnIr, ast->name );
-//	std::printf("-----------------------------------------------------------\n");
+	std::printf("-- ABOUT TO COMPILE %s ------------------------------------\n", (util::CStr)ast->name );
+	jit_dump_function( stderr, fnIr, ast->name );
+	std::printf("-----------------------------------------------------------\n");
 
 	if ( jit_function_compile( fnIr ) == 0 ) {
 		LLLM_FAIL( ast->location << "Could not compile function " << ast );
 	}
 
-//	std::printf("-- COMPILED %s --------------------------------------------\n", (util::CStr)ast->name );
-//	jit_dump_function( stderr, fnIr, ast->name );
-// 		std::printf("-----------------------------------------------------------\n");
+	std::printf("-- COMPILED %s --------------------------------------------\n", (util::CStr)ast->name );
+	jit_dump_function( stderr, fnIr, ast->name );
+	std::printf("-----------------------------------------------------------\n");
 
 	jit_context_build_end( shared->ctx );
 
 	fn->data->code = (Lambda::FnPtr) jit_function_to_closure( fnIr );
 
-//	printf(">> %p\n", fn->data->code );
+	printf(">> %p\n", fn->data->code );
 }
 
 

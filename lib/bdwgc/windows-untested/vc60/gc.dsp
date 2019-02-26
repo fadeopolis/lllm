@@ -120,10 +120,6 @@ SOURCE=..\..\blacklst.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\checksums.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\dbg_mlc.c
 # End Source File
 # Begin Source File
@@ -172,7 +168,7 @@ SOURCE=..\..\misc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\msvc_dbg.c
+SOURCE=..\..\extra\msvc_dbg.c
 # End Source File
 # Begin Source File
 
@@ -198,10 +194,6 @@ SOURCE=..\..\reclaim.c
 
 SOURCE=..\stdafx.c
 # ADD CPP /Yc"stdafx.h"
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\stubborn.c
 # End Source File
 # Begin Source File
 
@@ -293,7 +285,11 @@ SOURCE=..\..\include\leak_detector.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\msvc_dbg.h
+SOURCE=..\..\include\private\msvc_dbg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\gc_alloc_ptrs.h
 # End Source File
 # Begin Source File
 
@@ -305,11 +301,7 @@ SOURCE=..\stdafx.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\version.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\weakpointer.h
+SOURCE=..\..\include\gc_version.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

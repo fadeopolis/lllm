@@ -252,28 +252,6 @@
                 </FileConfiguration>
             </File>
             <File
-                RelativePath="..\..\checksums.c">
-                <FileConfiguration
-                    Name="Release|Win32">
-                    <Tool
-                        Name="VCCLCompilerTool"
-                        Optimization="2"
-                        AdditionalIncludeDirectories=""
-                        PreprocessorDefinitions="NDEBUG;_WINDOWS;_USRDLL;GC_DLL;WIN32;_MBCS;GC_THREADS;$(NoInherit)"
-                        ForcedIncludeFiles=""/>
-                </FileConfiguration>
-                <FileConfiguration
-                    Name="Debug|Win32">
-                    <Tool
-                        Name="VCCLCompilerTool"
-                        Optimization="0"
-                        AdditionalIncludeDirectories=""
-                        PreprocessorDefinitions="_DEBUG;_WINDOWS;_USRDLL;GC_DLL;WIN32;_MBCS;GC_THREADS;$(NoInherit)"
-                        BasicRuntimeChecks="3"
-                        ForcedIncludeFiles=""/>
-                </FileConfiguration>
-            </File>
-            <File
                 RelativePath="..\..\dbg_mlc.c">
                 <FileConfiguration
                     Name="Release|Win32">
@@ -538,7 +516,7 @@
                 </FileConfiguration>
             </File>
             <File
-                RelativePath="..\..\msvc_dbg.c">
+                RelativePath="..\..\extra\msvc_dbg.c">
                 <FileConfiguration
                     Name="Release|Win32">
                     <Tool
@@ -694,28 +672,6 @@
                 </FileConfiguration>
             </File>
             <File
-                RelativePath="..\..\stubborn.c">
-                <FileConfiguration
-                    Name="Release|Win32">
-                    <Tool
-                        Name="VCCLCompilerTool"
-                        Optimization="2"
-                        AdditionalIncludeDirectories=""
-                        PreprocessorDefinitions="NDEBUG;_WINDOWS;_USRDLL;GC_DLL;WIN32;_MBCS;GC_THREADS;$(NoInherit)"
-                        ForcedIncludeFiles=""/>
-                </FileConfiguration>
-                <FileConfiguration
-                    Name="Debug|Win32">
-                    <Tool
-                        Name="VCCLCompilerTool"
-                        Optimization="0"
-                        AdditionalIncludeDirectories=""
-                        PreprocessorDefinitions="_DEBUG;_WINDOWS;_USRDLL;GC_DLL;WIN32;_MBCS;GC_THREADS;$(NoInherit)"
-                        BasicRuntimeChecks="3"
-                        ForcedIncludeFiles=""/>
-                </FileConfiguration>
-            </File>
-            <File
                 RelativePath="..\..\typd_mlc.c">
                 <FileConfiguration
                     Name="Release|Win32">
@@ -821,7 +777,10 @@
                 RelativePath="..\..\include\leak_detector.h">
             </File>
             <File
-                RelativePath="..\..\msvc_dbg.h">
+                RelativePath="..\..\include\private\msvc_dbg.h">
+            </File>
+            <File
+                RelativePath="..\..\include\gc_alloc_ptrs.h">
             </File>
             <File
                 RelativePath="..\..\include\new_gc_alloc.h">
@@ -830,10 +789,7 @@
                 RelativePath="..\stdafx.h">
             </File>
             <File
-                RelativePath="..\..\version.h">
-            </File>
-            <File
-                RelativePath="..\..\include\weakpointer.h">
+                RelativePath="..\..\include\gc_version.h">
             </File>
         </Filter>
         <Filter

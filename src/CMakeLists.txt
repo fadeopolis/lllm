@@ -1,6 +1,6 @@
 
-set(CMAKE_CXX_COMPILER        clang++)
-# set(CMAKE_CXX_LINK_EXECUTABLE clang)
+cmake_minimum_required(VERSION 3.11)
+
 set(CMAKE_SHARED_LINKER_FLAGS "-g -rdynamic")
 
 add_definitions( -std=gnu++11 )
@@ -13,8 +13,6 @@ add_subdirectory( ast   )
 add_subdirectory( value )
 
 add_library( lllm lllm.cpp Reader.cpp Analyzer.cpp Evaluator.cpp EscapeAnalyzer.cpp Jit.cpp Builtins.cpp GlobalScope.cpp )
-add_library( jit  STATIC IMPORTED )
-set_property( TARGET jit PROPERTY IMPORTED_LOCATION /home/fader/Desktop/libjit.a )
 
 target_link_libraries(lllm
 	## lllm libs
@@ -23,7 +21,7 @@ target_link_libraries(lllm
 	value
 	# system libs
 	gc-lib
-	${LIBJIT}
+	libjit
 	pthread
 	ffi
 	dl
@@ -31,7 +29,7 @@ target_link_libraries(lllm
 )
 
 add_executable(repl repl.cpp)
-target_link_libraries(repl lllm gc-lib ${LIBJIT})
+target_link_libraries(repl lllm)
 
 ## testing
 add_executable( test_1_reader   test_1_reader.cpp   )
@@ -44,4 +42,8 @@ target_link_libraries( test_2_analyzer lllm )
 target_link_libraries( test_3_eval     lllm )
 target_link_libraries( test_4_jit      lllm )
 
+add_test(NAME test_1_reader   COMMAND test_1_reader)
+add_test(NAME test_2_analyzer COMMAND test_2_analyzer)
+add_test(NAME test_3_eval     COMMAND test_3_eval)
+add_test(NAME test_4_jit      COMMAND test_4_jit)
 

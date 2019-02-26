@@ -1,8 +1,6 @@
 #ifndef __LLLM_HPP__
 #define __LLLM_HPP__ 1
 
-struct __float128;
-
 #include <gc_cpp.h>
 
 #define LLLM_DBG_LVL 0
