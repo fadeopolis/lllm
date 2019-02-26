@@ -6,7 +6,7 @@
 
 namespace lllm {
 	namespace util {
-		template<typename T> 
+		template<typename T>
 		class Scope {
 			public:
 				virtual bool contains( const util::InternedString& name ) = 0;
@@ -18,4 +18,3 @@ namespace lllm {
 };
 
 #endif /* __LLLM_ENV_TPP__ */
-

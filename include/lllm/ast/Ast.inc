@@ -1,28 +1,44 @@
-#ifndef LLLM_VISITOR
-#	error "No VISITOR macro was defined"
+
+#ifndef LLLM_VISIT_ROOT
+#  define LLLM_VISIT_ROOT(TYPE) LLLM_VISIT_ABSTRACT(TYPE)
 #endif
 
-LLLM_VISITOR( Ast         )
-	LLLM_VISITOR( Atom        )
-		LLLM_VISITOR( Nil         )
-		LLLM_VISITOR( Int         )
-		LLLM_VISITOR( Real        )
-		LLLM_VISITOR( Char        )
-		LLLM_VISITOR( String      )
-		LLLM_VISITOR( Variable    )
-//			LLLM_VISITOR( Builtin     )
-//			LLLM_VISITOR( Global      )
-//			LLLM_VISITOR( Parameter   )
-//			LLLM_VISITOR( Captured    )
-//			LLLM_VISITOR( Local       )
-	LLLM_VISITOR( SpecialForm )
-		LLLM_VISITOR( Quote       )
-		LLLM_VISITOR( If          )
-		LLLM_VISITOR( Do          )
-		LLLM_VISITOR( Let         )
-		LLLM_VISITOR( LetStar     )
-		LLLM_VISITOR( Lambda      )
-		LLLM_VISITOR( Define      )
-	LLLM_VISITOR( Application )
+#ifndef LLLM_VISIT_ABSTRACT
+#  ifndef LLLM_VISIT
+#    error "No VISITOR macro was defined"
+#  endif
+#  define LLLM_VISIT_ABSTRACT(TYPE) LLLM_VISIT(TYPE)
+#endif
 
-#undef LLLM_VISITOR
+#ifndef LLLM_VISIT_CONCRETE
+#  ifndef LLLM_VISIT
+#    error "No VISITOR macro was defined"
+#  endif
+#  define LLLM_VISIT_CONCRETE(TYPE) LLLM_VISIT(TYPE)
+#endif
+
+LLLM_VISIT_ROOT( Ast )
+	LLLM_VISIT_ABSTRACT( Atom )
+		LLLM_VISIT_CONCRETE( Nil )
+		LLLM_VISIT_CONCRETE( Int )
+		LLLM_VISIT_CONCRETE( Real )
+		LLLM_VISIT_CONCRETE( Char )
+		LLLM_VISIT_CONCRETE( String )
+		LLLM_VISIT_CONCRETE( Variable )
+	LLLM_VISIT_ABSTRACT( SpecialForm )
+		LLLM_VISIT_CONCRETE( Quote )
+		LLLM_VISIT_CONCRETE( If )
+		LLLM_VISIT_CONCRETE( Do )
+		LLLM_VISIT_CONCRETE( Let )
+		LLLM_VISIT_CONCRETE( LetStar )
+		LLLM_VISIT_CONCRETE( Lambda )
+		LLLM_VISIT_CONCRETE( Define )
+	LLLM_VISIT_CONCRETE( Application )
+
+#ifdef LLLM_VISIT_CONCRETE
+#  undef LLLM_VISIT
+#endif
+
+#undef LLLM_VISIT_ROOT
+#undef LLLM_VISIT_ABSTRACT
+#undef LLLM_VISIT_CONCRETE

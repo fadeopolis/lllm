@@ -1,13 +1,14 @@
 
 #include "lllm/value/Value.hpp"
+#include "lllm/value/ValueIO.hpp"
 #include "lllm/ast/Ast.hpp"
 #include "lllm/util/InternedString.hpp"
 
+#include <cassert>
 #include <cstring>
 #include <cstdlib>
 
 #include <iostream>
-#include "lllm/value/ValueIO.hpp"
 
 using namespace lllm;
 using namespace lllm::value;
@@ -23,7 +24,7 @@ String::String( CStr value )                  : Value( Type::String ), value( va
 Symbol::Symbol( const InternedString& value ) : Value( Type::Symbol ), value( value ) {}
 Ref::Ref()                                    : Ref( nullptr ) {}
 Ref::Ref( ValuePtr value )                    : Value( Type::Ref ), value( value ) {}
-Lambda::Lambda( size_t        arity, 
+Lambda::Lambda( size_t        arity,
                 Lambda::Data* data,
                 Lambda::FnPtr code     ) : Value( Type(size_t(Type::Lambda) + arity) ), code( code ), data( data ) {}
 
@@ -41,12 +42,8 @@ bool lllm::operator!=( const Value& a, const Value& b ) {
 	return !(a == b);
 }
 bool value::equal( ValuePtr a, ValuePtr b ) {
-//	using namespace std;
-
 	struct V1 final {
-		bool visit( ValuePtr  a, ValuePtr b ) const { return false; }
-
-		bool visit( NilPtr    a, NilPtr    b ) const { return true; }
+		bool visit( NilPtr     , NilPtr      ) const { return true; }
 		bool visit( ConsPtr   a, ConsPtr   b ) const { return equal( a->car, b->car ) && equal( a->cdr, b->cdr ); }
 		bool visit( IntPtr    a, IntPtr    b ) const { return a->value == b->value; }
 		bool visit( RealPtr   a, IntPtr    b ) const { return a->value == b->value; }
@@ -57,6 +54,9 @@ bool value::equal( ValuePtr a, ValuePtr b ) {
 		bool visit( SymbolPtr a, SymbolPtr b ) const { return a->value == b->value; }
 		bool visit( RefPtr    a, RefPtr    b ) const { return a == b; }
 		bool visit( LambdaPtr a, LambdaPtr b ) const { return a == b; }
+
+		/// catch all other cases
+		bool visit( ValuePtr , ValuePtr ) const { return false; }
 	};
 	struct V2 final {
 		bool visit( NilPtr    a, ValuePtr b ) const { return value::visit<bool>( b, V1(), a ); }
@@ -66,13 +66,11 @@ bool value::equal( ValuePtr a, ValuePtr b ) {
 		bool visit( CharPtr   a, ValuePtr b ) const { return value::visit<bool>( b, V1(), a ); }
 		bool visit( StringPtr a, ValuePtr b ) const { return value::visit<bool>( b, V1(), a ); }
 		bool visit( SymbolPtr a, ValuePtr b ) const { return value::visit<bool>( b, V1(), a ); }
-		bool visit( RefPtr    a, ValuePtr b ) const { return value::visit<bool>( b, V1(), a ); }		
+		bool visit( RefPtr    a, ValuePtr b ) const { return value::visit<bool>( b, V1(), a ); }
 		bool visit( LambdaPtr a, ValuePtr b ) const { return value::visit<bool>( b, V1(), a ); }
 	};
 
 	bool eq = visit<bool>( a, V2(), b );
-
-//	std::cout << a << "=?=" << b << " = " << (eq?"true":"false") << std::endl;
 
 	return eq;
 }
@@ -84,11 +82,12 @@ bool Value::isLambda( ValuePtr val ) {
 	return typeOf( val ) >= Type::Lambda;
 }
 
-#define LLLM_VISITOR( TYPE ) 																\
-	TYPE##Ptr Value::as##TYPE( ValuePtr val ) { 											\
-		return (typeOf( val ) == Type::TYPE) ? static_cast<TYPE##Ptr>( val ) : nullptr;	\
+#define LLLM_VISIT( TYPE )
+#define LLLM_VISIT_CONCRETE( TYPE )                                                     \
+	TYPE##Ptr Value::as##TYPE( ValuePtr val ) {                                         \
+		return (typeOf( val ) == Type::TYPE) ? static_cast<TYPE##Ptr>( val ) : nullptr; \
 	}
-#include "lllm/value/Value_concrete.inc"
+#include "lllm/value/Value.inc"
 
 NumberPtr Value::asNumber( ValuePtr val ) {
 	switch ( typeOf( val ) ) {
@@ -129,19 +128,16 @@ ValuePtr  value::True() { return number(1); }
 ValuePtr  value::False = nullptr;
 ConsPtr   value::cons( ValuePtr car, ListPtr cdr )           { return new Cons( car, cdr );  }
 IntPtr    value::number( int    value )                      { return number( (long)value ); }
-IntPtr    value::number( long   value )                      { 
+IntPtr    value::number( long   value )                      {
 	if ( (MIN_INT <= value) && (value <= MAX_INT) ) {
 		IntPtr i = INTS[value + MAX_INT];
 
 		if ( !i ) { i = INTS[value + MAX_INT] = new Int( value ); }
-//		else { cacheHits++; }
 
 		return i;
-//	} else {
-//		cacheMisses++; 
 	}
 
-	return new Int( value );      
+	return new Int( value );
 }
 RealPtr   value::number( float  value )                      { return new Real( value );     }
 RealPtr   value::number( double value )                      { return new Real( value );     }
@@ -159,18 +155,20 @@ Lambda* Lambda::alloc( ast::LambdaPtr ast, Lambda::FnPtr code ) {
 	size_t          arity   = ast->arity();
 	size_t          envSize = ast->envSize();
 
-//	data->ast = ast;
-	if ( code ) data->code = code;
+	if ( code ) {
+		assert(!data->code);
+		data->code = code;
+	}
 
 	void* memory = new char[sizeof(Lambda) + envSize * sizeof(ValuePtr)];
 
-	value::Lambda* clojure = new (memory) Lambda( arity, data, code );
+	value::Lambda* closure = new (memory) Lambda( arity, data, code );
 
 	for ( size_t i = 0; i < envSize; ++i ) {
-		clojure->env[i] = nullptr;
+		closure->env[i] = nullptr;
 	}
 
-	return clojure;
+	return closure;
 }
 Lambda* Lambda::alloc( size_t arity, size_t envSize, FnPtr code ) {
 	Lambda::Data* data = new Data( nullptr );
@@ -185,4 +183,3 @@ Lambda* Lambda::alloc( size_t arity, size_t envSize, FnPtr code ) {
 
 	return clojure;
 }
-

@@ -10,7 +10,7 @@ using namespace lllm::util;
 
 namespace {
 	struct CmpStr final {
-		bool operator()( CStr a, CStr b) { 
+		bool operator()( CStr a, CStr b) {
 			return std::strcmp( a, b ) < 0;
 		}
 	};
@@ -40,4 +40,3 @@ CStr InternedString::intern( CStr str ) {
 		return str;
 	}
 }
-

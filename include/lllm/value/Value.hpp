@@ -11,8 +11,9 @@ namespace lllm {
 		extern unsigned long long cacheHits, cacheMisses;
 
 		enum class Type : size_t {
-			#define LLLM_VISITOR( TYPE ) TYPE, 
-			#include "lllm/value/Value_concrete.inc"
+			#define LLLM_VISIT( TYPE, ... )
+			#define LLLM_VISIT_CONCRETE( TYPE, ... ) TYPE,
+			#include "lllm/value/Value.inc"
 
 			// values after Type::Lambda are also lambdas.
 			// the arity of the lambda is (type - Type::Lambda).
@@ -30,8 +31,10 @@ namespace lllm {
 				static bool isList( ValuePtr val );
 				static bool isLambda( ValuePtr val );
 
-				#define LLLM_VISITOR( TYPE ) static TYPE##Ptr as##TYPE( ValuePtr val );
-				#include "lllm/value/Value_concrete.inc"
+				#define LLLM_VISIT( TYPE )
+				#define LLLM_VISIT_CONCRETE( TYPE ) static TYPE##Ptr as##TYPE( ValuePtr val );
+				#include "lllm/value/Value.inc"
+
 				static NumberPtr asNumber( ValuePtr val );
 				static LambdaPtr asLambda( ValuePtr val );
 				static LambdaPtr asLambda( ValuePtr val, size_t arity );
@@ -40,8 +43,10 @@ namespace lllm {
 
 				const Type type;
 
-			#define LLLM_VISITOR( TYPE ) friend class TYPE;
+			#define LLLM_VISIT_ROOT( TYPE )
+			#define LLLM_VISIT( TYPE ) friend class TYPE;
 			#include "lllm/value/Value.inc"
+
 			friend Type typeOf( ValuePtr );
 		};
 		class List : public Value {
@@ -56,7 +61,7 @@ namespace lllm {
 		};
 		class Cons : public List {
 			public:
-				Cons( ValuePtr car, ListPtr cdr );				
+				Cons( ValuePtr car, ListPtr cdr );
 
 				const ValuePtr car;
 				const ListPtr  cdr;
@@ -72,26 +77,26 @@ namespace lllm {
 			public:
 				Int();
 				Int( long );
-				
+
 				const long value;
 		};
 		class Real : public Number {
 			public:
 				Real();
 				Real( double );
-				
+
 				const double value;
 		};
 		class Char : public Value {
 			public:
 				Char( char );
-				
+
 				const char value;
 		};
 		class String : public Value {
 			public:
 				String( util::CStr );
-				
+
 				const util::CStr value;
 		};
 		class Symbol : public Value {
@@ -119,14 +124,14 @@ namespace lllm {
 
 					size_t         callCnt;
 					FnPtr          code;
-					ast::LambdaPtr ast;										
+					ast::LambdaPtr ast;
 				};
 				typedef Data* DataPtr;
 
 				static Lambda* alloc( ast::LambdaPtr ast );
 				static Lambda* alloc( ast::LambdaPtr ast, FnPtr code );
 				static Lambda* alloc( size_t arity, size_t envSize, FnPtr code );
-	
+
 				size_t arity() const;
 
 				mutable FnPtr   code;
@@ -157,29 +162,29 @@ namespace lllm {
 		inline ListPtr list( ValuePtr v, Tail... tail ) {
 			return cons( v, list( tail... ) );
 		}
-	
+
 		template<typename Return, typename Visitor, typename... Args>
 		Return visit( ValuePtr val, Visitor& v, Args&&... args ) {
 			switch ( value::typeOf( val ) ) {
-				#define LLLM_VISITOR( TYPE ) \
+				#define LLLM_VISIT( TYPE )
+				#define LLLM_VISIT_CONCRETE( TYPE ) \
 					case value::Type::TYPE: return v.visit( static_cast<TYPE##Ptr>( val ), args... );
-				#include "lllm/value/Value_concrete.inc"
+				#include "lllm/value/Value.inc"
 				default: return v.visit( static_cast<LambdaPtr>( val ), args... );
 			}
 		}
 		template<typename Return, typename Visitor, typename... Args>
 		Return visit( ValuePtr val, const Visitor& v, Args&&... args ) {
 			switch ( value::typeOf( val ) ) {
-				#define LLLM_VISITOR( TYPE ) \
+				#define LLLM_VISIT( TYPE )
+				#define LLLM_VISIT_CONCRETE( TYPE ) \
 					case value::Type::TYPE: return v.visit( static_cast<TYPE##Ptr>( val ), args... );
-				#include "lllm/value/Value_concrete.inc"
+				#include "lllm/value/Value.inc"
 				default: return v.visit( static_cast<LambdaPtr>( val ), args... );
 			}
 		}
 
 		static_assert( sizeof( Value ) == 8, "Value must be 8 bytes in size" );
-		static_assert( offsetof( Lambda, code ) ==  8, "The code must start at byte 8 of a lambda" );
-		static_assert( offsetof( Lambda, env  ) == 24, "The environment must start at byte 24 of a lambda" );
 	};
 
 	bool operator==( const value::Value&, const value::Value& );
@@ -187,4 +192,3 @@ namespace lllm {
 };
 
 #endif /* __VALUE_HPP__ */
-

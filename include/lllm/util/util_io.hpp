@@ -14,4 +14,3 @@ namespace lllm {
 };
 
 #endif /* __UTIL_IO_HPP__ */
-

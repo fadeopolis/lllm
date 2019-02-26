@@ -20,7 +20,7 @@ using namespace lllm::sexpr;
 #	include <iomanip>
 #	include "lllm/sexpr/SexprIO.hpp"
 #	define DBG()
-#else 
+#else
 #	define DBG()
 #endif
 
@@ -37,7 +37,7 @@ Reader Reader::fromString( CStr source ) {
 Reader Reader::fromString( CStr sourceName, CStr source ) {
 	return Reader( sourceName, new stringstream( source ) );
 }
-	
+
 Reader Reader::fromFile( CStr fileName ) {
 	return Reader( fileName, new fstream( fileName ) );
 }
@@ -49,7 +49,7 @@ Reader::Reader( CStr srcName, std::istream* src ) : stream( src ), loc( srcName 
 	la = stream->get();
 }
 
-Reader::~Reader() { 
+Reader::~Reader() {
 	if ( stream != &cin ) delete stream;
 }
 
@@ -59,7 +59,7 @@ SexprPtr Reader::read() {
 	// return null if we reach EOF
 	if ( la < 0 ) return nullptr;
 
-	// at this point there is at least one 
+	// at this point there is at least one
 	// valid char left in the input
 
 //	cout << "DISPATCHING " << (char)la << endl;
@@ -97,7 +97,7 @@ ListPtr   Reader::readList() {
 	SourceLocation start = loc;
 
 	consume( '(' );
-	loc.incColumn();	
+	loc.incColumn();
 
 	std::vector<SexprPtr> exprs;
 
@@ -374,8 +374,3 @@ void Reader::skipComment() {
 		la = stream->get();
 	}
 }
-
-
-
-
-

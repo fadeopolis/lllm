@@ -38,9 +38,9 @@ struct LambdaScope : public util::Scope<ast::VariablePtr> {
 
 	bool lookup( const util::InternedString& name, ast::VariablePtr* dst ) override final;
 	bool contains( const util::InternedString& name ) override final;
-	
+
 	void setName( sexpr::SymbolPtr );
-	
+
 	void addParam( sexpr::SymbolPtr sym );
 
 	bool containsParam( const util::InternedString& name );
@@ -65,8 +65,6 @@ static AstPtr analyzeLambda( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
 static AstPtr analyzeDefine( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
 static AstPtr analyzeApplication( sexpr::ListPtr expr, AnalyzerScopePtr ctx );
 
-static inline bool isLambda( sexpr::SexprPtr form );
-
 AstPtr Analyzer::analyze( sexpr::SexprPtr expr, GlobalScopePtr scope ) {
 	// handle define form specially
 	if ( sexpr::ListPtr form = expr->asList() ) {
@@ -77,23 +75,23 @@ AstPtr Analyzer::analyze( sexpr::SexprPtr expr, GlobalScopePtr scope ) {
 				}
 			}
 		}
-	}	
+	}
 
 	return analyzeExpr( expr, scope );
 }
 
 AstPtr analyzeExpr( sexpr::SexprPtr expr, AnalyzerScopePtr ctx ) {
 	struct Visitor final {
-		AstPtr visit( sexpr::IntPtr    expr, AnalyzerScopePtr ctx ) const {
+		AstPtr visit( sexpr::IntPtr    expr, AnalyzerScopePtr ) const {
 			return new Int( expr->location, expr->value );
 		}
-		AstPtr visit( sexpr::RealPtr   expr, AnalyzerScopePtr ctx ) const {
+		AstPtr visit( sexpr::RealPtr   expr, AnalyzerScopePtr ) const {
 			return new Real( expr->location, expr->value );
 		}
-		AstPtr visit( sexpr::CharPtr   expr, AnalyzerScopePtr ctx ) const {
+		AstPtr visit( sexpr::CharPtr   expr, AnalyzerScopePtr ) const {
 			return new Char( expr->location, expr->value );
 		}
-		AstPtr visit( sexpr::StringPtr expr, AnalyzerScopePtr ctx ) const {
+		AstPtr visit( sexpr::StringPtr expr, AnalyzerScopePtr ) const {
 			return new String( expr->location, expr->value );
 		}
 		AstPtr visit( sexpr::SymbolPtr expr, AnalyzerScopePtr ctx ) const {
@@ -101,12 +99,12 @@ AstPtr analyzeExpr( sexpr::SexprPtr expr, AnalyzerScopePtr ctx ) {
 			if ( ctx->lookup( expr->value, &var ) ) {
 				return var;
 			} else {
-				LLLM_FAIL( expr->location << ": Undefined symbol '" << expr << "'" );			
+				LLLM_FAIL( expr->location << ": Undefined symbol '" << expr << "'" );
 			}
 		}
 		AstPtr visit( sexpr::ListPtr   expr, AnalyzerScopePtr ctx ) const {
 			if ( sexpr::length( expr ) == 0 ) return new Nil( expr->location );
-	
+
 			if ( sexpr::SymbolPtr sym = sexpr::at( expr, 0 )->asSymbol() ) {
 				// check for special forms
 				if ( "quote"  == sym->value ) return analyzeQuote( expr );
@@ -146,11 +144,11 @@ AstPtr analyzeQuote( sexpr::ListPtr expr ) {
 		ValuePtr       visit( sexpr::StringPtr expr ) const { return value::string( expr->value );    }
 		ValuePtr       visit( sexpr::SymbolPtr expr ) const { return value::symbol( expr->value );    }
 		value::ListPtr visit( sexpr::ListPtr   expr ) const { return visit( expr, 0 );                }
-		value::ListPtr visit( sexpr::ListPtr expr, int i ) const {
+		value::ListPtr visit( sexpr::ListPtr expr, size_t i ) const {
 			if ( i < sexpr::length( expr ) ) {
 				return value::cons(
-					sexpr::at( expr, i )->visit<ValuePtr>( *this ), 
-					visit( expr, i + 1 ) 
+					sexpr::at( expr, i )->visit<ValuePtr>( *this ),
+					visit( expr, i + 1 )
 				);
 			} else {
 				return value::nil;
@@ -164,7 +162,7 @@ AstPtr analyzeQuote( sexpr::ListPtr expr ) {
 }
 
 AstPtr analyzeIf( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
-	if ( sexpr::length( expr ) != 4 ) 
+	if ( sexpr::length( expr ) != 4 )
 		LLLM_FAIL( expr->location << ": A if must be of the form (if <test> <then> <else>) not " << expr );
 
 	assert( sexpr::at( expr, 0 )->asSymbol() );
@@ -174,7 +172,7 @@ AstPtr analyzeIf( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 		expr->location,
 		analyzeExpr( sexpr::at( expr, 1 ), ctx ),
 		analyzeExpr( sexpr::at( expr, 2 ), ctx ),
-		analyzeExpr( sexpr::at( expr, 3 ), ctx ) 
+		analyzeExpr( sexpr::at( expr, 3 ), ctx )
 	);
 }
 static AstPtr analyzeLet( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
@@ -187,16 +185,16 @@ static AstPtr analyzeLet( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 
 	LocalScope locals( ctx );
 
-	if ( sexpr::length( expr ) < 3 ) 
+	if ( sexpr::length( expr ) < 3 )
 		LLLM_FAIL( expr->location << ": A let must be of the form (let (<name> <value>)... <sexpr>) not " << expr );
 
-	const size_t numBindings = sexpr::length( expr ) - 2;	
+	const size_t numBindings = sexpr::length( expr ) - 2;
 
 	for ( size_t i = 0; i < numBindings; i++ ) {
 		if ( sexpr::ListPtr binding = sexpr::at( expr, i + 1 )->asList() ) {
-			if ( sexpr::length( binding ) != 2 ) 
+			if ( sexpr::length( binding ) != 2 )
 				LLLM_FAIL( binding->location << ": A binding of a let must be of the form (<name> <value>) not " << binding );
-			
+
 			if ( sexpr::SymbolPtr sym = sexpr::at( binding, 0 )->asSymbol() ) {
 				if ( locals.containsLocal( sym->value ) ) {
 					LLLM_FAIL( sym->location << " : local variable " << sym << " declared twice" );
@@ -225,16 +223,16 @@ static AstPtr analyzeLetStar( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 
 	LocalScope locals( ctx );
 
-	if ( sexpr::length( expr ) < 3 ) 
+	if ( sexpr::length( expr ) < 3 )
 		LLLM_FAIL( expr->location << ": A let* must be of the form (let* (<name> <value>)... <sexpr>) not " << expr );
 
-	const size_t numBindings = sexpr::length( expr ) - 2;	
+	const size_t numBindings = sexpr::length( expr ) - 2;
 
 	for ( size_t i = 0; i < numBindings; i++ ) {
 		if ( sexpr::ListPtr binding = sexpr::at( expr, i + 1 )->asList() ) {
-			if ( sexpr::length( binding ) != 2 ) 
+			if ( sexpr::length( binding ) != 2 )
 				LLLM_FAIL( binding->location << ": A binding of a let* must be of the form (<name> <value>) not!! " << sexpr::length( binding ) << " " << binding );
-			
+
 			if ( sexpr::SymbolPtr sym = sexpr::at( binding, 0 )->asSymbol() ) {
 				if ( locals.containsLocal( sym->value ) ) {
 					LLLM_FAIL( sym->location << " : local variable " << sym << " declared twice" );
@@ -256,7 +254,7 @@ static AstPtr analyzeLetStar( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 	return new LetStar( expr->location, locals.bindings(), body );
 }
 static AstPtr analyzeDo( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
-	if ( sexpr::length( expr ) < 2 ) 
+	if ( sexpr::length( expr ) < 2 )
 		LLLM_FAIL( expr->location << ": A do form must be of the form (do <value>...), not " << expr );
 
 	assert( sexpr::at( expr, 0 )->asSymbol() );
@@ -274,7 +272,7 @@ static AstPtr analyzeDo( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 }
 
 static AstPtr analyzeLambda( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
-	if ( sexpr::length( expr ) != 3 && sexpr::length( expr ) != 4 ) 
+	if ( sexpr::length( expr ) != 3 && sexpr::length( expr ) != 4 )
 		LLLM_FAIL( expr->location << ": A lambda must be of the form (lambda <name>? (<name>...) <expr>) not " << expr << " " << sexpr::length( expr ) );
 
 	assert( sexpr::at( expr, 0 )->asSymbol() );
@@ -323,10 +321,10 @@ static AstPtr analyzeApplication( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 	}
 
 	std::vector<AstPtr> args;
-	
+
 	for ( auto it = ++sexpr::begin( expr ), end = sexpr::end( expr ); it != end; ++it ) {
 		args.push_back( analyzeExpr( *it, ctx ) );
-	}	
+	}
 
 	return new Application( expr->location, fun, args );
 
@@ -345,7 +343,7 @@ AstPtr analyzeDefine( sexpr::ListPtr expr, AnalyzerScopePtr ctx ) {
 
 		AstPtr val = analyzeExpr( body, ctx );
 
-		return new Define( expr->location, name, val ); 
+		return new Define( expr->location, name, val );
 	} else {
 		LLLM_FAIL( expr->location << ": A define must be of the form (define <name> <value>) not " << expr );
 	}
@@ -406,7 +404,7 @@ bool LambdaScope::lookup( const util::InternedString& name, ast::VariablePtr* ds
 			return true;
 		}
 	}
-	// get var from outer scope 
+	// get var from outer scope
 	VariablePtr var;
 
 	if ( parent->lookup( name, &var ) ) {
@@ -420,7 +418,7 @@ bool LambdaScope::lookup( const util::InternedString& name, ast::VariablePtr* ds
 		var->getsCaptured = true;
 
 		capture.push_back( cap );
-				
+
 		*dst = cap;
 		return true;
 	} else {
@@ -429,7 +427,7 @@ bool LambdaScope::lookup( const util::InternedString& name, ast::VariablePtr* ds
 }
 bool LambdaScope::contains( const util::InternedString& name ) {
 	// check parameters
-	if ( containsParam( name ) ) return true;	
+	if ( containsParam( name ) ) return true;
 
 	// check for recursion
 	if ( self && self->name == name ) {
@@ -442,7 +440,7 @@ bool LambdaScope::contains( const util::InternedString& name ) {
 			return true;
 		}
 	}
-	// get var from outer scope 
+	// get var from outer scope
 	return parent->contains( name );
 }
 bool LambdaScope::containsParam( const util::InternedString& name ) {
@@ -473,4 +471,3 @@ const Lambda::Bindings& LambdaScope::parameters() const {
 const Lambda::Bindings& LambdaScope::captured()   const {
 	return capture;
 }
-

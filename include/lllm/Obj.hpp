@@ -8,4 +8,3 @@ namespace lllm {
 };
 
 #endif /* __OBJ_HPP__ */
-

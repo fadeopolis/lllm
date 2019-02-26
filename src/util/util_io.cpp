@@ -16,8 +16,10 @@ std::ostream& lllm::operator<<( std::ostream& os, const SourceLocation& sl ) {
 
 static inline void printType( std::ostream& os, value::Type t ) {
 	switch ( t ) {
-		#define LLLM_VISITOR( TYPE ) case value::Type::TYPE: os << #TYPE; break;
-		#include "lllm/value/Value_concrete.inc"
+		#define LLLM_VISIT( TYPE )
+		#define LLLM_VISIT_CONCRETE( TYPE ) case value::Type::TYPE: os << #TYPE; break;
+		#include "lllm/value/Value.inc"
+
 		default: os << "Lambda"; break;
 	}
 }
@@ -37,23 +39,3 @@ std::ostream& lllm::operator<<( std::ostream& os, const TypeSet& ts ) {
 
 	return os << '}';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

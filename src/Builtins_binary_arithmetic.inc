@@ -19,4 +19,3 @@
 #undef INT_REAL
 #undef REAL_INT
 #undef REAL_REAL
-

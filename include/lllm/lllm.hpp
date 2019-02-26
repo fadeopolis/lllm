@@ -15,7 +15,7 @@ namespace lllm {
 	//***** S-EXPRESSION (PARSE TREE) *****************************************
 
 	namespace sexpr {
-		#define LLLM_VISITOR( TYPE )       \
+		#define LLLM_VISIT( TYPE, ... )    \
 			class TYPE;                    \
 			typedef const TYPE* TYPE##Ptr;
 		#include "lllm/sexpr/Sexpr.inc"
@@ -24,9 +24,9 @@ namespace lllm {
 	//***** ABSTRACT SYNTAX TREE **********************************************
 
 	namespace ast {
-		#define LLLM_VISITOR( TYPE )                 \
-			class   TYPE;                            \
-			typedef TYPE*       TYPE##Ptr;           \
+		#define LLLM_VISIT( TYPE )                 \
+			class   TYPE;                          \
+			typedef TYPE*       TYPE##Ptr;         \
 			typedef const TYPE* Const##TYPE##Ptr;
 		#include "lllm/ast/Ast.inc"
 	};
@@ -34,12 +34,12 @@ namespace lllm {
 	//***** RUNTIME VALUES ****************************************************
 
 	namespace value {
-		#define LLLM_VISITOR( TYPE )       \
+		#define LLLM_VISIT( TYPE )       \
 			class TYPE;                    \
 			typedef const TYPE* TYPE##Ptr;
 		#include "lllm/value/Value.inc"
 	};
-		
+
 	//***** MAIN INTERFACES ***************************************************
 
 	class   Vm;
@@ -74,11 +74,10 @@ namespace lllm {
 
 		template<typename T>
 		class Scope;
-		
+
 		template<typename T>
 		using ScopePtr = Scope<T>*;
 	};
 };
 
 #endif /* __LLLM_HPP__ */
-		

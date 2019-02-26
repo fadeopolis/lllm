@@ -60,6 +60,3 @@ void GlobalScope::dump() {
 		std::cout << "*GLO " << it->first << "\t->\t" << it->second.first << "\t->\t" << it->second.second << std::endl;
 	}
 }
-
-
-

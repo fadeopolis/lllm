@@ -23,22 +23,23 @@ std::ostream& lllm::operator<<( std::ostream& os, ConstAstPtr ast ) {
 		return os << "<*builtin*>";
 	}
 	struct Visitor {
-		void visit( ConstNilPtr      ast, std::ostream& os ) const { 
-			DBG_BEGIN( Nil ); 
+		void visit( ConstNilPtr      ast, std::ostream& os ) const {
+			(void) ast;
+			DBG_BEGIN( Nil );
 			os << "()";
-			DBG_END( Nil ); 
+			DBG_END( Nil );
 		}
-		void visit( ConstIntPtr      ast, std::ostream& os ) const { 
-			DBG_BEGIN( Int ); 
-			os << ast->value; 
-			DBG_END( Int ); 
+		void visit( ConstIntPtr      ast, std::ostream& os ) const {
+			DBG_BEGIN( Int );
+			os << ast->value;
+			DBG_END( Int );
 		}
-		void visit( ConstRealPtr     ast, std::ostream& os ) const { 
+		void visit( ConstRealPtr     ast, std::ostream& os ) const {
 			DBG_BEGIN( Real );
-			os << ast->value; 
+			os << ast->value;
 			DBG_END( Real );
 		}
-		void visit( ConstCharPtr     ast, std::ostream& os ) const { 
+		void visit( ConstCharPtr     ast, std::ostream& os ) const {
 			DBG_BEGIN( Char );
 			switch ( ast->value ) {
 				case '\t': os << "\\tab";     break;
@@ -47,24 +48,24 @@ std::ostream& lllm::operator<<( std::ostream& os, ConstAstPtr ast ) {
 			}
 			DBG_END( Char );
 		}
-		void visit( ConstStringPtr   ast, std::ostream& os ) const { 
+		void visit( ConstStringPtr   ast, std::ostream& os ) const {
 			DBG_BEGIN( String );
-			os << '"' << ast->value << '"'; 
+			os << '"' << ast->value << '"';
 			DBG_END( String );
 		}
-		void visit( ConstVariablePtr ast, std::ostream& os ) const { 
+		void visit( ConstVariablePtr ast, std::ostream& os ) const {
 			DBG_BEGIN( Variable );
-			os << ast->name;  
+			os << ast->name;
 			DBG_END( Variable );
 		}
-		void visit( ConstQuotePtr    ast, std::ostream& os ) const { 
+		void visit( ConstQuotePtr    ast, std::ostream& os ) const {
 			DBG_BEGIN( Quote );
-			os << "'" << ast->value; 
+			os << "'" << ast->value;
 			DBG_END( Quote );
 		}
-		void visit( ConstIfPtr       ast, std::ostream& os ) const { 	
+		void visit( ConstIfPtr       ast, std::ostream& os ) const {
 			DBG_BEGIN( If );
- 			os << "(if " << ast->test << " " << ast->thenBranch << " " << ast->elseBranch << ")"; 
+ 			os << "(if " << ast->test << " " << ast->thenBranch << " " << ast->elseBranch << ")";
 			DBG_END( If );
 		}
 		void visit( ConstDoPtr       ast, std::ostream& os ) const {
@@ -118,13 +119,13 @@ std::ostream& lllm::operator<<( std::ostream& os, ConstAstPtr ast ) {
 			}
 
 			os << "(";
-			
+
 			if ( ast->arity() > 0 ) {
 				os << ast->params.front();
 				for ( auto it = ++(ast->params_begin()), end = ast->params_end(); it != end; ++it ) {
 					os << " " << *it;
 				}
-			}	
+			}
 
 			os << ") " << ast->body << ")";
 			DBG_END( Lambda );
@@ -149,4 +150,3 @@ std::ostream& lllm::operator<<( std::ostream& os, ConstAstPtr ast ) {
 
 	return os;
 }
-

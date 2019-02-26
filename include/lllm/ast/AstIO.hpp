@@ -6,8 +6,7 @@
 #include <iosfwd>
 
 namespace lllm {
-	std::ostream& operator<<( std::ostream&, ast::ConstAstPtr );	
+	std::ostream& operator<<( std::ostream&, ast::ConstAstPtr );
 };
 
 #endif /* __Ast_IO_HPP__ */
-

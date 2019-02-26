@@ -41,7 +41,7 @@ CStr argsString( int argc, char** argv ) {
 }
 
 int main( int argc, char** argv ) {
-	std::cout << "Starting LLLM REPL" << std::endl;		
+	std::cout << "Starting LLLM REPL" << std::endl;
 	std::cout << ">> " << std::flush;
 
 	Evaluator::setJittingThreshold( 5 );
@@ -66,11 +66,11 @@ int main( int argc, char** argv ) {
 		std::cout << "AST:   " << std::flush << ast << std::endl;
 
 		if ( ast::DefinePtr def = dynamic_cast<ast::DefinePtr>( ast ) ) {
-			value::ValuePtr val = Evaluator::evaluate( def->expr, &scope );	
+			value::ValuePtr val = Evaluator::evaluate( def->expr, &scope );
 
 			scope.add( def->location, def->name, ast, val );
 
-			std::cout << "DEFINED " << def->name << " TO " << val << std::endl;			
+			std::cout << "DEFINED " << def->name << " TO " << val << std::endl;
 		} else {
 			value::ValuePtr val = Evaluator::evaluate( ast, &scope );
 
@@ -82,6 +82,5 @@ int main( int argc, char** argv ) {
 		}
 	}
 
-	std::cout << "LLLM REPL, over and out" << std::endl;		
+	std::cout << "LLLM REPL, over and out" << std::endl;
 }
-

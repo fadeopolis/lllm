@@ -9,10 +9,9 @@ namespace lllm {
 			ESCAPE_AS_RETURN,
 			ESCAPE_GLOBAL
 		};
-		
+
 		EscapeStatus max( EscapeStatus, EscapeStatus );
 	};
 };
 
 #endif /* __LLLM_UTIL_ESCAPE_STATUS_HPP__ */
-

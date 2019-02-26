@@ -7,8 +7,7 @@
 
 namespace lllm {
 	std::ostream& operator<<( std::ostream&, value::Type );
-	std::ostream& operator<<( std::ostream&, value::ValuePtr );	
+	std::ostream& operator<<( std::ostream&, value::ValuePtr );
 };
 
 #endif /* __VALUE_IO_HPP__ */
-

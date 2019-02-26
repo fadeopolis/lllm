@@ -8,7 +8,7 @@
 
 namespace lllm {
 	class Builtins : public util::Scope<ast::AstPtr>,
-	                 public util::Scope<ast::VariablePtr>, 
+	                 public util::Scope<ast::VariablePtr>,
 	                 public util::Scope<value::ValuePtr> {
 		public:
 			static Builtins& get();
@@ -28,4 +28,3 @@ namespace lllm {
 };
 
 #endif /* __LLLM_BUILTINS_HPP__ */
-

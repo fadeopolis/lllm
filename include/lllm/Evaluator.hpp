@@ -34,4 +34,3 @@ namespace lllm {
 };
 
 #endif /* __EVALUATOR_HPP__ */
-

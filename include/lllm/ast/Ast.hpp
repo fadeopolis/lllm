@@ -24,8 +24,9 @@
 namespace lllm {
 	namespace ast {
 		enum class Type {
-			#define LLLM_VISITOR( TYPE ) TYPE, 
-			#include "lllm/ast/Ast_concrete.inc"
+			#define LLLM_VISIT( TYPE )
+			#define LLLM_VISIT_CONCRETE( TYPE ) TYPE,
+			#include "lllm/ast/Ast.inc"
 		};
 
 		class Ast : public Obj {
@@ -34,7 +35,7 @@ namespace lllm {
 			public:
 				virtual util::TypeSet possibleTypes() const = 0;
 				virtual size_t        depth()         const = 0;
-	
+
 				template<typename T>
 				T* as();
 
@@ -51,7 +52,8 @@ namespace lllm {
 			private:
 				const Type                   type;
 
-			#define LLLM_VISITOR( TYPE ) friend class TYPE;
+			#define LLLM_VISIT_ROOT( TYPE )
+			#define LLLM_VISIT( TYPE ) friend class TYPE;
 			#include "lllm/ast/Ast.inc"
 		};
 
@@ -73,7 +75,7 @@ namespace lllm {
 		class Nil final : public Atom {
 			public:
 				Nil( const util::SourceLocation& );
-	
+
 				util::TypeSet possibleTypes() const override final;
 		};
 		class Int final : public Atom {
@@ -81,21 +83,21 @@ namespace lllm {
 				Int( const util::SourceLocation&, long );
 
 				util::TypeSet possibleTypes() const override final;
-	
+
 				const long value;
 		};
 		class Real final : public Atom {
 			public:
 				Real( const util::SourceLocation&, double );
-	
+
 				util::TypeSet possibleTypes() const override final;
-	
+
 				const double value;
 		};
 		class Char final : public Atom {
 			public:
 				Char( const util::SourceLocation&, char );
-	
+
 				util::TypeSet possibleTypes() const override final;
 
 				const char value;
@@ -103,7 +105,7 @@ namespace lllm {
 		class String final : public Atom {
 			public:
 				String( const util::SourceLocation&, util::CStr );
-	
+
 				util::TypeSet possibleTypes() const override final;
 
 				const util::CStr value;
@@ -135,19 +137,19 @@ namespace lllm {
 		class Quote : public Ast {
 			public:
 				Quote( const util::SourceLocation&, value::ValuePtr value );
-	
+
 				util::TypeSet possibleTypes() const override final;
 				size_t        depth()         const override final;
-	
+
 				const value::ValuePtr value;
 		};
 		class If : public Ast {
 			public:
 				If( const util::SourceLocation&, AstPtr test, AstPtr thenBranch, AstPtr elseBranch );
-	
+
 				util::TypeSet possibleTypes() const override final;
 				size_t        depth()         const override final;
-	
+
 				const AstPtr test;
 				const AstPtr thenBranch;
 				const AstPtr elseBranch;
@@ -160,10 +162,10 @@ namespace lllm {
 
 				util::TypeSet possibleTypes() const override final;
 				size_t        depth()         const override final;
-	
+
 				std::vector<AstPtr>::const_iterator begin() const;
 				std::vector<AstPtr>::const_iterator end()   const;
-				
+
 				AstPtr back() const;
 
 				const std::vector<AstPtr> exprs;
@@ -212,7 +214,7 @@ namespace lllm {
 				typedef std::vector<Binding>     Bindings;
 				typedef Bindings::const_iterator Iterator;
 
-				Lambda( const util::SourceLocation&, 
+				Lambda( const util::SourceLocation&,
 				        const util::InternedString& name,
 						const Bindings& params,
 						const Bindings& capture,
@@ -244,10 +246,10 @@ namespace lllm {
 		class Define : public Ast {
 			public:
 				Define( const util::SourceLocation&, const util::InternedString& name, AstPtr ast );
-	
+
 				util::TypeSet possibleTypes() const override final;
 				size_t        depth()         const override final;
-	
+
 				const util::InternedString name;
 				const AstPtr               expr;
 		};
@@ -258,10 +260,10 @@ namespace lllm {
 				typedef std::vector<AstPtr>::const_iterator iterator;
 
 				Application( const util::SourceLocation&, AstPtr fun, const std::vector<AstPtr>& args );
-	
+
 				util::TypeSet possibleTypes() const override final;
 				size_t        depth()         const override final;
-	
+
 				const AstPtr              fun;
 				const std::vector<AstPtr> args;
 
@@ -280,8 +282,9 @@ namespace lllm {
 		Return Ast::visit( Visitor&& v, Args... args ) {
 			AST_VISIT_DBG_BEGIN;
 			switch ( type ) {
-				#define LLLM_VISITOR( TYPE ) case ast::Type::TYPE: return v.visit( dynamic_cast<TYPE##Ptr>( this ), args... );
-				#include "lllm/ast/Ast_concrete.inc"
+				#define LLLM_VISIT( TYPE )
+				#define LLLM_VISIT_CONCRETE( TYPE ) case ast::Type::TYPE: return v.visit( dynamic_cast<TYPE##Ptr>( this ), args... );
+				#include "lllm/ast/Ast.inc"
 				default: return v.visit( dynamic_cast<LambdaPtr>( this ), args... );
 			}
 			AST_VISIT_DBG_END;
@@ -290,8 +293,9 @@ namespace lllm {
 		Return Ast::visit( Visitor&& v, Args... args ) const {
 			AST_VISIT_DBG_BEGIN;
 			switch ( type ) {
-				#define LLLM_VISITOR( TYPE ) case ast::Type::TYPE: return v.visit( dynamic_cast<Const##TYPE##Ptr>( this ), args... );
-				#include "lllm/ast/Ast_concrete.inc"
+				#define LLLM_VISIT( TYPE )
+				#define LLLM_VISIT_CONCRETE( TYPE ) case ast::Type::TYPE: return v.visit( dynamic_cast<Const##TYPE##Ptr>( this ), args... );
+				#include "lllm/ast/Ast.inc"
 				default: return v.visit( dynamic_cast<ConstLambdaPtr>( this ), args... );
 			}
 			AST_VISIT_DBG_END;
@@ -305,4 +309,3 @@ namespace lllm {
 };
 
 #endif /* __Ast_HPP__ */
-

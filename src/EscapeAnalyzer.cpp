@@ -17,34 +17,28 @@ void EscapeAnalyzer::analyze( ast::LambdaPtr ast, util::ScopePtr<ast::VariablePt
 
 	struct Visitor {
 		// literals are easy
-		void visit( ast::NilPtr      ast, bool tail ) {}
-		void visit( ast::IntPtr      ast, bool tail ) {
+		void visit( ast::NilPtr ast, bool tail ) {
 			if ( tail ) ast->escape = max( ast->escape, EscapeStatus::ESCAPE_AS_RETURN );
 		}
-		void visit( ast::RealPtr     ast, bool tail ) {
+		void visit( ast::IntPtr ast, bool tail ) {
 			if ( tail ) ast->escape = max( ast->escape, EscapeStatus::ESCAPE_AS_RETURN );
 		}
-		void visit( ast::CharPtr     ast, bool tail ) {
+		void visit( ast::RealPtr ast, bool tail ) {
 			if ( tail ) ast->escape = max( ast->escape, EscapeStatus::ESCAPE_AS_RETURN );
 		}
-		void visit( ast::StringPtr   ast, bool tail ) {
+		void visit( ast::CharPtr ast, bool tail ) {
 			if ( tail ) ast->escape = max( ast->escape, EscapeStatus::ESCAPE_AS_RETURN );
 		}
-		// variables 
-		void visit( ast::VariablePtr ast, bool tail ) {
-			
+		void visit( ast::StringPtr ast, bool tail ) {
+			if ( tail ) ast->escape = max( ast->escape, EscapeStatus::ESCAPE_AS_RETURN );
 		}
-		void visit( ast::LambdaPtr   ast, bool tail ) {
-			
-		}
-		void visit( ast::AstPtr    ast, bool tail ) {
-			
+		void visit( ast::AstPtr, bool ) {
+			/// TODO
 		}
 
 		util::ScopePtr<ast::VariablePtr> env;
-	};	
+	};
 
 	Visitor v{ env };
 	ast->body->visit<void>( v, true );
 }
-

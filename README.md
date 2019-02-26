@@ -7,7 +7,7 @@ TODO
 =====
 * Escape Analysis
 * When does a value escape?
- * If it is stored in a ref
+  * If it is stored in a ref
   * If it is consed to a list
   * If it is captured by a lambda
   * If it is passed to a function and that function does one of the other three things to that parameter

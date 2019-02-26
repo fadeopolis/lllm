@@ -26,4 +26,3 @@ namespace lllm {
 };
 
 #endif /* __SOURCE_LOCATION_HPP__ */
-

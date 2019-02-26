@@ -5,4 +5,3 @@
 #include "lllm/ast/AstIO.hpp"
 
 #endif /* __AST_MAIN_HPP__ */
-

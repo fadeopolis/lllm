@@ -18,7 +18,7 @@ namespace lllm {
 			Jit& operator=( const Jit& ) = delete;
 
 			struct SharedData;
-			static SharedData* shared; 
+			static SharedData* shared;
 
 			static size_t inliningThreshold;
 			static size_t inliningDepth;
@@ -26,4 +26,3 @@ namespace lllm {
 };
 
 #endif /* __LLLM_JIT_HPP__ */
-

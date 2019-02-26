@@ -14,11 +14,9 @@
 #include <cstdio>
 #include <iostream>
 
-//#include <p99_for.h>
-
 #if LLLM_DBG_LVL > 5
 #	define DBG( TYPE ) (void) ({ std::cout << "{VISITING " << #TYPE << "}" << std::endl; nullptr; })
-#else 
+#else
 #	define DBG( TYPE ) (void) ({ nullptr; })
 #endif
 
@@ -113,45 +111,6 @@ class JitValueScope final : public JitScope {
 		util::InternedString name;
 		jit_value_t          val;
 };
-class JitFunctionScope final : public JitScope {
-	public:
-		JitFunctionScope( const util::InternedString& name, jit_function_t fun, JitScopePtr parent = nullptr ) :
-		  parent( parent ),
-		  name( name ),
-		  fun( fun ) {}
-
-		bool lookup( const util::InternedString& name, jit_value_t* dst ) override final {
-			return parent->lookup( name, dst );
-		}
-		bool lookup( const util::InternedString& name, jit_function_t* dst ) override final {
-			if ( this->name == name ) {
-				*dst = fun;
-				return true;
-			} else if ( parent ) {
-				return parent->lookup( name, dst );
-			} else {
-				return false;
-			}
-		}
-		bool contains( const util::InternedString& name ) override final {
-			if ( this->name == name ) {
-				return true;
-			} else if ( parent ) {
-				return parent->contains( name );
-			} else {
-				return false;
-			}
-		}
-
-		void dump() override final {
-			std::cout << "*FUN " << name << "\t" << fun << std::endl;
-			if ( parent ) parent->dump();
-		}
-	private:
-		const JitScopePtr    parent;
-		util::InternedString name;
-		jit_function_t       fun;
-};
 
 
 struct Jit::SharedData {
@@ -179,7 +138,7 @@ struct Jit::SharedData {
 };
 
 static inline int envElementOffset( int elemIdx ) {
-	return 24 + (elemIdx * sizeof(ValuePtr));
+	return offsetof( Lambda, env ) + (elemIdx * sizeof(ValuePtr));
 }
 
 static inline bool isTailRecursive( ast::AstPtr fun, jit_value_t env, JitScopePtr scope ) {
@@ -237,8 +196,8 @@ extern "C" {
 	}
 
 	static void* lllm_jit( void* rawFn, void* rawEnv ) {
-		auto fn    = (value::LambdaPtr)                      rawFn;
-		auto env   = (const util::ScopePtr<value::ValuePtr>) rawEnv;
+		auto fn    = (value::LambdaPtr)                rawFn;
+		auto env   = (util::ScopePtr<value::ValuePtr>) rawEnv;
 
 		Jit::compile( fn, env );
 
@@ -261,7 +220,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 
 	// start compiling
 	jit_context_build_start( shared->ctx );
-	
+
 	ast::LambdaPtr      ast = fn->data->ast;
 
 	std::cout << "JITTING " << ast->name << std::endl;
@@ -272,43 +231,46 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 //	printf( "JITTING %s\n", (util::CStr)ast->name );
 
 	jit_function_t fnIr = jit_function_create( shared->ctx, shared->signature( fn->arity() ) );
-	
+
 	struct Visitor {
-		jit_value_t visit( ast::NilPtr         ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::NilPtr, JitScopePtr, bool tail ) {
 			DBG( Nil );
 			return jit_value_create_long_constant( ir, shared->ptr_t, 0 );
 		}
-		jit_value_t visit( ast::IntPtr         ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::IntPtr ast, JitScopePtr, bool tail ) {
 			DBG( Int );
 			return jit_value_create_long_constant( ir, shared->ptr_t, (long)(void*) number( ast->value ) );
 		}
-		jit_value_t visit( ast::RealPtr        ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::RealPtr ast, JitScopePtr, bool tail ) {
 			DBG( Real );
 			return jit_value_create_long_constant( ir, shared->ptr_t, (long)(void*) number( ast->value ) );
 		}
-		jit_value_t visit( ast::CharPtr        ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::CharPtr ast, JitScopePtr, bool tail ) {
 			DBG( Char );
 			return jit_value_create_long_constant( ir, shared->ptr_t, (long)(void*) character( ast->value ) );
 		}
-		jit_value_t visit( ast::StringPtr      ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::StringPtr ast, JitScopePtr, bool tail ) {
 			DBG( String );
 			return jit_value_create_long_constant( ir, shared->ptr_t, (long)(void*) string( ast->value ) );
 		}
-		jit_value_t visit( ast::VariablePtr    ast, JitScopePtr scope, bool tail ) {
+
+		jit_value_t visit( ast::VariablePtr ast, JitScopePtr scope, bool tail ) {
 			DBG( Variable );
 			jit_value_t val;
 			if ( scope->lookup( ast->name, &val ) ) {
-				return val;	
+				return val;
 			} else {
 				scope->dump();
 				LLLM_FAIL( ast->location << ": Undefined variable " << ast );
 			}
 		}
-		jit_value_t visit( ast::QuotePtr       ast, JitScopePtr scope, bool tail ) {
+
+		jit_value_t visit( ast::QuotePtr ast, JitScopePtr, bool tail ) {
 			DBG( Quote );
 			return jit_value_create_long_constant( ir, shared->ptr_t, (long)(void*) ast->value );
 		}
-		jit_value_t visit( ast::IfPtr          ast, JitScopePtr scope, bool tail ) {
+
+		jit_value_t visit( ast::IfPtr ast, JitScopePtr scope, bool tail ) {
 			DBG( If );
 
 			jit_label_t elseLabel = jit_label_undefined;
@@ -317,9 +279,9 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 			jit_value_t result = jit_value_create( ir, shared->ptr_t );
 
 			// emit test code
-			jit_value_t test = ast->test->visit<jit_value_t>( *this, scope, false ); 
+			jit_value_t test = ast->test->visit<jit_value_t>( *this, scope, false );
 			// branch to else part if test == 0
-			jit_insn_branch_if_not( ir, test, &elseLabel );    
+			jit_insn_branch_if_not( ir, test, &elseLabel );
 			// emit then part
 			jit_value_t thenResult = ast->thenBranch->visit<jit_value_t>( *this, scope, tail );
 			if ( thenResult ) {
@@ -335,13 +297,13 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 				jit_insn_store( ir, result, elseResult );
 			} else {
 				// else part was tail recursive, we never reach the code after it
-			}			
+			}
 			// emit end part
 			jit_insn_label( ir, &endLabel );
 
 			return result;
 		}
-		jit_value_t visit( ast::DoPtr          ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::DoPtr ast, JitScopePtr scope, bool tail ) {
 			DBG( Do );
 
 			for ( auto it = ast->begin(), end = --(ast->end()); it != end; ++it ) {
@@ -350,7 +312,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 
 			return ast->back()->visit<jit_value_t>( *this, scope, tail );
 		}
-		jit_value_t visit( ast::LetPtr         ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::LetPtr ast, JitScopePtr scope, bool tail ) {
 			DBG( Let );
 
 			auto newScope = scope;
@@ -368,7 +330,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 
 			return ast->body->visit<jit_value_t>( *this, newScope, tail );
 		}
-		jit_value_t visit( ast::LetStarPtr     ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::LetStarPtr ast, JitScopePtr scope, bool tail ) {
 			DBG( Let );
 
 			for ( auto it = ast->begin(), end = ast->end(); it != end; ++it ) {
@@ -384,14 +346,14 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 
 			return ast->body->visit<jit_value_t>( *this, scope, tail );
 		}
-		jit_value_t visit( ast::LambdaPtr      ast, JitScopePtr scope, bool tail ) {
+		jit_value_t visit( ast::LambdaPtr ast, JitScopePtr scope, bool tail ) {
 			DBG( Lambda );
 
 			jit_value_t args[1];
 			args[0] = jit_value_create_long_constant( ir, shared->ptr_t, (long)(void*) ast );
 
 			// create closure
-			jit_value_t lambda = jit_insn_call_native( ir, "lllm::value::Lambda::alloc", (void*)lllm_alloc_lambda, 
+			jit_value_t lambda = jit_insn_call_native( ir, "lllm::value::Lambda::alloc", (void*)lllm_alloc_lambda,
 			                                           shared->signature( 0 ), args, 1, 0 );
 
 			// fill env
@@ -421,13 +383,13 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 			size_t arity = ast->arity();
 
 			if ( arity != fn->arity() ) LLLM_FAIL("Cannot apply " << fn << " to " << arity << " arguments");
-	
+
 			// emit code for function to apply
 			jit_value_t  fun  = ast->fun->visit<jit_value_t>( *this, scope, false );
 
 			// emit code for args
 			jit_value_t* args = new jit_value_t[ast->args.size() + 2];
-		
+
 			args[0] = fun;
 
 			int idx = 1;
@@ -461,7 +423,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 					jit_value_t result = jit_value_create( ir, shared->ptr_t );
 
 					// get code ptr for call
-					jit_value_t code = jit_insn_load_relative( ir, fun , 8, shared->ptr_t );
+					jit_value_t code = jit_insn_load_relative( ir, fun , offsetof( Lambda, code ), shared->ptr_t );
 					// check code for null
 					jit_insn_branch_if_not( ir, code, &fnIsNotCompiled );
 					// code is not null, emit call
@@ -475,7 +437,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 					jit_value_t tmp       = jit_insn_call_indirect( ir, newCode, shared->signature( arity ), args, arity + 1, 0 );
 					jit_insn_store( ir, result, tmp );
 					jit_insn_branch( ir, &end );
-		
+
 					// done
 					jit_insn_label( ir, &end );
 					return result;
@@ -484,13 +446,13 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 		}
 		jit_value_t emitNormalCall( ast::ApplicationPtr ast, JitScopePtr scope, bool tail ) {
 			size_t arity = ast->arity();
-	
+
 			// emit code for function to apply
 			jit_value_t  fun  = ast->fun->visit<jit_value_t>( *this, scope, false );
 
 			// emit code for args
 			jit_value_t* args = new jit_value_t[ast->args.size() + 2];
-		
+
 			args[0] = fun;
 
 			int idx = 1;
@@ -544,17 +506,18 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 				jit_insn_branch( ir, &end );
 				// emit null check fail
 				jit_insn_label( ir, &fnIsNull );
-				jit_insn_call_native( ir, "lllm_fail_apply", (void*)lllm_fail_apply, shared->fail_signature, args, 1, JIT_CALL_NORETURN );			
+				jit_insn_call_native( ir, "lllm_fail_apply", (void*)lllm_fail_apply, shared->fail_signature, args, 1, JIT_CALL_NORETURN );
 				// emit arity check fail
 				jit_insn_label( ir, &fnHasWrongArity );
-				jit_insn_call_native( ir, "lllm_fail_apply", (void*)lllm_fail_apply, shared->fail_signature, args, 1, JIT_CALL_NORETURN );			
-	
+				jit_insn_call_native( ir, "lllm_fail_apply", (void*)lllm_fail_apply, shared->fail_signature, args, 1, JIT_CALL_NORETURN );
+
 				// done
 				jit_insn_label( ir, &end );
 				return result;
 			}
 		}
-		jit_value_t visit( ast::DefinePtr      ast, JitScopePtr scope, bool tail ) {
+
+		jit_value_t visit( ast::DefinePtr ast, JitScopePtr, bool tail ) {
 			DBG( Define );
 			LLLM_FAIL( ast->location << ": Define statements may not appear within a function" );
 		}
@@ -593,7 +556,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 	idx = 1;
 	for ( auto it = ast->params_begin(), end = ast->params_end(); it != end; ++it, ++idx ) {
 		scope = new JitValueScope( (*it)->name, jit_value_get_param( fnIr, idx ), scope );
-	}	
+	}
 
 	// create label for tail recursion hack
 	jit_label_t fnEntry = jit_label_undefined;
@@ -618,7 +581,7 @@ void Jit::compile( value::LambdaPtr fn, util::ScopePtr<value::ValuePtr> globals 
 
 	jit_context_build_end( shared->ctx );
 
-	fn->data->code = (Lambda::FnPtr) jit_function_to_closure( fnIr );
+	fn->code = fn->data->code = (Lambda::FnPtr) jit_function_to_closure( fnIr );
 
 	printf(">> %p\n", fn->data->code );
 }
@@ -629,11 +592,11 @@ ast::LambdaPtr Jit::performInlining( ast::LambdaPtr fn, util::ScopePtr<value::Va
 //	std::cout << "INLINING " << (util::CStr)fn->name << std::endl;
 
 	struct Visitor {
-		ast::AstPtr visit( ast::AstPtr         ast, util::ScopePtr<value::ValuePtr> globals ) const {
+		ast::AstPtr visit( ast::AstPtr ast, util::ScopePtr<value::ValuePtr> globals ) const {
 			//std::cout << "BORING " << ast << std::endl;
 			return ast;
 		}
-		ast::AstPtr visit( ast::IfPtr          ast, util::ScopePtr<value::ValuePtr> globals ) const {
+		ast::AstPtr visit( ast::IfPtr ast, util::ScopePtr<value::ValuePtr> globals ) const {
 			ast::AstPtr oldTest = ast->test;
 			ast::AstPtr newTest = ast->test->visit<ast::AstPtr>( *this, globals );
 
@@ -642,12 +605,12 @@ ast::LambdaPtr Jit::performInlining( ast::LambdaPtr fn, util::ScopePtr<value::Va
 
 			ast::AstPtr oldElse = ast->elseBranch;
 			ast::AstPtr newElse = ast->elseBranch->visit<ast::AstPtr>( *this, globals );
-		
+
 			if ( (oldTest == newTest) && (oldThen == newThen) && (oldElse == newElse) ) return ast;
 
 			return new ast::If( ast->location, newTest, newThen, newElse );
 		}
-		ast::AstPtr visit( ast::DoPtr          ast, util::ScopePtr<value::ValuePtr> globals ) const {
+		ast::AstPtr visit( ast::DoPtr ast, util::ScopePtr<value::ValuePtr> globals ) const {
 			DBG( Do );
 
 			std::vector<ast::AstPtr> exprs;
@@ -657,24 +620,18 @@ ast::LambdaPtr Jit::performInlining( ast::LambdaPtr fn, util::ScopePtr<value::Va
 				ast::AstPtr oldAst = *it;
 				ast::AstPtr newAst = oldAst->visit<ast::AstPtr>( *this, globals );
 
-//				if ( oldAst == newAst ) 
-//					std::cout << "POOO " << oldAst << std::endl;
-//				else
-//					std::cout << oldAst << ", NO POO" << std::endl;
-
-
 				changed = changed || (oldAst != newAst);
 
 				exprs.push_back( newAst );
 			}
 
-			if ( changed ) 
+			if ( changed )
 				return new ast::Do( ast->location, exprs );
 			else {
 				return ast;
 			}
 		}
-		ast::AstPtr visit( ast::LetStarPtr     ast, util::ScopePtr<value::ValuePtr> globals ) const {
+		ast::AstPtr visit( ast::LetStarPtr ast, util::ScopePtr<value::ValuePtr> globals ) const {
 			DBG( LetStar );
 
 			ast::Let::Bindings bindings;
@@ -697,12 +654,12 @@ ast::LambdaPtr Jit::performInlining( ast::LambdaPtr fn, util::ScopePtr<value::Va
 
 			changed = changed || (oldBody!= newBody);
 
-			if ( changed ) 
+			if ( changed )
 				return new ast::Let( ast->location, bindings, newBody );
 			else
 				return ast;
 		}
-		ast::AstPtr visit( ast::LetPtr         ast, util::ScopePtr<value::ValuePtr> globals ) const {
+		ast::AstPtr visit( ast::LetPtr ast, util::ScopePtr<value::ValuePtr> globals ) const {
 			DBG( Let );
 
 			ast::Let::Bindings bindings;
@@ -725,12 +682,12 @@ ast::LambdaPtr Jit::performInlining( ast::LambdaPtr fn, util::ScopePtr<value::Va
 
 			changed = changed || (oldBody!= newBody);
 
-			if ( changed ) 
+			if ( changed )
 				return new ast::Let( ast->location, bindings, newBody );
 			else
 				return ast;
 		}
-		ast::AstPtr visit( ast::LambdaPtr      ast, util::ScopePtr<value::ValuePtr> globals ) const {
+		ast::AstPtr visit( ast::LambdaPtr ast, util::ScopePtr<value::ValuePtr> globals ) const {
 			DBG( Lambda );
 
 			if ( ast->body ) {
@@ -749,7 +706,7 @@ ast::LambdaPtr Jit::performInlining( ast::LambdaPtr fn, util::ScopePtr<value::Va
 			if ( !(lambda->body) || (lambda->depth() > Jit::inliningThreshold) ) return ast;
 
 			ast::Let::Bindings bindings;
-				
+
 			auto name = lambda->params_begin();
 			for ( auto it = ast->begin(), end = ast->end(); it != end; ++it, ++name ) {
 				auto arg = (*it)->visit<ast::AstPtr>( *this, globals );
@@ -837,11 +794,9 @@ jit_type_t Jit::SharedData::SharedData::signature( size_t arity ) {
 		}
 
 		auto ty = jit_type_create_signature( jit_abi_cdecl, ptr_t, params, arity + 1, 1 );
-		
+
 		signature_ts.insert( lb, std::make_pair( arity, ty ) );
 
 		return ty;
 	}
 }
-
-

@@ -14,9 +14,9 @@ namespace lllm {
 
 			static Reader fromString( util::CStr source );
 			static Reader fromString( util::CStr sourceName, util::CStr source );
-	
+
 			static Reader fromFile( util::CStr fileName );
-			static Reader fromStdin();			
+			static Reader fromStdin();
 
 			~Reader();
 
@@ -42,4 +42,3 @@ namespace lllm {
 };
 
 #endif /* __READER_HPP__ */
-

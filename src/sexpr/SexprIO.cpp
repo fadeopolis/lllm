@@ -55,4 +55,3 @@ std::ostream& lllm::operator<<( std::ostream& os, SexprPtr expr ) {
 	expr->visit<void,Visitor,std::ostream&>( Visitor(), os );
 	return os;
 }
-

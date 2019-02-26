@@ -53,11 +53,11 @@ TypeSet Variable::possibleTypes() const { return ast ? ast->possibleTypes() : Ty
 size_t Variable::depth() const { return ast ? ast->depth() : 1; }
 
 //***** SPECIAL FORMS        ****************************************************************//
-Quote::Quote( const SourceLocation& loc, value::ValuePtr value ) : Ast( Type::Quote, loc ), value( value ) {}	
+Quote::Quote( const SourceLocation& loc, value::ValuePtr value ) : Ast( Type::Quote, loc ), value( value ) {}
 If::If( const SourceLocation& loc, AstPtr test, AstPtr thenBranch, AstPtr elseBranch ) :
 	  Ast( Type::If, loc ),
 	  test( test ),
-	  thenBranch( thenBranch ), 
+	  thenBranch( thenBranch ),
 	  elseBranch( elseBranch ),
 	  _depth( std::max( std::max( test->depth(), thenBranch->depth() ), elseBranch->depth() ) ) {}
 Do::Do( const SourceLocation& loc, const std::vector<AstPtr>& exprs ) : Ast( Type::Do, loc ), exprs( exprs ) {
@@ -84,7 +84,7 @@ LetStar::LetStar( const SourceLocation& loc, const Let::Bindings& bindings, AstP
 		_depth = std::max( _depth, (*it).second->depth() );
 	}
 }
-Lambda::Lambda( const SourceLocation& loc, 
+Lambda::Lambda( const SourceLocation& loc,
                 const util::InternedString& name,
                 const Bindings& params,
                 const Bindings& capture,
@@ -140,16 +140,16 @@ Lambda::Iterator Lambda::capture_end()   const { return capture.end();   }
 
 #include <iostream>
 
-EscapeStatus Lambda::paramEscape( Iterator param ) { 
-	std::cout << size_t( param - params_end() ) << std::endl;	
+EscapeStatus Lambda::paramEscape( Iterator param ) {
+	std::cout << size_t( param - params_end() ) << std::endl;
 	return EscapeStatus::NO_ESCAPE;
 }
-void         Lambda::paramEscape( Iterator param, EscapeStatus ) {
-
+void Lambda::paramEscape( Iterator param, EscapeStatus ) {
+  (void) param;
 }
 
 //***** FUNCTION APPLICATION ****************************************************************//
-Application::Application( const SourceLocation& loc, AstPtr fun, const std::vector<AstPtr>& args ) : 
+Application::Application( const SourceLocation& loc, AstPtr fun, const std::vector<AstPtr>& args ) :
   Ast( Type::Application, loc ),
   fun( fun ),
   args( args ) {
@@ -170,17 +170,3 @@ size_t Application::depth() const { return _depth; }
 Application::iterator Application::begin() const { return args.begin(); }
 Application::iterator Application::end()   const { return args.end();   }
 size_t                Application::arity() const { return args.size();  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

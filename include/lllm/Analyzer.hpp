@@ -13,4 +13,3 @@ namespace lllm {
 };
 
 #endif /* __ANALYZER_HPP__ */
-

@@ -13,8 +13,7 @@ namespace lllm {
 			_str_ << MSG; \
 			::lllm::util::fail( __FILE__, __PRETTY_FUNCTION__, __LINE__, _str_.str().c_str() ); \
 		})
-	}; // end namespace util	
+	}; // end namespace util
 }
 
 #endif /* __FAIL_HPP__ */
-

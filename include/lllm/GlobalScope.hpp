@@ -25,4 +25,3 @@ namespace lllm {
 };
 
 #endif /* __LLLM_VM_HPP__ */
-

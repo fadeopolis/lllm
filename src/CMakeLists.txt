@@ -47,3 +47,7 @@ add_test(NAME test_2_analyzer COMMAND test_2_analyzer)
 add_test(NAME test_3_eval     COMMAND test_3_eval)
 add_test(NAME test_4_jit      COMMAND test_4_jit)
 
+install(
+	TARGETS repl
+	RUNTIME DESTINATION bin
+)

@@ -9,11 +9,13 @@ using namespace lllm;
 using namespace lllm::sexpr;
 using namespace lllm::util;
 
-#define LLLM_VISITOR( TYPE, VALUE ) \
+#define LLLM_VISIT( TYPE, ... )
+#define LLLM_VISIT_CONCRETE( TYPE, VALUE ) \
 	TYPE::TYPE( const SourceLocation& loc, const VALUE& value ) : Sexpr( Type::TYPE, loc ), value( value ) {}
-#include "lllm/sexpr/Sexpr_concrete.inc"
+#include "lllm/sexpr/Sexpr.inc"
 
-#define LLLM_VISITOR( TYPE, ... )                  \
+#define LLLM_VISIT( TYPE, ... )
+#define LLLM_VISIT_CONCRETE( TYPE, VALUE )         \
 	bool      Sexpr::is##TYPE() const {            \
 		return type == Type::TYPE;                 \
 	}                                              \
@@ -24,7 +26,7 @@ using namespace lllm::util;
 			return nullptr;                        \
 		}                                          \
 	}
-#include "lllm/sexpr/Sexpr_concrete.inc"
+#include "lllm/sexpr/Sexpr.inc"
 
 
 size_t        sexpr::length( ListPtr l )         { return l->value.size();  }
@@ -32,7 +34,7 @@ SexprIterator sexpr::begin( ListPtr l )          { return l->value.begin(); }
 SexprIterator sexpr::end( ListPtr l)             { return l->value.end();   }
 SexprPtr      sexpr::at( ListPtr l, size_t idx ) { return l->value[idx];    }
 SexprPtr      sexpr::last( ListPtr l ) {
-	if ( l->value.empty() ) 
+	if ( l->value.empty() )
 		LLLM_FAIL( "LIST IS EMPTY" );
 
 	return l->value.back();
@@ -112,4 +114,3 @@ ListPtr   sexpr::cons( SexprPtr car, ListPtr cdr )     {
 
 	return new List( SourceLocation("*test*"), exprs );
 }
-

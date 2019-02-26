@@ -29,11 +29,11 @@ void util::fail( const char* file, const char* function, int line, const char* m
 	std::cout << "Stack trace:" << std::endl;
 
 	std::string buf;
-	for ( int i = 0; i < size; i++ ) {		
+	for ( int i = 0; i < size; i++ ) {
 		demangle( symbols[i], buf );
 		std::cout << '\t' << buf << std::endl;
 	}
- 
+
 	free( symbols );
 
 	std::abort();
@@ -66,5 +66,3 @@ void demangle( const char* symbol, std::string& dst ) {
 	dst += symbol;
 	return;
 }
-
-

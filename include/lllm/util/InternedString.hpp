@@ -29,7 +29,7 @@ namespace lllm {
 			private:
 				CStr string;
 		};
-	};	
+	};
 
 	inline bool operator==( const util::InternedString& a, const util::InternedString& b ) { return ((util::CStr)a) == ((util::CStr)b); }
 	inline bool operator==( util::CStr                  a, const util::InternedString& b ) { return std::strcmp( a, b ) == 0; }
@@ -37,4 +37,3 @@ namespace lllm {
 };
 
 #endif /* __STRINGS_HPP__ */
-

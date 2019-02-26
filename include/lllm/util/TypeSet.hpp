@@ -24,14 +24,15 @@ namespace lllm {
 
 		class TypeSet {
 			public:
-				#define LLLM_VISITOR( TYPE ) \
+				#define LLLM_VISIT( TYPE )
+				#define LLLM_VISIT_CONCRETE( TYPE ) \
 					static inline constexpr TypeSet TYPE() { return TypeSet( value::Type::TYPE ); }
-				#include "lllm/value/Value_concrete.inc"
+				#include "lllm/value/Value.inc"
 
-				static inline constexpr TypeSet Number() { return Int() | Real(); }	
-				static inline constexpr TypeSet Lambda() { return TypeSet( value::Type::Lambda ); }	
+				static inline constexpr TypeSet Number() { return Int() | Real(); }
+				static inline constexpr TypeSet Lambda() { return TypeSet( value::Type::Lambda ); }
 				static inline constexpr TypeSet all()    { return all( TypeSet(), value::Type::BEGIN ); }
-	
+
 				inline constexpr bool contains( const value::Type& t ) const { return (bits( t ) & mask) != 0; }
 
 				inline unsigned size() const { return __builtin_popcount( mask ); }
@@ -50,15 +51,15 @@ namespace lllm {
 				short mask;
 
 				static inline constexpr short bits()                       { return 0; }
-				static inline constexpr short bits( value::Type t ) { 
-					return 1 << ((short) (t > value::Type::Lambda ? value::Type::Lambda : t)); 
+				static inline constexpr short bits( value::Type t ) {
+					return 1 << ((short) (t > value::Type::Lambda ? value::Type::Lambda : t));
 				}
 				static inline constexpr short bits( const TypeSet& t )     { return t.mask; }
 				template<typename... Ts>
 				static inline constexpr short bits( value::Type t, Ts... ts ) { return bits( t ) | bits( ts... ); }
 
 				static inline constexpr TypeSet all( const TypeSet& accum, value::Type t ) {
-					return t <= value::Type::END ? all( accum | t, value::Type( short( t ) + 1 ) ) : accum; 
+					return t <= value::Type::END ? all( accum | t, value::Type( short( t ) + 1 ) ) : accum;
 				}
 
 			friend constexpr TypeSet operator|( const value::Type& a, const value::Type& b );
@@ -84,10 +85,8 @@ namespace lllm {
 		constexpr TypeSet operator&( const value::Type& a, const TypeSet&     b ) { return TypeSet( TypeSet::bits( a ) & TypeSet::bits( b ) ); }
 		constexpr TypeSet operator&( const TypeSet&     a, const value::Type& b ) { return TypeSet( TypeSet::bits( a ) & TypeSet::bits( b ) ); }
 
-		constexpr bool operator==( const TypeSet& a, const TypeSet& b ) { return a.mask == b.mask; }		
+		constexpr bool operator==( const TypeSet& a, const TypeSet& b ) { return a.mask == b.mask; }
 	};
 };
 
-
 #endif /* __TYPE_SET_HPP__ */
-

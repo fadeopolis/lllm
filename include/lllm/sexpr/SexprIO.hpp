@@ -6,8 +6,7 @@
 #include <iosfwd>
 
 namespace lllm {
-	std::ostream& operator<<( std::ostream&, sexpr::SexprPtr );	
+	std::ostream& operator<<( std::ostream&, sexpr::SexprPtr );
 };
 
 #endif /* __SEXPR_IO_HPP__ */
-

@@ -12,7 +12,7 @@
 #if LLLM_DBG_LVL > 4
 #	include <iostream>
 #	define DBG( TYPE ) (void) ({ std::cout << "{VISITING " << #TYPE << "}" << std::endl; nullptr; })
-#else 
+#else
 #	define DBG( TYPE ) (void) ({ nullptr; })
 #endif
 
@@ -74,7 +74,7 @@ ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::Value
 		}
 		ValuePtr visit( ast::IntPtr         ast, util::ScopePtr<value::ValuePtr> env ) const {
 			return number( ast->value );
-		}		
+		}
 		ValuePtr visit( ast::RealPtr        ast, util::ScopePtr<value::ValuePtr> env ) const {
 			return number( ast->value );
 		}
@@ -91,11 +91,11 @@ ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::Value
 			} else {
 				LLLM_FAIL( ast->location << ": Unknown variable '" << ast->name << "'" );
 			}
-		}	
+		}
 		// ***** SPECIAL FORMS
 		ValuePtr visit( ast::QuotePtr    ast, util::ScopePtr<value::ValuePtr> env ) const {
 			return ast->value;
-		}		
+		}
 		ValuePtr visit( ast::IfPtr          ast, util::ScopePtr<value::ValuePtr> env ) const {
 			if ( evaluate( ast->test, env ) ) {
 				return evaluate( ast->thenBranch, env );
@@ -111,7 +111,7 @@ ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::Value
 			return val;
 		}
 		ValuePtr visit( ast::LetPtr         ast, util::ScopePtr<value::ValuePtr> env ) const {
-			auto newEnv = env;			
+			auto newEnv = env;
 
 			for ( auto it = ast->bindings.begin(), end = ast->bindings.end(); it != end; ++it ) {
 				const ast::Let::Binding& b = *it;
@@ -158,7 +158,7 @@ ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::Value
 				// evaluate args
 				std::vector<ValuePtr> evaluatedArgs;
 				evaluatedArgs.resize( ast->args.size() );
-				
+
 				size_t i = 0;
 				for ( auto it = ast->args.begin(), end = ast->args.end(); it != end; ++it, ++i ) {
 					evaluatedArgs[i] = evaluate( *it, env );
@@ -184,7 +184,7 @@ ValuePtr Evaluator::evaluate( ast::AstPtr ast, const util::ScopePtr<value::Value
 					LLLM_FAIL( ast->location << ": Cannot apply '" << head << "' to (" << ast->args << "), wrong arity" );
 				}
 			}
-		}	
+		}
 	};
 
 	return ast->visit<ValuePtr>( Visitor(), env );
@@ -237,8 +237,7 @@ ValuePtr Evaluator::applyAST( LambdaPtr fn, util::ScopePtr<value::ValuePtr> env,
 
 	if ( data->callCnt > jittingThreshold ) {
 		Jit::compile( fn, env );
-		assert( fn->data->code );
-		fn->code = fn->data->code;
+		assert( fn->code );
 
 		return applyFun( fn, args.size(), fn->code, args );
 	}
@@ -262,9 +261,8 @@ ValuePtr Evaluator::applyAST( LambdaPtr fn, util::ScopePtr<value::ValuePtr> env,
 	i = 0;
 	for ( auto it = ast->params_begin(), end = ast->params_end(); it != end; ++it, ++i ) {
 		env = new EvalScope( (*it)->name, args[i], env );
-	}		
+	}
 
 	// eval body
 	return evaluate( ast->body, env );
 }
-

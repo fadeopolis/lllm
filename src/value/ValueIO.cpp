@@ -8,13 +8,18 @@
 using namespace lllm;
 using namespace lllm::value;
 
-#define DBG( TYPE ) (void) ({ nullptr; })
-//#define DBG( TYPE ) (void) ({ std::cout << "{VISITING " << #TYPE << "}" << std::flush; nullptr; })
+#if 1
+#  define DBG( TYPE ) (void) ({ nullptr; })
+#else
+#  define DBG( TYPE ) (void) ({ std::cout << "{VISITING " << #TYPE << "}" << std::flush; nullptr; })
+#endif
 
 std::ostream& lllm::operator<<( std::ostream& os, Type t ) {
 	switch ( t ) {
-		#define LLLM_VISITOR( TYPE ) case Type::TYPE: return os << #TYPE;
-		#include "lllm/value/Value_concrete.inc"
+		#define LLLM_VISIT( TYPE )
+		#define LLLM_VISIT_CONCRETE( TYPE ) case Type::TYPE: return os << #TYPE;
+		#include "lllm/value/Value.inc"
+
 		default: return os << "Lambda";
 	}
 }
@@ -23,12 +28,11 @@ std::ostream& lllm::operator<<( std::ostream& os, ValuePtr v ) {
 
 	if ( long(typeOf(v)) > (long(Type::Lambda) + 3) ) {
 		os << "{?" << (long)typeOf( v ) << "?}";;
-//		std::cerr << "{PRINTING " << (long)typeOf( v ) << "}";
 		return os;
 	}
 
 	struct Visitor final {
-		void visit( NilPtr expr, std::ostream& os ) const {
+		void visit( NilPtr, std::ostream& os ) const {
 			DBG( Nil );
 			os << "()";
 		}
@@ -62,7 +66,7 @@ std::ostream& lllm::operator<<( std::ostream& os, ValuePtr v ) {
 			DBG( Symbol );
 			if ( (void*)(util::CStr)expr->value )
 				os << expr->value;
-			else 
+			else
 				os << "<EMPTY SYMBOL>";
 		}
 		void visit( RefPtr expr, std::ostream& os ) const {
@@ -71,8 +75,8 @@ std::ostream& lllm::operator<<( std::ostream& os, ValuePtr v ) {
 		}
 		void visit( LambdaPtr expr, std::ostream& os ) const {
 			DBG( Lambda );
-	
-			if ( expr->code ) 
+
+			if ( expr->code )
 				os << "<jitted " << expr->data->ast << ">";
 			else
 				os << "<" << expr->data->ast << ">";
@@ -89,5 +93,4 @@ std::ostream& lllm::operator<<( std::ostream& os, ValuePtr v ) {
 	visit<void,Visitor,std::ostream&>( v, Visitor(), os );
 
 	return os;
-}	
-
+}
