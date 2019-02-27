@@ -42,5 +42,5 @@ matrix:
 
     # MacOSX build
     - os:        osx
-      osx_image: xcode10.1
+      # osx_image: xcode10.1
       compiler:  clang
