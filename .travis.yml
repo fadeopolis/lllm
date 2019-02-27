@@ -30,7 +30,7 @@ before_script:
   - mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR}
   - cmake .. || { cat config.log && exit 1; }
 script:
-  - make -j3 && make test
+  - make VERBOSE=1 V=1 -j3 && make test
 
 matrix:
   include:
