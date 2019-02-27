@@ -32,10 +32,10 @@ cache: ccache
 #       - glib
 #       - pixman
 
-# env:
-#   global:
-#     - SRC_DIR="."
-#     - BUILD_DIR="build"
+env:
+  global:
+    - SRC_DIR="."
+    - BUILD_DIR="build"
 
 before_install:
   - sudo apt-get update
