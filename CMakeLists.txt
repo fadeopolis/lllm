@@ -6,6 +6,8 @@ cmake_minimum_required (VERSION 3.11)
 
 #### ADD SUBDIRS
 
+add_compile_options(-rdynamic)
+
 ## Boehm-Demer-Weiser GC
 add_subdirectory(lib/bdwgc)
 include_directories(lib/bdwgc/include)

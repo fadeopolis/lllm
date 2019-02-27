@@ -22,21 +22,24 @@ void util::fail( const char* file, const char* function, int line, const char* m
 
 	char** symbols = backtrace_symbols( stackFrames + 1, size );
 
-	std::cout << "\nError: \""  << msg << '"' << std::endl;
-	std::cout << "In file     " << file     << std::endl;
-	std::cout << "In function " << function << std::endl;
-	std::cout << "At line     " << line     << std::endl;
-	std::cout << "Stack trace:" << std::endl;
+	std::stringstream O;
+
+	O << "\nError: \""  << msg << '"' << std::endl;
+	O << "In file     " << file     << std::endl;
+	O << "In function " << function << std::endl;
+	O << "At line     " << line     << std::endl;
+	O << "Stack trace:" << std::endl;
 
 	std::string buf;
 	for ( int i = 0; i < size; i++ ) {
 		demangle( symbols[i], buf );
-		std::cout << '\t' << buf << std::endl;
+		O << '\t' << buf << std::endl;
 	}
 
 	free( symbols );
 
-	std::abort();
+	throw std::runtime_error(O.str());
+	// std::abort();
 }
 
 void demangle( const char* symbol, std::string& dst ) {
