@@ -39,7 +39,7 @@ env:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -y byacc flex cmake make automake autoconf libtool pkg-config makeinfo
+  - sudo apt-get install -y byacc flex cmake make automake autoconf libtool pkg-config texinfo
 
 before_script:
   - mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR}
