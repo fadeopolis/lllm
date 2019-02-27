@@ -1,20 +1,30 @@
 
 language: cpp
-dist:     xenial
-compiler:
-  - gcc
-  ## libjit gen-apply segfaults when built with clang
-  # - clang
 cache: ccache
+
+addons:
+  apt:
+    packages:
+      - cmake
+      ## for libjit
+      - automake
+      - autoconf
+      - libtool
+      - pkg-config
+      - texinfo
+      - byacc
+      - flex
+  homebrew:
+    packages:
+      ## for libjit
+      - texinfo
+      - byacc
+      - flex
 
 env:
   global:
     - SRC_DIR="."
     - BUILD_DIR="build"
-
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y byacc flex cmake make automake autoconf libtool pkg-config texinfo
 
 before_script:
   - mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR}
@@ -24,7 +34,13 @@ script:
 
 matrix:
   include:
+    # Linux build
+    - os:       linux
+      dist:     xenial
+      compiler: gcc
+      ## NOTE: libjit gen-apply segfaults when built with Travis's clang
+
     # MacOSX build
-    - os: osx
-      osx_image: xcode9.4
+    - os:        osx
+      osx_image: xcode10.1
       compiler:  clang
