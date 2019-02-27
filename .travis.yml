@@ -3,34 +3,9 @@ language: cpp
 dist:     xenial
 compiler:
   - gcc
-  - clang
+  ## libjit gen-apply segfaults when built with clang
+  # - clang
 cache: ccache
-
-# addons:
-#   apt:
-#     update: true
-#     sources:
-#       # PPAs for newer toolchains
-#       - ubuntu-toolchain-r-test
-#     packages:
-#       # Extra toolchains
-#       - gcc-7
-#       - g++-7
-#       # Build dependencies
-#       - byacc
-#       - flex
-#       - cmake
-#       - make
-#       - automake
-#       - autoconf
-#       - libtool
-#       - pkg-config
-#   homebrew:
-#     packages:
-#       - libffi
-#       - gettext
-#       - glib
-#       - pixman
 
 env:
   global:
@@ -47,14 +22,9 @@ before_script:
 script:
   - make -j3 && make test
 
-# matrix:
-#   include:
-#     - env:
-#         - CONFIG=""
-
-#     # MacOSX builds
-#     - env:
-#         - CONFIG=""
-#       os: osx
-#       osx_image: xcode9.4
-#       compiler: clang
+matrix:
+  include:
+    # MacOSX build
+    - os: osx
+      osx_image: xcode9.4
+      compiler:  clang
